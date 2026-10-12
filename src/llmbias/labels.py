@@ -181,9 +181,12 @@ def read_labels(path, require_complete=True):
         except LabelError as e: errs.append(f"{r['item_id']}: {e}"); labs.append(None)
     if errs: raise LabelError("; ".join(errs))
     df["label"] = labs
+    has_comment = "comment" in df.columns   # _final files (Project Owner) have no comment column -> all comments empty
+    if not has_comment: df["comment"] = ""
     df["comment"] = df["comment"].apply(lambda c: "" if c is None or (isinstance(c, float) and math.isnan(c)) else str(c).strip())
     if require_complete and df.label.isna().any(): raise LabelError(f"{int(df.label.isna().sum())} items unlabeled")
-    df["unsure_no_comment"] = (df.label == "unsure") & (df.comment == "")
+    df["unsure_no_comment"] = (df.label == "unsure") & (df.comment == "")   # counted, never an error
+    df.attrs["has_comment_column"] = has_comment
     return df[["item_id", "task", "label", "comment", "unsure_no_comment"]]
 
 def map_back(df, run_id, labeler):
@@ -243,6 +246,7 @@ def agreement(run_dir, a_path, b_path, adjudication_path=None, adj_out=None, B=B
     M = A.merge(Bdf[["internal_id", "item_id", "label", "comment", "unsure_no_comment"]], on="internal_id", suffixes=("_A", "_B"))
     text = item_pool(run_dir).set_index("internal_id").text
     res = {"run_id": run_id, "flags_unsure_without_comment": {"A": A[A.unsure_no_comment].item_id.tolist(), "B": Bdf[Bdf.unsure_no_comment].item_id.tolist()},
+           "count_unsure_without_comment": {"A": int(A.unsure_no_comment.sum()), "B": int(Bdf.unsure_no_comment.sum())},
            "per_task": {}}
     adj_rows = []
     for task, g in M.groupby("task"):

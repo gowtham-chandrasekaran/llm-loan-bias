@@ -106,3 +106,22 @@ def test_calibration_outside_180(env):
     used = set(json.load(open(os.path.join(priv, "RUNX", "labeling_pilot-v1_key.json")))["selected_internal_ids"])
     ids = {v["internal_id"] for v in k["map"].values()}
     assert len(ids) == 20 and not ids & used and k["seed"] == 15803
+
+def test_four_column_final_roundtrip(env):
+    """Project Owner's _final files: item_id, task, text, label (no comment column), dropdown kept."""
+    from openpyxl import load_workbook
+    rd, out, priv = env
+    paths, kp = L.export(rd, out); key = json.load(open(kp)); finals = {}
+    for lab in "AB":
+        wb = load_workbook(paths[lab][0]); ws = wb["Items"]; ws.delete_cols(5)
+        assert [c.value for c in ws[1]] == ["item_id", "task", "text", "label"]
+        for k, row in enumerate(ws.iter_rows(min_row=2)):
+            row[3].value = "unsure" if k < 2 else key["labelers"][lab]["map"][row[0].value]["judge"]
+        finals[lab] = os.path.join(out, f"labeler_{lab}_final.xlsx"); wb.save(finals[lab])
+        ws2 = load_workbook(finals[lab])["Items"]; assert ws2.data_validations.dataValidation[0].formula1 == '"1,0,unsure"'
+    df = L.read_labels(finals["A"])
+    assert (df.comment == "").all() and int(df.unsure_no_comment.sum()) == 2
+    res = L.agreement(rd, finals["A"], finals["B"], B=200)
+    assert res["count_unsure_without_comment"] == {"A": 2, "B": 2}
+    bad = load_workbook(finals["A"]); bad["Items"]["D5"] = "yes"; bad.save(finals["A"])
+    with pytest.raises(L.LabelError): L.read_labels(finals["A"])
