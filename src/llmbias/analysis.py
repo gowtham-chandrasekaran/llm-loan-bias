@@ -283,11 +283,6 @@ def analyze(run_dir, n_perm=10000):
     json.dump(R, open(os.path.join(run_dir, "analysis.json"), "w"), indent=2, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o))
     return R
 
-if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("--run", required=True); ap.add_argument("--n-perm", type=int, default=10000)
-    a = ap.parse_args(); R = analyze(a.run, a.n_perm); print(json.dumps({k: R[k] for k in ["label", "holm", "fallback", "parse_rate"]}, indent=1, default=str))
-
-
 # ---- Name-level inference (amendments 15.5 / 15.6). No name random effect: too few names. ----
 def name_diffs(df, va="base", vb="name_b", setup=1, extra=()):
     """Paired deny difference (majority-of-3) per profile x model: d = deny(vb) - deny(va), tagged with the name pair."""
@@ -351,3 +346,8 @@ def name_level(df, va="base", vb="name_b", setup=1, strict_only=False, holm_p=No
             "lono": lono, "lono_all_pass": lono_ok,
             "robust_confirmed": bool(holm_p is not None and holm_p < 0.05 and lono_ok),
             "note": "no name random effect (15.5); clusters = name pairs"}
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser(); ap.add_argument("--run", required=True); ap.add_argument("--n-perm", type=int, default=10000)
+    a = ap.parse_args(); R = analyze(a.run, a.n_perm); print(json.dumps({k: R[k] for k in ["label", "holm", "fallback", "parse_rate"]}, indent=1, default=str))
