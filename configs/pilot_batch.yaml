@@ -24,7 +24,7 @@ est_tokens:
   input: 750
   output_visible: 350
   reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}
-  tool_overhead: {openai: 300, anthropic: 7.0, google: 400, mock: 300}   # from live tool checks (2 rounds)
+  tool_overhead: {openai: 300, anthropic: 1200, google: 400, mock: 300}   # from live tool checks (2 rounds)
   tool_call_output: 60
   judge_input: 350
   judge_output: 40
