@@ -1,0 +1,11 @@
+step,rows_remaining
+raw,518894
+"action_taken in {1 originated, 3 denied}",518894
+loan_type == 1 conventional,428102
+loan_purpose == 1 home purchase,172708
+lien_status == 1 first lien,164097
+occupancy_type == 1 principal residence,136486
+"site-built single family, 1 unit",127431
+not business/reverse/open-end,122192
+drop missing/exempt key fields,119411
+drop range violations,119006

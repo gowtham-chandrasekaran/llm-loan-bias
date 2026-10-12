@@ -1,0 +1,10 @@
+{
+  "seed": 20261012,
+  "schema_problems": [],
+  "pool_sizes": {
+    "borderline": 42943,
+    "control_approve": 16284,
+    "control_deny": 1535
+  },
+  "variants_sha256": "ce5de3ac8953d37554bc67c5136248d6fa9775db89cf79f205d758065f1524e6"
+}

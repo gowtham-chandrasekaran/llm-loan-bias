@@ -1,0 +1,17 @@
+seed: 20261012
+hmda_files: [data/raw/hmda_2024_DE_actions1_3.csv, data/raw/hmda_2024_MD_actions1_3.csv, data/raw/hmda_2024_PA_actions1_3.csv]
+states: [DE, MD, PA]
+state_fips: ['10', '24', '42']
+n_borderline: 150
+n_pilot: 25
+n_control_approve: 10
+n_control_deny: 10
+borderline: {dti_values: [40, 41, 42, 43, 44, 45, 46, 47, 48, 49], ltv_min: 60, ltv_max: 97}
+names: {min_recognition: 0.70, per_group: 10}
+tracts:
+  low_minority_max: 20.0
+  high_minority_min: 50.0
+  max_income_pct_diff: 10.0
+  max_hpi_growth_diff: 10.0
+  hpi_base_year: 2019
+  hpi_end_year: 2024

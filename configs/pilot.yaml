@@ -1,0 +1,15 @@
+run_seed: 777
+pilot: true                      # all outputs tagged excluded_from_confirmatory
+budget_usd: 15.0
+per_vendor_budget_usd: {openai: 5.0, anthropic: 5.0, google: 5.0, mock: 15.0}
+repeats: 3
+setups: [3, 1]                   # setup 3 first (primary, H4). Add 2 to include tool-assisted condition.
+variants: [base, control_dup, name_b, name_w_placebo, name_b_placebo, zip_b, zip_placebo, anchor]
+models:
+  - {vendor: openai, model: gpt-5.4-mini, effort: low}
+  - {vendor: anthropic, model: claude-sonnet-5, effort: none}
+  - {vendor: google, model: gemini-3.8-flash, effort: low}
+judge: {vendor: openai, model: gpt-5-nano, effort: minimal}
+max_output_tokens: 1500
+# token assumptions for the pre-run estimate (replaced by measured means after the mock/pilot run)
+est_tokens: {input: 750, output_visible: 350, reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}, judge_input: 350, judge_output: 40}

@@ -1,0 +1,4 @@
+stratum,hmda_denial_rate
+borderline,0.04
+control_approve,0.0
+control_deny,0.8

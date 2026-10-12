@@ -1,0 +1,15 @@
+check,pass
+schema,True
+seed_reproducible,True
+pair_diffs_only_proxy,True
+synthetic_dti_in_hmda_band,True
+credit_score_range_300_850,True
+ltv_range_0_200,True
+income_positive,True
+no_missing_in_profile_fields,True
+>=10_names_per_group_and_gender,True
+>=15_tract_pairs,True
+>=5_placebo_tract_pairs,True
+tract_pairs_same_state,True
+tract_pairs_income_within_10pts,True
+tract_pairs_hpi_within_10pts,True
