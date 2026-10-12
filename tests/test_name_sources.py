@@ -50,3 +50,11 @@ def test_name_level_inference_and_lono():
     S = name_level(df, strict_only=True, n_perm=1000); assert S["full_cluster_robust"]["G"] == 2
     assert name_sign_flip_perm([1, 1, -1, -1], ["a", "a", "b", "b"])["p"] == 1.0
     assert abs(cluster_robust_mean([1, 0, 1, 0], ["a", "a", "b", "b"])["est"] - 0.5) < 1e-9
+
+def test_15_7_pair_gap_covariates():
+    from llmbias.analysis import _pair_gap_covs
+    n = pd.read_csv(os.path.join(ns.ROOT, "data", "processed", "name_pairs.csv"))
+    d, use = _pair_gap_covs(pd.DataFrame({"name_pair_id": n.name_pair_id}))
+    assert use and (d.class_gap_abs >= 0).all() and d.class_gap_abs.notna().all()
+    miss = n.class_w.isna() | n.class_b.isna()
+    assert (d.class_missing.values == miss.astype(int).values).all() and (d.class_gap_abs[miss.values] == 0).all()

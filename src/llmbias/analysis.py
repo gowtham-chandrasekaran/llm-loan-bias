@@ -176,7 +176,25 @@ def _name_source_term(d):
     d = d.assign(name_source=d.profile_id.map(ns).map(lambda x: "mixed" if "|" in x else x))
     return d, d.name_source.nunique() > 1
 
-def mixed_logit(df, proxy_variants, setup=1):
+NAME_PAIRS_CSV = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed", "name_pairs.csv")
+
+def _pair_gap_covs(d, pairs_csv=NAME_PAIRS_CSV):
+    """15.7: pair-level |class gap| (SD; 0 when missing), |era gap| (years), class_missing indicator, joined on name_pair_id.
+    Returns (d, use) where use is True when the covariates vary (otherwise they are left out as inestimable)."""
+    if "name_pair_id" not in d or not os.path.exists(pairs_csv):
+        return d.assign(class_gap_abs=0.0, era_gap_abs=0.0, class_missing=0), False
+    npairs = pd.read_csv(pairs_csv).set_index("name_pair_id")
+    miss = npairs.class_w.isna() | npairs.class_b.isna()
+    d = d.assign(class_gap_abs=d.name_pair_id.map(npairs.class_gap.abs().where(~miss, 0.0)).astype(float),
+                 era_gap_abs=d.name_pair_id.map(npairs.era_gap.abs()).astype(float),
+                 class_missing=d.name_pair_id.map(miss.astype(int)))
+    use = d[["class_gap_abs", "era_gap_abs", "class_missing"]].notna().all().all() and d.class_gap_abs.nunique() > 1
+    return d, bool(use)
+
+def _gap_terms(d):
+    return [c for c in ("class_gap_abs", "era_gap_abs", "class_missing") if d[c].nunique() > 1]
+
+def mixed_logit(df, proxy_variants, setup=1, pair_covs=False):
     """decision ~ proxy x model + effort + state + (1|profile)  [pre-reg 15.1 #3, 15.2]. Variational Bayes GLMM (statsmodels).
     Returns summary dict or note if not estimable (e.g., no variation in mock)."""
     from statsmodels.genmod.bayes_mixed_glm import BinomialBayesMixedGLM
@@ -187,6 +205,8 @@ def mixed_logit(df, proxy_variants, setup=1):
     d["state"] = d.get("proxy_state", pd.Series("NA", index=d.index)).fillna("NA").astype(str)
     d, use_src = _name_source_term(d)
     terms = ["proxy"] + (["C(model)", "proxy:C(model)"] if d.model.nunique() > 1 else []) + (["C(effort)"] if d.effort.nunique() > 1 else []) + (["C(state)"] if d.state.nunique() > 1 else []) + (["C(name_source)"] if use_src else [])
+    if pair_covs:
+        d, use_g = _pair_gap_covs(d); terms += _gap_terms(d) if use_g else []
     f = "deny ~ " + " + ".join(terms)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -194,7 +214,7 @@ def mixed_logit(df, proxy_variants, setup=1):
     names = m.model.exog_names
     return {"formula": f + " + (1|profile)", "n": len(d), "fe": {n: {"mean": float(m.fe_mean[i]), "sd": float(m.fe_sd[i])} for i, n in enumerate(names)}}
 
-def glmer_fit(df, proxy_variants, setup=1, rscript="Rscript"):
+def glmer_fit(df, proxy_variants, setup=1, rscript="Rscript", pair_covs=False):
     """CONFIRMATORY model (15.3 #6): lme4::glmer via Rscript subprocess, Laplace. Same formula as mixed_logit (VB = sensitivity)."""
     import subprocess, tempfile, shutil
     if not shutil.which(rscript): return {"ok": False, "error": "Rscript not found"}
@@ -205,10 +225,14 @@ def glmer_fit(df, proxy_variants, setup=1, rscript="Rscript"):
     d["state"] = d.get("proxy_state", pd.Series("NA", index=d.index)).fillna("NA").astype(str)
     d, use_src = _name_source_term(d)
     terms = ["proxy"] + (["model", "proxy:model"] if d.model.nunique() > 1 else []) + (["effort"] if d.effort.nunique() > 1 else []) + (["state"] if d.state.nunique() > 1 else []) + (["name_source"] if use_src else [])
+    if pair_covs:  # 15.7 pair-level covariates (name analyses only)
+        d, use_g = _pair_gap_covs(d); terms += _gap_terms(d) if use_g else []
+    else:
+        d = d.assign(class_gap_abs=0.0, era_gap_abs=0.0, class_missing=0)
     f = "deny ~ " + " + ".join(terms) + " + (1 | profile_id)"
     with tempfile.TemporaryDirectory() as td:
         ci, co = os.path.join(td, "d.csv"), os.path.join(td, "o.json")
-        d[["deny", "proxy", "model", "effort", "state", "name_source", "profile_id"]].to_csv(ci, index=False)
+        d[["deny", "proxy", "model", "effort", "state", "name_source", "class_gap_abs", "era_gap_abs", "class_missing", "profile_id"]].to_csv(ci, index=False)
         r = subprocess.run([rscript, os.path.join(os.path.dirname(__file__), "..", "..", "R", "glmer_fit.R"), ci, co, f], capture_output=True, text=True, timeout=600)
         if not os.path.exists(co): return {"ok": False, "error": (r.stderr or r.stdout)[-800:]}
         return json.loads(open(co).read(), strict=False)
@@ -234,8 +258,8 @@ def analyze(run_dir, n_perm=10000):
         R[f"M1b_approve_exploratory_{proxy}"] = m1b(df, judg, va, vb, "approve", n_perm)
         pv[f"M1a_{proxy}"] = r1 and r1["p_perm"]; pv[f"M1b_{proxy}"] = r1b and r1b["p_perm"]
         pv[f"M2_{proxy}"] = r2 and r2["p_mcnemar"]; pv[f"M3_{proxy}"] = r3 and r3["p_mcnemar"]
-        R[f"glmer_confirmatory_{proxy}"] = glmer_fit(df, (va, vb))
-        R[f"mixed_logit_vb_sensitivity_{proxy}"] = mixed_logit(df, (va, vb))
+        R[f"glmer_confirmatory_{proxy}"] = glmer_fit(df, (va, vb), pair_covs=(proxy == "name"))
+        R[f"mixed_logit_vb_sensitivity_{proxy}"] = mixed_logit(df, (va, vb), pair_covs=(proxy == "name"))
     R["placebo"] = {f"{p}": m3(pairs.assign(pair_type=pairs.pair_type.replace({"placebo": "proxy"})).query("pair_type=='proxy' or pair_type=='control'"), p)
                     for p in ("name", "name_black", "zip") if not pairs.empty}
     R["placebo_M1a"] = {"name": m1a(df, "base", "name_w_placebo", n_perm), "zip": m1a(df, "base", "zip_placebo", n_perm)}
@@ -243,6 +267,9 @@ def analyze(run_dir, n_perm=10000):
     R["holm"] = holm({k: (v if v is not None else np.nan) for k, v in pv.items()})
     hp = R["holm"].get("M3_name", {}).get("p_holm") if isinstance(R["holm"].get("M3_name"), dict) else None
     R["name_level"] = {f"setup{st}": name_level(df, setup=st, holm_p=hp, n_perm=n_perm) for st in sorted(df.setup.unique()) if st in (1, 2)}
+    if "name_pair_sensitivity_only" in df and "name_pair_no_class" in df:  # 15.7 (c): 5 clean pairs, descriptive
+        clean = df.assign(_dirty=df.name_pair_sensitivity_only.fillna(False).astype(bool) | df.name_pair_no_class.fillna(False).astype(bool))
+        R["name_level_clean_pairs_descriptive"] = {f"setup{st}": name_level(clean, setup=st, n_perm=n_perm, exclude="_dirty") for st in sorted(df.setup.unique()) if st in (1, 2)}
     for ex in ("name_pair_sensitivity_only", "name_pair_no_class"):
         R[f"name_level_excl_{ex.replace('name_pair_', '')}"] = {f"setup{st}": name_level(df, setup=st, holm_p=hp, n_perm=n_perm, exclude=ex) for st in sorted(df.setup.unique()) if st in (1, 2)}
     R["name_level_strict_15_5_sensitivity"] = {f"setup{st}": name_level(df, setup=st, strict_only=True, holm_p=hp, n_perm=n_perm) for st in sorted(df.setup.unique()) if st in (1, 2)}
@@ -262,7 +289,7 @@ if __name__ == "__main__":
 
 
 # ---- Name-level inference (amendments 15.5 / 15.6). No name random effect: too few names. ----
-def name_diffs(df, va="base", vb="name_b", setup=1):
+def name_diffs(df, va="base", vb="name_b", setup=1, extra=()):
     """Paired deny difference (majority-of-3) per profile x model: d = deny(vb) - deny(va), tagged with the name pair."""
     d = df[(df.setup == setup)]
     mj = majority(d)
@@ -271,7 +298,7 @@ def name_diffs(df, va="base", vb="name_b", setup=1):
     t = w[[va, vb]].dropna().reset_index()
     t["d"] = (t[vb] == "deny").astype(int) - (t[va] == "deny").astype(int)
     meta = d.drop_duplicates("profile_id").set_index("profile_id")
-    for c in ("name_pair_id", "name_pair_strict_155", "name_pair_sensitivity_only", "name_pair_no_class"):
+    for c in ("name_pair_id", "name_pair_strict_155", "name_pair_sensitivity_only", "name_pair_no_class") + tuple(extra):
         t[c] = t.profile_id.map(meta[c]) if c in meta else np.nan
     names = d[d.variant == vb].drop_duplicates("profile_id").set_index("profile_id").applicant_name
     t["name_b"] = t.profile_id.map(names)
@@ -305,7 +332,7 @@ def name_sign_flip_perm(d, cl, n_perm=10000, seed=0):
 def name_level(df, va="base", vb="name_b", setup=1, strict_only=False, holm_p=None, n_perm=10000, exclude=None):
     """Per-name estimates, leave-one-name-out, cluster-robust and permutation inference at the name-pair level.
     Robust per 15.5: Holm-significant in the full sample AND every LONO estimate keeps the sign and lies inside the full 95% CI."""
-    t = name_diffs(df, va, vb, setup)
+    t = name_diffs(df, va, vb, setup, extra=(exclude,) if exclude and exclude.startswith("_") else ())
     if t.empty or t.name_pair_id.isna().all(): return {"note": "no name-pair data"}
     if strict_only: t = t[t.name_pair_strict_155.astype(bool)]
     if exclude: t = t[~t[exclude].fillna(False).astype(bool)]   # 'name_pair_sensitivity_only' or 'name_pair_no_class'
