@@ -243,6 +243,8 @@ def analyze(run_dir, n_perm=10000):
     R["holm"] = holm({k: (v if v is not None else np.nan) for k, v in pv.items()})
     hp = R["holm"].get("M3_name", {}).get("p_holm") if isinstance(R["holm"].get("M3_name"), dict) else None
     R["name_level"] = {f"setup{st}": name_level(df, setup=st, holm_p=hp, n_perm=n_perm) for st in sorted(df.setup.unique()) if st in (1, 2)}
+    for ex in ("name_pair_sensitivity_only", "name_pair_no_class"):
+        R[f"name_level_excl_{ex.replace('name_pair_', '')}"] = {f"setup{st}": name_level(df, setup=st, holm_p=hp, n_perm=n_perm, exclude=ex) for st in sorted(df.setup.unique()) if st in (1, 2)}
     R["name_level_strict_15_5_sensitivity"] = {f"setup{st}": name_level(df, setup=st, strict_only=True, holm_p=hp, n_perm=n_perm) for st in sorted(df.setup.unique()) if st in (1, 2)}
     R["fallback"] = fallback_trigger(R.get("M3_name")) , fallback_trigger(R.get("M3_zip"))
     R["parse_rate"] = float(df.parsed.apply(lambda p: isinstance(p, dict) and p.get("parse_ok")).mean())
@@ -269,7 +271,7 @@ def name_diffs(df, va="base", vb="name_b", setup=1):
     t = w[[va, vb]].dropna().reset_index()
     t["d"] = (t[vb] == "deny").astype(int) - (t[va] == "deny").astype(int)
     meta = d.drop_duplicates("profile_id").set_index("profile_id")
-    for c in ("name_pair_id", "name_pair_strict_155"):
+    for c in ("name_pair_id", "name_pair_strict_155", "name_pair_sensitivity_only", "name_pair_no_class"):
         t[c] = t.profile_id.map(meta[c]) if c in meta else np.nan
     names = d[d.variant == vb].drop_duplicates("profile_id").set_index("profile_id").applicant_name
     t["name_b"] = t.profile_id.map(names)
@@ -300,12 +302,13 @@ def name_sign_flip_perm(d, cl, n_perm=10000, seed=0):
     stat = np.abs(signs @ sums)
     return {"p": float((stat >= obs - 1e-12).mean()), "G": G, "exact": G <= int(math.log2(n_perm))}
 
-def name_level(df, va="base", vb="name_b", setup=1, strict_only=False, holm_p=None, n_perm=10000):
+def name_level(df, va="base", vb="name_b", setup=1, strict_only=False, holm_p=None, n_perm=10000, exclude=None):
     """Per-name estimates, leave-one-name-out, cluster-robust and permutation inference at the name-pair level.
     Robust per 15.5: Holm-significant in the full sample AND every LONO estimate keeps the sign and lies inside the full 95% CI."""
     t = name_diffs(df, va, vb, setup)
     if t.empty or t.name_pair_id.isna().all(): return {"note": "no name-pair data"}
     if strict_only: t = t[t.name_pair_strict_155.astype(bool)]
+    if exclude: t = t[~t[exclude].fillna(False).astype(bool)]   # 'name_pair_sensitivity_only' or 'name_pair_no_class'
     if t.empty: return {"note": "no rows in subset"}
     full = cluster_robust_mean(t.d, t.name_pair_id)
     per = t.groupby(["name_pair_id", "name_b"]).d.agg(["mean", "size"]).reset_index().rename(columns={"mean": "est", "size": "n"})

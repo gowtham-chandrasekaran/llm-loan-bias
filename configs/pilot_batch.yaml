@@ -16,7 +16,7 @@ models:
   - {vendor: openai, model: gpt-5.4-mini, effort: none}
   - {vendor: anthropic, model: claude-sonnet-5, effort: none}
   - {vendor: google, model: gemini-3.8-flash, effort: none}
-judge: {vendor: openai, model: gpt-5-nano, effort: minimal}   # 'minimal' NOT live-verified
+judge: {vendor: openai, model: gpt-5-nano, effort: minimal}   # 'minimal' live-verified 2026-10-12: 0 reasoning tokens (docs/live_checks_judge.json); runs in batch mode by default
 max_output_tokens: 800
 batch_chunk: 500
 poll_seconds: 60

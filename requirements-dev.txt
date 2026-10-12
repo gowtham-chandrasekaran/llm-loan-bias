@@ -1,0 +1,2 @@
+-r requirements.txt
+openpyxl==3.1.5  # dev only: reading .xlsx codebooks (E&H, Crabtree)

@@ -54,6 +54,8 @@ def build_record(cfg, run_id, excluded, m, setup, app, rep):
            "hmda_denial_reasons": [None if pd.isna(app.get(f"hmda_denial_reason_{i}")) else str(app.get(f"hmda_denial_reason_{i}")).split(".")[0] for i in range(1, 5)],
            "proxy_state": None if pd.isna(app.get("proxy_state")) else str(app.get("proxy_state")).split(".")[0],
            "name_source": None if pd.isna(app.get("name_source")) else str(app.get("name_source")),
+           "name_pair_sensitivity_only": None if pd.isna(app.get("name_pair_sensitivity_only")) else bool(app.get("name_pair_sensitivity_only")),
+           "name_pair_no_class": None if pd.isna(app.get("name_pair_no_class")) else bool(app.get("name_pair_no_class")),
            "name_pair_id": app.get("name_pair_id"), "name_pair_strict_155": None if pd.isna(app.get("name_pair_strict_155")) else bool(app.get("name_pair_strict_155")),
            "system": sysm, "prompt": user, "prompt_sha256": hashlib.sha256((sysm + user).encode()).hexdigest()}
     return rec, sysm, user

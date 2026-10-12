@@ -85,6 +85,10 @@ class MockClient(BaseClient):
         treated = self.bias.get("name") if re.search(r"Applicant: (Lakisha|Tamika|Latasha|Latoya|Latonya|Tanisha|Ebony|Jermaine|Darnell|Roosevelt|Demetria|Keisha|Kenya|Latanya|Latisha|Latrice|Lawanda|Darius|Lamont|Terrell|Tyrone) ", user) else None
         if treated and dec == "approve" and r.random() < treated:
             dec = "deny"
+        zt = self.bias.get("zip")   # ZIP bias: flip approve->deny when the property ZIP is in bias["zip_treated"]
+        mz = re.search(r"ZIP code: (\d{5})", user)
+        if zt and mz and mz.group(1) in set(map(str, self.bias.get("zip_treated", []))) and dec == "approve" and r.random() < zt:
+            dec = "deny"
         if fixed:
             dec = "deny" if fixed.group(1) == "DENIED" else "approve"
         codes = ["C09", "X02"] if dec == "deny" else []

@@ -60,3 +60,16 @@
   on the strict 15.5 subset (`name_level_strict_15_5_sensitivity`).
 - **Budget:** Anthropic per-vendor cap raised to $7 (total stays $15), per Gowtham, so all 25 profiles stay in setup 2 with no trim.
 - Candidate sources evaluated but not integrated: see docs/name_sources.md.
+
+## data-gate-v3.1 (2026-10-12)
+- **Fallback-bound tie (0.434 for name and ZIP): not a bug.** In the mock run both proxies had 6/25 flips and 0 control flips, so both had the
+  same 2x2 table [0,6,0,19]. Newcombe depends only on those counts, so the bounds matched. Different profiles flipped (name: P000,P011,P014,P016,P020,P022;
+  ZIP: P004,P011,P014,P016,P019,P022). The real gap was that the mock could not inject ZIP bias at all. It now accepts `bias: {zip: p, zip_treated: [...]}`.
+  With name 0.9 and ZIP 0.25 the bounds differ (name 8/25 flips, upper 0.516; ZIP 3/25, upper 0.300). The regression test is `test_fallback_bounds_track_each_proxy`.
+- **Pairing:** Hungarian (scipy linear_sum_assignment) within gender, one unique White partner per Black name. Cost = 1.0 x |class_z gap| + 1.0 x |era gap|/10 y
+  (1 SD == 10 years), plus penalties: 100 cross-source, 50 when the White class score is missing but the Black one exists, 5 for a non-strict White partner of a strict Black name.
+  `sensitivity_only` = class gap > 1 SD or era gap > 10 y. `no_class` = class rating missing on either side. Analyses: `name_level_excl_sensitivity_only`, `name_level_excl_no_class`.
+- **Shared surnames:** 2010 Census surnames with count >= 10k, ranked by smallest |pctwhite - pctblack|. Added constraint: pctwhite + pctblack >= 80. Without it, the literal rule picks
+  Asian surnames with ~1% White and ~1% Black (Chung, Xiong, Singh), which would add an Asian signal. Deviation flagged for the Reviewer.
+- Judge: batch by default (`--sync` = debug only); gpt-5-nano `minimal` verified live, 0 reasoning tokens (docs/live_checks_judge.json).
+- openpyxl moved to requirements-dev.txt (dev only).

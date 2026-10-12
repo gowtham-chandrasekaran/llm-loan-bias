@@ -91,14 +91,23 @@ def _cost(c, r):
     return (dc.fillna(0) + de.fillna(3)) + np.where(has, 0, 100), has  # prefer candidates with class data
 
 
-def _surnames(seed):
+SURNAME_MIN_COUNT = 10000
+SURNAME_MIN_WB_TOTAL = 80.0  # pctwhite + pctblack >= 80: without it the literal |W-B| rule picks Asian surnames (Chung, Xiong: ~1% each)
+W_CLASS, W_ERA_PER_10Y = 1.0, 1.0   # cost weights: 1 SD of class index == 10 years of era (documented in design.md)
+FLAG_CLASS_SD, FLAG_ERA_Y = 1.0, 10.0
+
+
+def _surnames(seed=None, k=30):
+    """Shared surnames for E&H pairs: common 2010-Census surnames (count >= 10k) with the most even White/Black split,
+    i.e. smallest |pctwhite - pctblack|. Deterministic (no seed needed); returned in that order."""
     s = pd.read_csv(os.path.join(RAW, "Names_2010Census.csv"))
-    for c in ("pctwhite", "pctblack"): s[c] = pd.to_numeric(s[c], errors="coerce")
-    s = s[(s["rank"].astype(str).str.isdigit()) & s.pctwhite.between(35, 60) & s.pctblack.between(35, 60)].copy()
-    s["rank"] = s["rank"].astype(int); s = s.sort_values("rank").head(30)
-    names = [n.title() for n in s.name]
-    rng = np.random.default_rng(seed); rng.shuffle(names)
-    return names, s
+    for c in ("pctwhite", "pctblack", "count"): s[c] = pd.to_numeric(s[c], errors="coerce")
+    s = s[s["count"] >= SURNAME_MIN_COUNT].dropna(subset=["pctwhite", "pctblack"]).copy()
+    s = s[s.pctwhite + s.pctblack >= SURNAME_MIN_WB_TOTAL]
+    s["wb_gap"] = (s.pctwhite - s.pctblack).abs()
+    s = s.sort_values(["wb_gap", "count"], ascending=[True, False]).head(k)
+    s["surname"] = s.name.str.title()
+    return list(s.surname), s[["surname", "count", "pctwhite", "pctblack", "wb_gap"]].reset_index(drop=True)
 
 
 def pair_names_v3(pools, seed):
@@ -113,7 +122,7 @@ def pair_names_v3(pools, seed):
         C = np.zeros((len(B), len(W)))
         for i, b in B.iterrows():
             dc = (W.class_z - b.class_z).abs(); de = (W.era_year - b.era_year).abs() / 10
-            C[i] = (dc.fillna(0) + de.fillna(3) + np.where(W.name_source != b.name_source, 100, 0)
+            C[i] = (W_CLASS * dc.fillna(0) + W_ERA_PER_10Y * de.fillna(3) + np.where(W.name_source != b.name_source, 100, 0)
                     + np.where(pd.notna(b.class_z) & W.class_z.isna(), 50, 0) + np.where(b.strict_155 & ~W.strict_155, 5, 0))
         ri, ci = linear_sum_assignment(C)
         for i, j in zip(ri, ci):
@@ -125,6 +134,9 @@ def pair_names_v3(pools, seed):
                              shared_surname=surname, class_w=w.class_z, class_b=b.class_z, class_gap=w.class_z - b.class_z,
                              class_matched=bool(pd.notna(w.class_z) and pd.notna(b.class_z)), era_w=w.era_year, era_b=b.era_year,
                              era_gap=w.era_year - b.era_year, strict_155=bool(w.strict_155 and b.strict_155), strict_155_black=bool(b.strict_155),
+                             no_class=not (pd.notna(w.class_z) and pd.notna(b.class_z)),
+                             sensitivity_only=bool((pd.notna(w.class_z) and pd.notna(b.class_z) and abs(w.class_z - b.class_z) > FLAG_CLASS_SD)
+                                                   or abs(w.era_year - b.era_year) > FLAG_ERA_Y),
                              rec_w=w.race_recognition, rec_b=b.race_recognition, eh_mean_w=w.eh_target_mean, eh_mean_b=b.eh_target_mean))
     return pd.DataFrame(rows)
 

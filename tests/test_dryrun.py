@@ -50,3 +50,19 @@ def test_injected_bias_detected(tmp_path):
 
 def test_paid_requires_flag(tmp_path):
     with pytest.raises(SystemExit): run(P("configs", "pilot.yaml"), out_root=str(tmp_path))
+
+def test_fallback_bounds_track_each_proxy(tmp_path):
+    """Regression for the identical 0.434 bounds: with different injected name/ZIP biases the M3 bounds must differ,
+    and each proxy must be computed from its own pairs."""
+    import pandas as pd
+    from llmbias.analysis import load_calls, majority, pair_table
+    tp = pd.read_csv(P("data", "processed", "tract_pairs.csv"), dtype={"zip_b": str})
+    cfg = yaml.safe_load(open(P("configs", "pilot_mock.yaml")))
+    cfg["models"] = [{"vendor": "mock", "model": "mock-1", "effort": "low", "bias": {"name": 0.9, "zip": 0.25, "zip_treated": sorted(set(tp.zip_b))}}]; cfg["setups"] = [1]
+    p = tmp_path / "b.yaml"; yaml.safe_dump(cfg, open(p, "w"))
+    rd = run(str(p), out_root=str(tmp_path)); R = analyze(rd, n_perm=200)
+    fn, fz = R["fallback"]
+    assert R["M3_name"]["flips"] > R["M3_zip"]["flips"] and fn["upper"] != fz["upper"]
+    pt = pair_table(majority(load_calls(rd)))
+    pr = pt[(pt.pair_type == "proxy") & (pt.setup == 1)]
+    assert set(pr[pr.proxy == "name"].vb) == {"name_b"} and set(pr[pr.proxy == "zip"].vb) == {"zip_b"}

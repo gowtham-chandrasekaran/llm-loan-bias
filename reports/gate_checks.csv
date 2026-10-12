@@ -18,6 +18,11 @@ name_source_recorded_on_name_variants,True
 name_pair_id_on_all_profiles,True
 strict_15_5_flag_present,True
 eh_pairs_share_surname,True
+name_pairs_hungarian_optimal,True
+sensitivity_flags_consistent,True
+no_class_flag_consistent,True
+pair_flags_on_variants,True
+surnames_count_>=10k_and_most_even,True
 placebo_same_source_as_base,True
 no_name_random_effect_in_models,True
 placebo_names_differ_from_base,True

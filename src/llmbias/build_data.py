@@ -329,7 +329,7 @@ def build_variants(prof, name_pairs, tract_pairs, placebo_pairs, rng, pools=None
             d = p.to_dict()
             d.update({"name_source": srcs[ns] if ns else None,
                       "variant": v, "variant_id": f"{p.profile_id}-{v}", "name_gender": gen,
-                      "name_pair_id": npr.name_pair_id, "name_pair_strict_155": bool(npr.strict_155),
+                      "name_pair_id": npr.name_pair_id, "name_pair_strict_155": bool(npr.strict_155), "name_pair_sensitivity_only": bool(npr.sensitivity_only), "name_pair_no_class": bool(npr.no_class),
                       "applicant_name": names[ns] if ns else None, "name_slot": ns,
                       "placebo_name_kind": {"W2": w2kind, "B2": b2kind}.get(ns),
                       "property_zip": zips[zs] if zs else None, "zip_slot": zs,

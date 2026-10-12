@@ -81,3 +81,13 @@ def test_judge_batch_mode(tmp_path):
     st = json.load(open(os.path.join(rd, "judge_batch_state.json"))); assert st["batches"] and all(r["status"] == "done" for r in st["requests"].values())
     led = [json.loads(l) for l in open(os.path.join(rd, "spend_ledger.jsonl"))]; assert any(x["call_id"].startswith("j") and x["batch"] for x in led)
     R = analyze(rd, n_perm=100); assert R["parse_rate"] == 1.0
+
+def test_v31_pair_flags_and_surnames():
+    n = pd.read_csv(P("data", "processed", "name_pairs.csv"))
+    assert n.groupby("gender").first_w.apply(lambda s: s.is_unique).all()
+    exp = ((n.class_gap.abs() > 1.0) & ~n.no_class) | (n.era_gap.abs() > 10)
+    assert (exp == n.sensitivity_only).all() and (n.no_class == (n.class_w.isna() | n.class_b.isna())).all()
+    from llmbias.names_v3 import _surnames
+    _, tab = _surnames()
+    u = tab[tab.surname.isin(set(n.shared_surname.dropna()))]
+    assert len(u) == n.shared_surname.notna().sum() and (u["count"] >= 10000).all() and (u.pctwhite + u.pctblack >= 80).all() and (u.wb_gap < 5).all()

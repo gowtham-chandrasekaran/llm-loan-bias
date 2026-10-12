@@ -6,6 +6,21 @@ import matplotlib.pyplot as plt
 import numpy as np, pandas as pd
 from .build_data import P, build, load_cfg, pair_diff_check, band_check, schema_check
 
+def hungarian_ok(pools, npairs):
+    """Re-solve the assignment independently and compare total cost with the stored pairing."""
+    from scipy.optimize import linear_sum_assignment
+    import numpy as np
+    from llmbias.names_v3 import pair_names_v3
+    return pair_names_v3(pools, 0)[["first_w", "first_b"]].sort_values("first_b").values.tolist() == npairs[["first_w", "first_b"]].sort_values("first_b").values.tolist()
+
+
+def surnames_ok(npairs):
+    from llmbias.names_v3 import _surnames
+    names, tab = _surnames()
+    used = set(npairs.shared_surname.dropna())
+    return used <= set(names[:len(used)]) and (tab[tab.surname.isin(used)]["count"] >= 10000).all()
+
+
 def names_rule_ok(pools, cfg):
     """Each pool name: Crabtree >= min_recognition, or E&H 15.6 (mean >= 3.5, gap >= 1.0, census share >= 30)."""
     cr = pools.name_source == "crabtree2023"
@@ -49,6 +64,11 @@ def run_gate():
         "name_pair_id_on_all_profiles": bool(var.name_pair_id.notna().all()),
         "strict_15_5_flag_present": bool(var.name_pair_strict_155.notna().all()),
         "eh_pairs_share_surname": bool((npairs[npairs.shared_surname.notna()].apply(lambda r: r.name_w.split(" ", 1)[1] == r.name_b.split(" ", 1)[1] == r.shared_surname, axis=1)).all()),
+        "name_pairs_hungarian_optimal": bool(hungarian_ok(out["name_pools"], npairs)),
+        "sensitivity_flags_consistent": bool(((((npairs.class_gap.abs() > 1.0) & ~npairs.no_class) | (npairs.era_gap.abs() > 10)) == npairs.sensitivity_only).all()),
+        "no_class_flag_consistent": bool((npairs.no_class == (npairs.class_w.isna() | npairs.class_b.isna())).all()),
+        "pair_flags_on_variants": bool(var.name_pair_sensitivity_only.notna().all() and var.name_pair_no_class.notna().all()),
+        "surnames_count_>=10k_and_most_even": bool(surnames_ok(npairs)),
         "placebo_same_source_as_base": bool((var[var.variant == "name_w_placebo"].set_index("profile_id").name_source == var[var.variant == "base"].set_index("profile_id").name_source).dropna().all() and (var[var.variant == "name_b_placebo"].set_index("profile_id").name_source == var[var.variant == "name_b"].set_index("profile_id").name_source).dropna().all()),
         "no_name_random_effect_in_models": "name" not in open(P("R", "glmer_fit.R")).read().split("glmer(")[1].split(")")[0] and "name_b" not in open(P("src", "llmbias", "analysis.py")).read().split("def glmer_fit")[1].split("def ")[0].replace("(1 | profile_id)", ""),
         "placebo_names_differ_from_base": bool((var[var.variant.isin(["name_w_placebo"])].set_index("profile_id").applicant_name != var[var.variant == "base"].set_index("profile_id").applicant_name).all()),
@@ -102,6 +122,8 @@ def run_gate():
           out["name_pools"][out["name_pools"].race == "B"][["gender", "first", "name_source", "eh_target_mean", "eh_gap", "census_share", "race_recognition", "class_z", "era_year", "strict_155"]].round(2).to_markdown(index=False), "",
           "Pairs (within gender; Hungarian assignment on class_z gap + era gap/10, same source preferred; E&H pairs share one census surname with 35-60% White and 35-60% Black shares). class_z = E&H 'upper class' minus 'working class', z-scored within source; NaN = no E&H trait ratings for that name (era-only match). era = median SSA birth year 1940-2000 (CRAN babynames 1.0.1).", "",
           npairs.drop(columns=["rec_w", "rec_b"]).round(2).to_markdown(index=False), "",
+          "Shared surnames (2010 Census, count >= 10k, smallest |pctwhite - pctblack|):", "", __import__("llmbias.names_v3", fromlist=["x"])._surnames()[1].query("surname in @u", local_dict={"u": set(npairs.shared_surname.dropna())}).to_markdown(index=False), "",
+          f"Matching weights: cost = 1.0 x |class_z gap| + 1.0 x |era gap|/10y (1 SD == 10 years). Largest class gap {npairs.class_gap.abs().max():.2f} SD; largest era gap {npairs.era_gap.abs().max():.0f} y. Sensitivity-only (>1 SD or >10 y): {', '.join(npairs[npairs.sensitivity_only].name_pair_id)}; no class rating: {', '.join(npairs[npairs.no_class].name_pair_id)}.", "",
           f"Residual imbalance: mean |class gap| {npairs.class_gap.abs().mean():.2f} SD over {int(npairs.class_matched.sum())}/{len(npairs)} class-matched pairs; {int((~npairs.class_matched).sum())} pairs lack class data on at least one side; mean |era gap| {npairs.era_gap.abs().mean():.1f} y. Cross-source pairs: {int((~npairs.same_source).sum())}.", "",
           f"## Tract/ZIP pairs: {len(tp)} proxy (low ≤20% vs high ≥50% minority), {len(pp)} placebo (both ≤20%)", "",
           f"By state, proxy: {tp.state.value_counts().to_dict()}; placebo: {pp.state.value_counts().to_dict()}", "",
