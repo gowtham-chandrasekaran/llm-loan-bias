@@ -1,0 +1,13 @@
+{
+  "check": "judge_minimal",
+  "vendor": "openai",
+  "model": "gpt-5-nano",
+  "effort": "minimal",
+  "ok": true,
+  "text": "{\"hit\":true}",
+  "model_version": "gpt-5-nano-2025-08-07",
+  "input_tokens": 41,
+  "output_tokens": 23,
+  "reasoning_tokens": 0,
+  "reasoning_present": false
+}

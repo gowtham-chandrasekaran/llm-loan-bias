@@ -4,7 +4,7 @@ trim_seed: 20261012            # pre-seeded order for dropping setup-2 profiles 
 pilot: true                    # all outputs tagged excluded_from_confirmatory
 mode: batch
 budget_usd: 15.0
-per_vendor_budget_usd: {openai: 5.0, anthropic: 5.0, google: 5.0, mock: 15.0}
+per_vendor_budget_usd: {openai: 5.0, anthropic: 7.0, google: 5.0, mock: 15.0}
 repeats: 3
 setups: [3, 1, 2]
 variants: [base, control_dup, name_b, name_w_placebo, name_b_placebo, zip_b, zip_placebo, anchor]
@@ -24,7 +24,7 @@ est_tokens:
   input: 750
   output_visible: 350
   reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}
-  tool_overhead: {openai: 300, anthropic: 1200, google: 400, mock: 300}   # from live tool checks (2 rounds)
+  tool_overhead: {openai: 300, anthropic: 7.0, google: 400, mock: 300}   # from live tool checks (2 rounds)
   tool_call_output: 60
   judge_input: 350
   judge_output: 40

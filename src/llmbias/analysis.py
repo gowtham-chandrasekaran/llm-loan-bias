@@ -168,6 +168,14 @@ def m3(pairs, proxy, setup=1):
             "newcombe": nc, "net_flip_ci_boot": boot, "trigger_upper": upper, "trigger_method": "bootstrap" if nc["degenerate"] else "newcombe",
             "wilson_raw": wilson(k, n), "b_deny_a_only": b, "c_deny_b_only": c, "p_mcnemar": p}
 
+def _name_source_term(d):
+    """Pair-level name-source covariate (Reviewer 2026-10-12): source of the names shown in that profile's pair;
+    'mixed' if the two arms used different sources. Added as a fixed effect only when >1 level is present."""
+    if "name_source" not in d: return d.assign(name_source="NA"), False
+    ns = d.groupby("profile_id")["name_source"].agg(lambda s: "|".join(sorted(set(s.dropna().astype(str)))) or "NA")
+    d = d.assign(name_source=d.profile_id.map(ns).map(lambda x: "mixed" if "|" in x else x))
+    return d, d.name_source.nunique() > 1
+
 def mixed_logit(df, proxy_variants, setup=1):
     """decision ~ proxy x model + effort + state + (1|profile)  [pre-reg 15.1 #3, 15.2]. Variational Bayes GLMM (statsmodels).
     Returns summary dict or note if not estimable (e.g., no variation in mock)."""
@@ -177,7 +185,8 @@ def mixed_logit(df, proxy_variants, setup=1):
     if d.empty or d.decision.nunique() < 2: return {"note": "not estimable (no outcome variation)"}
     d["deny"] = (d.decision == "deny").astype(int); d["proxy"] = (d.variant == b).astype(int)
     d["state"] = d.get("proxy_state", pd.Series("NA", index=d.index)).fillna("NA").astype(str)
-    terms = ["proxy"] + (["C(model)", "proxy:C(model)"] if d.model.nunique() > 1 else []) + (["C(effort)"] if d.effort.nunique() > 1 else []) + (["C(state)"] if d.state.nunique() > 1 else [])
+    d, use_src = _name_source_term(d)
+    terms = ["proxy"] + (["C(model)", "proxy:C(model)"] if d.model.nunique() > 1 else []) + (["C(effort)"] if d.effort.nunique() > 1 else []) + (["C(state)"] if d.state.nunique() > 1 else []) + (["C(name_source)"] if use_src else [])
     f = "deny ~ " + " + ".join(terms)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -194,11 +203,12 @@ def glmer_fit(df, proxy_variants, setup=1, rscript="Rscript"):
     if d.empty or d.decision.nunique() < 2: return {"ok": False, "note": "not estimable (no outcome variation)"}
     d["deny"] = (d.decision == "deny").astype(int); d["proxy"] = (d.variant == b).astype(int)
     d["state"] = d.get("proxy_state", pd.Series("NA", index=d.index)).fillna("NA").astype(str)
-    terms = ["proxy"] + (["model", "proxy:model"] if d.model.nunique() > 1 else []) + (["effort"] if d.effort.nunique() > 1 else []) + (["state"] if d.state.nunique() > 1 else [])
+    d, use_src = _name_source_term(d)
+    terms = ["proxy"] + (["model", "proxy:model"] if d.model.nunique() > 1 else []) + (["effort"] if d.effort.nunique() > 1 else []) + (["state"] if d.state.nunique() > 1 else []) + (["name_source"] if use_src else [])
     f = "deny ~ " + " + ".join(terms) + " + (1 | profile_id)"
     with tempfile.TemporaryDirectory() as td:
         ci, co = os.path.join(td, "d.csv"), os.path.join(td, "o.json")
-        d[["deny", "proxy", "model", "effort", "state", "profile_id"]].to_csv(ci, index=False)
+        d[["deny", "proxy", "model", "effort", "state", "name_source", "profile_id"]].to_csv(ci, index=False)
         r = subprocess.run([rscript, os.path.join(os.path.dirname(__file__), "..", "..", "R", "glmer_fit.R"), ci, co, f], capture_output=True, text=True, timeout=600)
         if not os.path.exists(co): return {"ok": False, "error": (r.stderr or r.stdout)[-800:]}
         return json.loads(open(co).read(), strict=False)
@@ -231,6 +241,9 @@ def analyze(run_dir, n_perm=10000):
     R["placebo_M1a"] = {"name": m1a(df, "base", "name_w_placebo", n_perm), "zip": m1a(df, "base", "zip_placebo", n_perm)}
     R["cross_name_vs_zip_M3"] = m3(pairs.assign(pair_type=pairs.pair_type.replace({"cross": "proxy"}), proxy=pairs.proxy.replace({"name_vs_zip": "x"})), "x") if not pairs.empty else None
     R["holm"] = holm({k: (v if v is not None else np.nan) for k, v in pv.items()})
+    hp = R["holm"].get("M3_name", {}).get("p_holm") if isinstance(R["holm"].get("M3_name"), dict) else None
+    R["name_level"] = {f"setup{st}": name_level(df, setup=st, holm_p=hp, n_perm=n_perm) for st in sorted(df.setup.unique()) if st in (1, 2)}
+    R["name_level_strict_15_5_sensitivity"] = {f"setup{st}": name_level(df, setup=st, strict_only=True, holm_p=hp, n_perm=n_perm) for st in sorted(df.setup.unique()) if st in (1, 2)}
     R["fallback"] = fallback_trigger(R.get("M3_name")) , fallback_trigger(R.get("M3_zip"))
     R["parse_rate"] = float(df.parsed.apply(lambda p: isinstance(p, dict) and p.get("parse_ok")).mean())
     if (df.setup == 2).any(): R["tool_called_rate"] = float(df[df.setup == 2].tool_called.mean())
@@ -244,3 +257,67 @@ def analyze(run_dir, n_perm=10000):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--run", required=True); ap.add_argument("--n-perm", type=int, default=10000)
     a = ap.parse_args(); R = analyze(a.run, a.n_perm); print(json.dumps({k: R[k] for k in ["label", "holm", "fallback", "parse_rate"]}, indent=1, default=str))
+
+
+# ---- Name-level inference (amendments 15.5 / 15.6). No name random effect: too few names. ----
+def name_diffs(df, va="base", vb="name_b", setup=1):
+    """Paired deny difference (majority-of-3) per profile x model: d = deny(vb) - deny(va), tagged with the name pair."""
+    d = df[(df.setup == setup)]
+    mj = majority(d)
+    w = mj.pivot_table(index=KEYS + ["profile_id"], columns="variant", values="maj", aggfunc="first")
+    if va not in w or vb not in w: return pd.DataFrame()
+    t = w[[va, vb]].dropna().reset_index()
+    t["d"] = (t[vb] == "deny").astype(int) - (t[va] == "deny").astype(int)
+    meta = d.drop_duplicates("profile_id").set_index("profile_id")
+    for c in ("name_pair_id", "name_pair_strict_155"):
+        t[c] = t.profile_id.map(meta[c]) if c in meta else np.nan
+    names = d[d.variant == vb].drop_duplicates("profile_id").set_index("profile_id").applicant_name
+    t["name_b"] = t.profile_id.map(names)
+    return t
+
+def cluster_robust_mean(d, cl):
+    """Intercept-only OLS with CR1 cluster-robust SE; t with G-1 df."""
+    d = np.asarray(d, float); cl = np.asarray(cl); m = d.mean(); n = len(d)
+    G = len(set(cl))
+    if G < 2: return {"est": float(m), "se": np.nan, "p": np.nan, "G": G}
+    s = pd.Series(d - m).groupby(cl).sum().values
+    se = math.sqrt((G / (G - 1)) * (s ** 2).sum()) / n
+    tval = m / se if se > 0 else np.nan
+    p = float(2 * stats.t.sf(abs(tval), G - 1)) if se > 0 else 1.0
+    q = stats.t.ppf(0.975, G - 1)
+    return {"est": float(m), "se": float(se), "t": None if se == 0 else float(tval), "df": G - 1, "p": p, "G": G,
+            "ci": [float(m - q * se), float(m + q * se)] if se > 0 else [float(m), float(m)]}
+
+def name_sign_flip_perm(d, cl, n_perm=10000, seed=0):
+    """Name-level permutation: flip the sign of all of one name pair's differences together. Exact if 2^G <= n_perm."""
+    d = np.asarray(d, float); cl = np.asarray(cl); keys = sorted(set(cl)); G = len(keys)
+    sums = np.array([d[cl == k].sum() for k in keys]); obs = abs(sums.sum())
+    if G <= int(math.log2(n_perm)):
+        import itertools
+        signs = np.array(list(itertools.product([1, -1], repeat=G)))
+    else:
+        signs = np.random.default_rng(seed).choice([1, -1], size=(n_perm, G))
+    stat = np.abs(signs @ sums)
+    return {"p": float((stat >= obs - 1e-12).mean()), "G": G, "exact": G <= int(math.log2(n_perm))}
+
+def name_level(df, va="base", vb="name_b", setup=1, strict_only=False, holm_p=None, n_perm=10000):
+    """Per-name estimates, leave-one-name-out, cluster-robust and permutation inference at the name-pair level.
+    Robust per 15.5: Holm-significant in the full sample AND every LONO estimate keeps the sign and lies inside the full 95% CI."""
+    t = name_diffs(df, va, vb, setup)
+    if t.empty or t.name_pair_id.isna().all(): return {"note": "no name-pair data"}
+    if strict_only: t = t[t.name_pair_strict_155.astype(bool)]
+    if t.empty: return {"note": "no rows in subset"}
+    full = cluster_robust_mean(t.d, t.name_pair_id)
+    per = t.groupby(["name_pair_id", "name_b"]).d.agg(["mean", "size"]).reset_index().rename(columns={"mean": "est", "size": "n"})
+    lono = []
+    for k in sorted(t.name_pair_id.unique()):
+        s = t[t.name_pair_id != k]
+        est = float(s.d.mean()) if len(s) else np.nan
+        ok = bool(len(s) and np.sign(est) == np.sign(full["est"]) and full.get("ci") and full["ci"][0] <= est <= full["ci"][1])
+        lono.append({"dropped": k, "est": est, "same_sign_inside_ci": ok})
+    perm = name_sign_flip_perm(t.d, t.name_pair_id, n_perm)
+    lono_ok = all(x["same_sign_inside_ci"] for x in lono)
+    return {"n": int(len(t)), "full_cluster_robust": full, "perm_name_level": perm, "per_name": per.to_dict("records"),
+            "lono": lono, "lono_all_pass": lono_ok,
+            "robust_confirmed": bool(holm_p is not None and holm_p < 0.05 and lono_ok),
+            "note": "no name random effect (15.5); clusters = name pairs"}

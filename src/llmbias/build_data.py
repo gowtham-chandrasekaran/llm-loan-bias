@@ -186,6 +186,7 @@ def name_ratings():
     g = g[g.identity.isin(["White", "Black or African American"])].copy()
     g["race"] = g.identity.map({"White": "W", "Black or African American": "B"})
     g["gender"] = g["first"].map(GENDER)
+    g["name_source"] = "crabtree2023"  # covariate hook; see name_sources.py (candidate sources not integrated)
     return g
 
 
@@ -302,14 +303,18 @@ PAIRS = [
 
 
 def build_variants(prof, name_pairs, tract_pairs, placebo_pairs, rng, pools=None):
+    """v3 (15.6): name pairs assigned round-robin over a seeded shuffle within gender, so every pair is used ~equally."""
+    from .names_v3 import placebo_v3
     rows = []
-    np_by_g = {g: name_pairs[name_pairs.gender == g].reset_index(drop=True) for g in "FM"}
+    order = {g: list(rng.permutation(name_pairs[name_pairs.gender == g].index)) for g in "FM"}
+    seen = {"F": 0, "M": 0}
     for i, p in prof.reset_index(drop=True).iterrows():
         gen = "F" if i % 2 == 0 else "M"  # alternate gender strata
-        npg = np_by_g[gen]
-        j = int(rng.integers(len(npg)))
-        w2, w2kind = placebo_name(pools, npg.name_w[j]); b2, b2kind = placebo_name(pools, npg.name_b[j])
-        names = {"W": npg.name_w[j], "B": npg.name_b[j], "W2": w2, "B2": b2}
+        npr = name_pairs.loc[order[gen][seen[gen] % len(order[gen])]]; seen[gen] += 1
+        w2, w2kind = placebo_v3(pools, npr.first_w, "W", gen, npr.source_w, npr.name_w)
+        b2, b2kind = placebo_v3(pools, npr.first_b, "B", gen, npr.source_b, npr.name_b)
+        names = {"W": npr.name_w, "B": npr.name_b, "W2": w2, "B2": b2}
+        srcs = {"W": npr.source_w, "B": npr.source_b, "W2": npr.source_w, "B2": npr.source_b}
         own = str(p.hmda_state)
         tps = tract_pairs[tract_pairs.state == own]
         if len(tps) == 0: tps = tract_pairs   # should not happen for DE/MD/PA (gate reports it)
@@ -322,7 +327,9 @@ def build_variants(prof, name_pairs, tract_pairs, placebo_pairs, rng, pools=None
             if zs == "A2" and pp is None: continue
             if ns in ("W2", "B2") and names[ns] is None: continue
             d = p.to_dict()
-            d.update({"variant": v, "variant_id": f"{p.profile_id}-{v}", "name_gender": gen,
+            d.update({"name_source": srcs[ns] if ns else None,
+                      "variant": v, "variant_id": f"{p.profile_id}-{v}", "name_gender": gen,
+                      "name_pair_id": npr.name_pair_id, "name_pair_strict_155": bool(npr.strict_155),
                       "applicant_name": names[ns] if ns else None, "name_slot": ns,
                       "placebo_name_kind": {"W2": w2kind, "B2": b2kind}.get(ns),
                       "property_zip": zips[zs] if zs else None, "zip_slot": zs,
@@ -341,10 +348,10 @@ def pair_diff_check(var):
             if a not in g.index or b not in g.index: continue
             ra, rb = g.loc[a], g.loc[b]
             diff = [c for c in g.columns if c not in meta and not (pd.isna(ra[c]) and pd.isna(rb[c])) and ra[c] != rb[c]]
-            allowed = {"name": {"applicant_name"}, "name_black": {"applicant_name"}, "zip": {"property_zip"},
-                       "none": set(), "name_vs_zip": {"applicant_name", "property_zip"}}[proxy]
+            allowed = {"name": {"applicant_name", "name_source"}, "name_black": {"applicant_name", "name_source"}, "zip": {"property_zip"},
+                       "none": set(), "name_vs_zip": {"applicant_name", "name_source", "property_zip"}}[proxy]
             bad = set(diff) - allowed
-            must = allowed if ptype != "control" else set()
+            must = (allowed - {"name_source"}) if ptype != "control" else set()  # source may legitimately be equal
             missing = must - set(diff)
             if bad or (ptype != "cross" and missing):
                 viol.append({"profile_id": pid, "pair": f"{a}|{b}", "unexpected_diffs": sorted(bad), "missing_diffs": sorted(missing)})
@@ -368,16 +375,17 @@ def build(cfg=None, outdir=None):
     tt = tract_table(raw, cfg)
     tp = match_tract_pairs(tt, cfg, placebo=False)
     pp = match_tract_pairs(tt, cfg, placebo=True)
-    pools = name_pools(cfg); npairs = pair_names(pools)
+    from .names_v3 import name_pools_v3, pair_names_v3, counts
+    pools = name_pools_v3(name_ratings(), cfg); npairs = pair_names_v3(pools, cfg["seed"])
     prof, n_border, n_appr, n_deny = synth_profiles(kept, cfg, rng)
     var = build_variants(prof, npairs, tp, pp, rng, pools)
     out = dict(schema_problems=schema, missingness=miss, exclusions=excl, filter_steps=steps, tracts=tt, tract_pairs=tp,
-               placebo_tract_pairs=pp, name_pools=pools, name_shortfall=pool_shortfall(pools, cfg), name_pairs=npairs, profiles=prof, variants=var,
+               placebo_tract_pairs=pp, name_pools=pools, name_counts={"rule_15_6": counts(pools), "strict_15_5": counts(pools, strict=True)}, name_pairs=npairs, profiles=prof, variants=var,
                pool_sizes={"borderline": n_border, "control_approve": n_appr, "control_deny": n_deny})
     for k in ["missingness", "exclusions", "filter_steps", "tracts", "tract_pairs", "placebo_tract_pairs", "name_pools", "name_pairs", "profiles", "variants"]:
         out[k].to_csv(os.path.join(outdir, f"{k}.csv"), index=False)
     with open(os.path.join(outdir, "build_meta.json"), "w") as f:
-        json.dump({"seed": cfg["seed"], "schema_problems": schema, "name_shortfall": out["name_shortfall"], "pool_sizes": out["pool_sizes"],
+        json.dump({"seed": cfg["seed"], "schema_problems": schema, "name_counts": out["name_counts"], "pool_sizes": out["pool_sizes"],
                    "variants_sha256": hashlib.sha256(var.to_csv(index=False).encode()).hexdigest()}, f, indent=2)
     return out
 

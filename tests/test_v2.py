@@ -14,8 +14,12 @@ def test_newcombe_properties():
 
 def test_name_pool_rules():
     pools = pd.read_csv(P("data", "processed", "name_pools.csv")); cfg = load_cfg()
-    assert (pools.race_recognition >= cfg["names"]["min_recognition"]).all()
-    r1 = pools[pools["rank"] == 1]; assert r1.groupby(["race", "gender"])["first"].apply(lambda s: s.is_unique).all()
+    from llmbias.gate import names_rule_ok
+    assert names_rule_ok(pools, cfg)   # amendment 15.6
+    assert pools.groupby(["race", "gender"])["first"].apply(lambda s: s.is_unique).all()
+    bm = sorted(pools[(pools.race == "B") & (pools.gender == "M")]["first"])
+    assert bm == ["Darius", "Jermaine", "Lamont", "Terrell", "Tyrone"]
+    assert sorted(pools[(pools.race == "B") & (pools.gender == "M") & pools.strict_155]["first"]) == ["Jermaine", "Tyrone"]
     v = pd.read_csv(P("data", "processed", "variants.csv"), dtype=str)
     base = v[v.variant == "base"].set_index("profile_id").applicant_name
     for pv in ["name_w_placebo", "name_b_placebo"]:
@@ -67,3 +71,13 @@ def test_trim_drops_setup2_profiles_never_repeats(tmp_path):
     t = B.plan_trim(cfg, B.load_prices(P("configs", "prices.yaml")), load_items(cfg))
     assert t["setup2_profiles_dropped"] and t["under_cap"]
     t2 = B.plan_trim(cfg, B.load_prices(P("configs", "prices.yaml")), load_items(cfg)); assert t == t2   # pre-seeded, deterministic
+
+def test_judge_batch_mode(tmp_path):
+    from llmbias.judge import run_judge_batch
+    rd = B.start(_cfg(tmp_path), out_root=str(tmp_path), limit=2)
+    p, stop = run_judge_batch(rd, poll_s=0)
+    J = [json.loads(l) for l in open(p)]
+    assert J and stop is None and all(j["judge_mode"] == "batch" and j["hedging_status"] == "done" for j in J)
+    st = json.load(open(os.path.join(rd, "judge_batch_state.json"))); assert st["batches"] and all(r["status"] == "done" for r in st["requests"].values())
+    led = [json.loads(l) for l in open(os.path.join(rd, "spend_ledger.jsonl"))]; assert any(x["call_id"].startswith("j") and x["batch"] for x in led)
+    R = analyze(rd, n_perm=100); assert R["parse_rate"] == 1.0

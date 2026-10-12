@@ -169,9 +169,9 @@ def plan_trim(cfg, prices, items):
 
 # ----------------------------------------------------------------------------- engine
 class BatchRun:
-    def __init__(self, rd, cfg, allow_paid):
-        self.rd, self.cfg = rd, cfg; self.sp = os.path.join(rd, "batch_state.json")
-        paid = {m["vendor"] for m in cfg["models"]} - {"mock"}
+    def __init__(self, rd, cfg, allow_paid, state_name="batch_state.json", vendors=None):
+        self.rd, self.cfg = rd, cfg; self.sp = os.path.join(rd, state_name)
+        paid = set(vendors or [m["vendor"] for m in cfg["models"]]) - {"mock"}
         if paid and not allow_paid: raise SystemExit("config contains paid vendors; pass --allow-paid")
         self.prices = load_prices(P("configs", "prices.yaml"))
         self.guard = BudgetGuard(cfg["budget_usd"], cfg.get("per_vendor_budget_usd", {}), self.prices, os.path.join(rd, "spend_ledger.jsonl"))
@@ -275,7 +275,10 @@ class BatchRun:
                     rec["error"] = r.get("error") or ("budget_stop" if self.state.get("budget_stop") else f"status={r['status']}")
                 f.write(json.dumps(_clean(rec), default=str, allow_nan=False) + "\n")
 
-    def loop(self, poll_s=60, max_wait_s=26 * 3600):
+    def init_requests(self, reqs, meta):
+        self.state = {"meta": meta, "trim": None, "requests": reqs, "batches": {}}; self.save()
+
+    def loop(self, poll_s=60, max_wait_s=26 * 3600, write=True):
         t0 = time.time()
         while True:
             stop = self.submit_pending(); self.collect()
@@ -283,6 +286,8 @@ class BatchRun:
             active = [r for r in R if r["status"] in ("submitted",) or (r["status"] == "pending" and not stop)]
             if not active or time.time() - t0 > max_wait_s: break
             if any(r["status"] == "submitted" for r in R): time.sleep(poll_s)
+        if not write:
+            self.state["budget_stop"] = self.state.get("budget_stop"); self.save(); return self.rd
         self.write_calls()
         m = self.state["meta"]; m.update(finished=dt.datetime.now().astimezone().isoformat(), budget_stop=self.state.get("budget_stop"),
                                          spent_usd=round(self.guard.spent, 6), spent_by_vendor=self.guard.by_vendor, trim=self.state["trim"],

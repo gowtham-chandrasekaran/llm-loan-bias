@@ -25,3 +25,10 @@ HMDA year: 2024 Snapshot/public data via FFIEC Data Browser (filtered query: act
 - House-price trend: FHFA tract-level annual HPI (methodology: Bogin, Doerner & Larson, FHFA Working Paper 16-01; citation not yet re-verified). The index is experimental; 2019→2024 growth is used.
 - ZIP: Census 2020 ZCTA (a ZIP approximation). Each tract is assigned to the ZCTA with the largest land overlap.
 - Reg B reasons: 12 CFR 1002 App. C Form C-1 https://www.consumerfinance.gov/rules-policy/regulations/1002/c/ ; HMDA denial_reason codes https://ffiec.cfpb.gov/documentation/publications/loan-level-datasets/lar-data-fields (both retrieved 2026-10-12).
+
+## data-gate-v3 additions (2026-10-12, amendments 15.5/15.6)
+- Elder & Hayes 2023 name ratings: copied from /workspace/research/eh (originally Harvard Dataverse doi:10.7910/DVN/47CZDX, CC0) into data/raw/eh/.
+  nameratings.tsv (comma-separated, 1038 names) sha256 59c5e598e27acc8bff95c4b5355e33f1749f0ffa896b9181a4d7c3c5307cda66;
+  traits.tsv sha256 f753a9fa269729c173d48db35fd853df5d1f5072e03f4e3ce6545d9d31c3164f.
+- SSA baby names via CRAN babynames 1.0.1 (https://cloud.r-project.org/src/contrib/babynames_1.0.1.tar.gz, retrieved 2026-10-12, sha256 70d8841a8dcd6e05ca9bd4935404352661c418342aa3f40bf8926366a96997bd; SSA 1880-2017). ssa.gov returned 403 (Access Denied) to our egress. Aggregated to data/raw/ssa_name_decade.csv for era matching.
+- Candidate (not integrated): Vaseiezadeh et al. wba.csv, https://osf.io/download/7yn9d/, sha256 8d29a85788c47a57045bb358d9791e8ecf8d0f63dad2d7f6f43bf35de30b9d5c.

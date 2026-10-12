@@ -38,3 +38,25 @@
 10. *(resolved in v2: Newcombe)* **Wilson fallback on the *net* rate:** computed as the Wilson upper bound on the raw proxy flip rate minus the control flip rate (point estimate). Researcher to confirm.
 11. *(v2: implemented, but live batch submission is untested; no paid batch was authorized)* **Batch API** Only the estimator models batch pricing. The synchronous runner and hard stop are implemented.
 12. *(v2: thinking-off and tool calling verified live for the sync adapters; batch backends untested live; the judge still runs synchronously, not via batch)* **Real adapters** Their tool-calling and thinking/summary capture paths have not been exercised against live APIs, since no pilot calls were allowed.
+
+## data-gate-v3 changes (2026-10-12, amendments 15.5 / 15.6; Anthropic cap)
+- **Name rule (15.6, final, fixed before outcome data):** Crabtree et al. 2023 full names with recognition >= 0.70, or Elder & Hayes 2023
+  (data/raw/eh/nameratings.tsv, copied from /workspace/research/eh; sha256 59c5e598...) with target-race mean >= 3.5, gap over the other race >= 1.0,
+  Tzioumis census target share >= 30%. Same rule for all four groups. Qualifying distinct first names: WF 134, WM 102, BF 14, BM 5
+  (BM = Darius, Jermaine, Lamont, Terrell, Tyrone). Strict 15.5 subset (mean >= 3.75, share >= 50%): WF 67, WM 54, BF 7, BM 2 (Jermaine, Tyrone).
+- **Source assignment:** every Black name that qualifies under Crabtree also qualifies under E&H, so it goes to E&H (the source with large
+  White pools and class traits). Result: all 19 pairs fall within E&H. `name_source` is recorded on every name variant and call record and
+  enters the GLMMs as a fixed effect when it has more than one level (it is constant in v3, so it drops out). Crabtree still contributes eligible names that end up unused.
+- **Pairing:** one White partner per Black first name, within gender, using a Hungarian assignment. Cost = |class_z gap| + |era gap|/10 years, plus penalties
+  for cross-source pairs, a missing White class score when the Black name has one, and a non-strict White partner for a strict Black name.
+  class_z = E&H "upper class" minus "working class" (traits file, 336 names), z-scored within source. Era = median SSA birth year 1940-2000
+  (CRAN babynames 1.0.1, SSA 1880-2017; ssa.gov blocks our egress). 8 of 19 pairs lack class ratings on at least one side, so those are matched on era only (limitation).
+- **Surnames:** E&H rated first names alone, so each E&H pair shares one frequent 2010-Census surname with 35-60% White and 35-60% Black shares
+  (seeded). The two arms differ only in the first name. Placebo names keep the base surname and come from the same source.
+- **Profile assignment:** pairs are cycled round-robin over a seeded shuffle within gender, so each pair is used about equally (F pairs 6-7 profiles each, M pairs 17).
+- **Name-level inference (15.5), with no name random effect:** `analysis.name_level` gives per-name paired deny differences (majority-of-3), CR1
+  cluster-robust mean with name-pair clusters (t, G-1 df), an exact or Monte Carlo name-level sign-flip permutation, and leave-one-name-out (LONO). LONO passes when the sign is kept and the
+  estimate falls inside the full-sample 95% CI. `robust_confirmed` = Holm-adjusted M3_name < .05 AND all LONO pass. The same analysis is run
+  on the strict 15.5 subset (`name_level_strict_15_5_sensitivity`).
+- **Budget:** Anthropic per-vendor cap raised to $7 (total stays $15), per Gowtham, so all 25 profiles stay in setup 2 with no trim.
+- Candidate sources evaluated but not integrated: see docs/name_sources.md.

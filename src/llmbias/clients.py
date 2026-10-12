@@ -82,7 +82,7 @@ class MockClient(BaseClient):
             dec = res["decision"]
         else:
             dec = "approve" if latent > 0 else "deny"
-        treated = self.bias.get("name") if re.search(r"Applicant: (Lakisha|Tamika|Latasha|Latoya|Latonya|Tanisha|Ebony|Jermaine|Darnell|Roosevelt)", user) else None
+        treated = self.bias.get("name") if re.search(r"Applicant: (Lakisha|Tamika|Latasha|Latoya|Latonya|Tanisha|Ebony|Jermaine|Darnell|Roosevelt|Demetria|Keisha|Kenya|Latanya|Latisha|Latrice|Lawanda|Darius|Lamont|Terrell|Tyrone) ", user) else None
         if treated and dec == "approve" and r.random() < treated:
             dec = "deny"
         if fixed:

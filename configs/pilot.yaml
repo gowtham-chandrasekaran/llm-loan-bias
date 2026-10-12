@@ -2,7 +2,7 @@
 run_seed: 777
 pilot: true                      # all outputs tagged excluded_from_confirmatory
 budget_usd: 15.0
-per_vendor_budget_usd: {openai: 5.0, anthropic: 5.0, google: 5.0, mock: 15.0}
+per_vendor_budget_usd: {openai: 5.0, anthropic: 7.0, google: 5.0, mock: 15.0}
 repeats: 3
 setups: [3, 1, 2]                   # setup 3 first (primary, H4). Add 2 to include tool-assisted condition.
 variants: [base, control_dup, name_b, name_w_placebo, name_b_placebo, zip_b, zip_placebo, anchor]
