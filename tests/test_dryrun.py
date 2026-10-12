@@ -2,7 +2,7 @@ import json, os, yaml, pytest
 from llmbias.runner import run
 from llmbias.judge import run_judge
 from llmbias.analysis import analyze
-from llmbias.labels import export, kappa
+from llmbias import labels as LB
 from llmbias.build_data import P
 
 def _cfg(tmp_path, **over):
@@ -27,12 +27,16 @@ def test_full_mock_dry_run(tmp_path):
     run_judge(rd)
     R = analyze(rd, n_perm=200)
     assert R["excluded_from_confirmatory"] and R["parse_rate"] == 1.0 and len(R["holm"]) == 8 and "glmer_confirmatory_name" in R
-    p, n = export(rd, n=120); assert n >= 100
+    LB.PRIVATE = str(tmp_path / "private")   # never touch the real private store from tests
+    paths, kp = LB.export(rd, str(tmp_path / "labeling"))
     import pandas as pd
-    L = pd.read_csv(p); assert set(L.columns) == {"item_id", "task", "text", "human_label"}
-    J = {j["item_id"]: j for j in (json.loads(l) for l in open(os.path.join(rd, "judgments.jsonl")))}
-    L["human_label"] = [str(bool(J[i]["hedging"])).lower() if t == "hedging" else str(bool(J[i.split("#s")[0]]["spans"][int(i.split("#s")[1])]["mentions_proxy"])).lower() for i, t in zip(L.item_id, L.task)]
-    L.to_csv(p, index=False); k = kappa(rd, p); assert k["hedging"]["kappa"] == 1.0
+    key = json.load(open(kp))
+    for lab in ("A", "B"):
+        d = pd.read_csv(paths[lab][1], dtype=str, keep_default_na=False)
+        assert list(d.columns) == ["item_id", "task", "text", "label", "comment"]
+        d["label"] = [str(key["labelers"][lab]["map"][i]["judge"]) for i in d.item_id]; d.to_csv(paths[lab][1], index=False)
+    res = LB.agreement(rd, paths["A"][1], paths["B"][1], B=200)
+    assert res["per_task"]["hedging"]["A_vs_judge"]["kappa"] == 1.0 and res["per_task"]["hedging"]["human_human"]["raw_agreement"] == 1.0
 
 def test_budget_stop_in_run(tmp_path):
     rd = run(_cfg(tmp_path, budget_usd=0.02, per_vendor_budget_usd={"mock": 0.02}), out_root=str(tmp_path), limit=3)

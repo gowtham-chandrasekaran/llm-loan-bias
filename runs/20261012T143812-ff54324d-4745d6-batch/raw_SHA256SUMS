@@ -5,3 +5,4 @@ a3bfbcdca0ecc0383bab34d8acbb3a28c4ecd5029cf2d18129f2aa6a4f8b5ad3  judge_batch_st
 3ab70fe6b5ded83336068b48ea5a9a9d9cf7497a9953e9ec24f8295dd3655df5  judgments.jsonl
 c3d4ce5bd7a0ae0c0ec4bd4fb62a1cc7e2db186b72fbeefe44ed31188aa4dfa3  run_meta.json
 c27c9c8fa539946ded0d30d0604ecb85f3e7f1c4492e03ffd9b771214d32e4ba  spend_ledger.jsonl
+# 2026-10-12: blind_key.jsonl moved out of the repo to the Developer-only private store per plan 15.8; original hash kept above for integrity verification (see MANIFEST there). History not rewritten.

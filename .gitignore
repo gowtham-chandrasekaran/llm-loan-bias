@@ -9,3 +9,7 @@ data/raw/*
 !data/raw/.gitkeep
 runs/*/raw_cache/
 runs/
+
+# blind keys never tracked (plan 15.8)
+blind_key*.jsonl
+**/blind_key*
