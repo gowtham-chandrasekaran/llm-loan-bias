@@ -1,0 +1,199 @@
+{
+ "run_id": "20261012T143812-ff54324d-4745d6-batch",
+ "label": "PILOT - feasibility only, excluded from confirmatory analysis",
+ "completion_parse": [
+  {
+   "vendor": "anthropic",
+   "setup": 1,
+   "planned": 600,
+   "completed": 600,
+   "completion_rate": 1.0,
+   "parse_ok": 599,
+   "parse_rate_of_planned": 0.9983,
+   "parse_rate_of_completed": 0.9983
+  },
+  {
+   "vendor": "anthropic",
+   "setup": 2,
+   "planned": 600,
+   "completed": 479,
+   "completion_rate": 0.7983,
+   "parse_ok": 473,
+   "parse_rate_of_planned": 0.7883,
+   "parse_rate_of_completed": 0.9875
+  },
+  {
+   "vendor": "anthropic",
+   "setup": 3,
+   "planned": 600,
+   "completed": 600,
+   "completion_rate": 1.0,
+   "parse_ok": 600,
+   "parse_rate_of_planned": 1.0,
+   "parse_rate_of_completed": 1.0
+  },
+  {
+   "vendor": "google",
+   "setup": 1,
+   "planned": 600,
+   "completed": 600,
+   "completion_rate": 1.0,
+   "parse_ok": 531,
+   "parse_rate_of_planned": 0.885,
+   "parse_rate_of_completed": 0.885
+  },
+  {
+   "vendor": "google",
+   "setup": 2,
+   "planned": 600,
+   "completed": 600,
+   "completion_rate": 1.0,
+   "parse_ok": 594,
+   "parse_rate_of_planned": 0.99,
+   "parse_rate_of_completed": 0.99
+  },
+  {
+   "vendor": "google",
+   "setup": 3,
+   "planned": 600,
+   "completed": 600,
+   "completion_rate": 1.0,
+   "parse_ok": 600,
+   "parse_rate_of_planned": 1.0,
+   "parse_rate_of_completed": 1.0
+  },
+  {
+   "vendor": "openai",
+   "setup": 1,
+   "planned": 600,
+   "completed": 600,
+   "completion_rate": 1.0,
+   "parse_ok": 600,
+   "parse_rate_of_planned": 1.0,
+   "parse_rate_of_completed": 1.0
+  },
+  {
+   "vendor": "openai",
+   "setup": 2,
+   "planned": 600,
+   "completed": 600,
+   "completion_rate": 1.0,
+   "parse_ok": 600,
+   "parse_rate_of_planned": 1.0,
+   "parse_rate_of_completed": 1.0
+  },
+  {
+   "vendor": "openai",
+   "setup": 3,
+   "planned": 600,
+   "completed": 600,
+   "completion_rate": 1.0,
+   "parse_ok": 600,
+   "parse_rate_of_planned": 1.0,
+   "parse_rate_of_completed": 1.0
+  }
+ ],
+ "setup2_tool": [
+  {
+   "vendor": "anthropic",
+   "n": 479,
+   "tool_called_rate": 1.0,
+   "override_rate_vs_tool": 0.0459,
+   "override_rate_when_tool_called": 0.0459
+  },
+  {
+   "vendor": "google",
+   "n": 600,
+   "tool_called_rate": 1.0,
+   "override_rate_vs_tool": 0.0,
+   "override_rate_when_tool_called": 0.0
+  },
+  {
+   "vendor": "openai",
+   "n": 600,
+   "tool_called_rate": 1.0,
+   "override_rate_vs_tool": 0.1817,
+   "override_rate_when_tool_called": 0.1817
+  }
+ ],
+ "fallback_trigger_setup1_pooled_models": {
+  "name": {
+   "n_pairs": 75,
+   "flip_rate": 0.09333333333333334,
+   "control_flip_rate": 0.02666666666666667,
+   "net_flip_rate": 0.06666666666666667,
+   "newcombe_95ci": [
+    0.0089680799764068,
+    0.1454716574690747
+   ],
+   "method": "newcombe",
+   "trigger_fallback(upper<0.10)": false
+  },
+  "zip": {
+   "n_pairs": 74,
+   "flip_rate": 0.10810810810810811,
+   "control_flip_rate": 0.02666666666666667,
+   "net_flip_rate": 0.08108108108108109,
+   "newcombe_95ci": [
+    0.019367996413587024,
+    0.16448004938668345
+   ],
+   "method": "newcombe",
+   "trigger_fallback(upper<0.10)": false
+  }
+ },
+ "spend_usd_by_vendor": {
+  "openai": 1.6328,
+  "anthropic": 6.9397,
+  "google": 2.0085
+ },
+ "spend_total_usd": 10.581,
+ "reasoning_token_check": [
+  {
+   "vendor": "anthropic",
+   "setup": 1,
+   "calls_with_reasoning_tokens": 0
+  },
+  {
+   "vendor": "anthropic",
+   "setup": 2,
+   "calls_with_reasoning_tokens": 0
+  },
+  {
+   "vendor": "anthropic",
+   "setup": 3,
+   "calls_with_reasoning_tokens": 0
+  },
+  {
+   "vendor": "google",
+   "setup": 1,
+   "calls_with_reasoning_tokens": 438
+  },
+  {
+   "vendor": "google",
+   "setup": 2,
+   "calls_with_reasoning_tokens": 30
+  },
+  {
+   "vendor": "google",
+   "setup": 3,
+   "calls_with_reasoning_tokens": 124
+  },
+  {
+   "vendor": "openai",
+   "setup": 1,
+   "calls_with_reasoning_tokens": 0
+  },
+  {
+   "vendor": "openai",
+   "setup": 2,
+   "calls_with_reasoning_tokens": 0
+  },
+  {
+   "vendor": "openai",
+   "setup": 3,
+   "calls_with_reasoning_tokens": 0
+  }
+ ],
+ "overall_parse_rate": 0.9624074074074074
+}
