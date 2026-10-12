@@ -158,7 +158,9 @@ class AnthropicClient(BaseClient):
             itok += r.usage.input_tokens; otok += r.usage.output_tokens
             thinking += [b.thinking for b in r.content if b.type == "thinking"]
         text = "".join(b.text for b in r.content if b.type == "text")
-        return CallResult(text, "\n".join(thinking) or None, "thinking" if thinking else None, itok, otok, 0, calls, r.model)
+        # Anthropic bills thinking inside output_tokens; a separate count is used if the SDK exposes one, else None (not 0).
+        rt = getattr(getattr(r.usage, "output_tokens_details", None), "thinking_tokens", None)
+        return CallResult(text, "\n".join(thinking) or None, "thinking" if thinking else None, itok, otok, rt, calls, r.model)
 
 # ---------------------------------------------------------------- Google
 class GoogleClient(BaseClient):

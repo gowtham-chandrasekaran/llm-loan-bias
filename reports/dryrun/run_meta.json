@@ -1,9 +1,11 @@
 {
-  "run_id": "20261012T131435-d201b93e-bc5775",
-  "config_path": "configs/pilot_mock.yaml",
+  "run_id": "20261012T133036-64e5728f-447832-batch",
+  "config_path": "configs/pilot_batch_mock.yaml",
   "config": {
     "run_seed": 777,
+    "trim_seed": 20261012,
     "pilot": true,
+    "mode": "batch",
     "budget_usd": 15.0,
     "per_vendor_budget_usd": {
       "openai": 5.0,
@@ -31,7 +33,7 @@
       {
         "vendor": "mock",
         "model": "mock-1",
-        "effort": "low"
+        "effort": "none"
       }
     ],
     "judge": {
@@ -39,7 +41,9 @@
       "model": "mock-1",
       "effort": "none"
     },
-    "max_output_tokens": 1500,
+    "max_output_tokens": 800,
+    "batch_chunk": 500,
+    "poll_seconds": 0,
     "est_tokens": {
       "input": 750,
       "output_visible": 350,
@@ -50,20 +54,73 @@
         "medium": 1200,
         "high": 3000
       },
+      "tool_overhead": {
+        "openai": 300,
+        "anthropic": 1200,
+        "google": 400,
+        "mock": 300
+      },
+      "tool_call_output": 60,
       "judge_input": 350,
       "judge_output": 40
     }
   },
-  "git_commit": null,
+  "git_commit": "c428b5d14b29e616a74f34e0766ff1a0b3ffbf03",
   "prompt_version": "v1.0-2026-10-12",
-  "started": "2026-10-12T13:14:35.275224-04:00",
+  "mode": "batch",
+  "started": "2026-10-12T13:30:36.606561-04:00",
   "pilot": true,
   "excluded_from_confirmatory": true,
   "n_items": 200,
-  "finished": "2026-10-12T13:14:35.770712-04:00",
+  "finished": "2026-10-12T13:30:37.962762-04:00",
   "budget_stop": null,
-  "spent_usd": 1.636603,
+  "spent_usd": 1.691147,
   "spent_by_vendor": {
-    "mock": 1.6366027499999876
+    "mock": 1.6911472499999776
+  },
+  "trim": {
+    "projected_usd": 6.074,
+    "projected_by_vendor": {
+      "mock": 6.074
+    },
+    "setup2_profiles_kept": [
+      "P000",
+      "P001",
+      "P002",
+      "P003",
+      "P004",
+      "P005",
+      "P006",
+      "P007",
+      "P008",
+      "P009",
+      "P010",
+      "P011",
+      "P012",
+      "P013",
+      "P014",
+      "P015",
+      "P016",
+      "P017",
+      "P018",
+      "P019",
+      "P020",
+      "P021",
+      "P022",
+      "P023",
+      "P024"
+    ],
+    "setup2_profiles_dropped": [],
+    "cap": 15.0,
+    "per_vendor_cap": {
+      "openai": 5.0,
+      "anthropic": 5.0,
+      "google": 5.0,
+      "mock": 15.0
+    },
+    "under_cap": true
+  },
+  "status_counts": {
+    "done": 1800
   }
 }

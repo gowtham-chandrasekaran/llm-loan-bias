@@ -142,12 +142,15 @@ def match_tract_pairs(tt, cfg, placebo=False):
     ok = tt.dropna(subset=["income_pct", "hpi_growth_pct", "zcta", "minority_pct"])
     lo = ok[ok.minority_pct <= c["low_minority_max"]]
     hi = lo if placebo else ok[ok.minority_pct >= c["high_minority_min"]]
+    lo = lo[lo.msa != "99999"]; hi = hi[hi.msa != "99999"]   # 99999 = non-metro code, not a shared metro: excluded
     m = lo.merge(hi, on=["state", "msa"], suffixes=("_a", "_b"))
     if placebo:
         m = m[m.census_tract_a < m.census_tract_b]
     m = m[m.zcta_a != m.zcta_b]
     m["di"] = (m.income_pct_a - m.income_pct_b).abs(); m["dh"] = (m.hpi_growth_pct_a - m.hpi_growth_pct_b).abs()
     m = m[(m.di <= c["max_income_pct_diff"]) & (m.dh <= c["max_hpi_growth_diff"])]
+    if placebo:
+        m = m[(m.minority_pct_a - m.minority_pct_b).abs() <= c["placebo_max_minority_gap"]]
     m["d"] = m.di / 10 + m.dh / 10 + (m.owner_occ_rate_a - m.owner_occ_rate_b).abs().fillna(0)
     cands = list(zip(m.d, m.census_tract_a, m.census_tract_b))
     cands.sort()
@@ -174,7 +177,7 @@ GENDER = {"David": "M", "James": "M", "John": "M", "Mark": "M", "Michael": "M", 
           "Latasha": "F", "Latonya": "F", "Latoya": "F", "Tamika": "F", "Tanisha": "F"}
 
 
-def name_pools(cfg):
+def name_ratings():
     s = pd.concat([pd.read_csv(P("data", "raw", "crabtree", f"study-{i}-names.csv")) for i in (1, 2, 3)])
     g = s.groupby(["name", "first", "last", "identity"]).agg(
         n_ratings=("correct", "size"), race_recognition=("correct", "mean"),
@@ -183,35 +186,59 @@ def name_pools(cfg):
     g = g[g.identity.isin(["White", "Black or African American"])].copy()
     g["race"] = g.identity.map({"White": "W", "Black or African American": "B"})
     g["gender"] = g["first"].map(GENDER)
-    k, out = cfg["names"]["per_group"], []
-    for race in "WB":
-        for gen in "FM":
-            sub = g[(g.race == race) & (g.gender == gen)].sort_values(["race_recognition", "name"], ascending=[False, True])
-            pick = sub[sub.race_recognition >= cfg["names"]["min_recognition"]].head(k)
-            if len(pick) < k:  # top-up below threshold, flagged
-                extra = sub[~sub.name.isin(pick.name)].head(k - len(pick)).assign(below_threshold=True)
-                pick = pd.concat([pick.assign(below_threshold=False), extra])
-            else:
-                pick = pick.assign(below_threshold=False)
-            out.append(pick)
-    return pd.concat(out).reset_index(drop=True)
+    return g
+
+
+def name_pools(cfg):
+    """Amendment 15.3 #3 + Reviewer blocker 1: DISTINCT first names per race x gender, every full name >= min_recognition.
+    For each qualifying first name keep its best-recognized surname combo (rank 1) and, as a placebo alternate,
+    its second-best qualifying combo (rank 2). Groups with < per_group qualifying first names are restricted, not topped up."""
+    g = name_ratings(); thr = cfg["names"]["min_recognition"]
+    q = g[g.race_recognition >= thr].sort_values(["race_recognition", "name"], ascending=[False, True])
+    out = []
+    for (race, gen), sub in q.groupby(["race", "gender"]):
+        firsts = sub.groupby("first").race_recognition.max().sort_values(ascending=False).index[:cfg["names"]["per_group"]]
+        for f in firsts:
+            combos = sub[sub["first"] == f].head(2).copy(); combos["rank"] = range(1, len(combos) + 1)
+            out.append(combos)
+    pools = pd.concat(out).reset_index(drop=True)
+    pools["below_threshold"] = False
+    return pools
+
+
+def pool_shortfall(pools, cfg):
+    k = cfg["names"]["per_group"]
+    c = pools[pools["rank"] == 1].groupby(["race", "gender"])["first"].nunique()
+    return {f"{r}-{g}": {"distinct_first_names": int(n), "target": k, "shortfall": max(0, k - int(n))} for (r, g), n in c.items()}
 
 
 def pair_names(pools):
-    """Within gender: match each Black name to an unused White name minimizing perceived income+education gap."""
+    """Within gender: each Black first name (rank-1 combo) gets the White rank-1 name closest in perceived income+education.
+    White names are reused only when the White group has fewer first names than the Black group (reported)."""
     rows = []
     for gen in "FM":
-        W = pools[(pools.race == "W") & (pools.gender == gen)].copy()
-        B = pools[(pools.race == "B") & (pools.gender == gen)]
+        W = pools[(pools.race == "W") & (pools.gender == gen) & (pools["rank"] == 1)]
+        B = pools[(pools.race == "B") & (pools.gender == gen) & (pools["rank"] == 1)]
         used = set()
-        for _, b in B.iterrows():
-            W2 = W[~W.name.isin(used)]
+        for _, b in B.sort_values("name").iterrows():
+            W2 = W[~W.name.isin(used)] if len(W) > len(used) else W
             d = (W2.perceived_income_ord - b.perceived_income_ord).abs() + (W2.perceived_edu_ord - b.perceived_edu_ord).abs()
             w = W2.loc[d.idxmin()]; used.add(w["name"])
             rows.append({"gender": gen, "name_w": w["name"], "name_b": b["name"], "rec_w": w.race_recognition, "rec_b": b.race_recognition,
-                         "inc_w": w.perceived_income_ord, "inc_b": b.perceived_income_ord, "edu_w": w.perceived_edu_ord, "edu_b": b.perceived_edu_ord,
-                         "below_threshold_b": bool(b.below_threshold)})
+                         "inc_w": w.perceived_income_ord, "inc_b": b.perceived_income_ord, "edu_w": w.perceived_edu_ord, "edu_b": b.perceived_edu_ord})
     return pd.DataFrame(rows)
+
+
+def placebo_name(pools, name):
+    """Same race & gender, different first name if the group has one; otherwise same first name, different surname (rank 2)."""
+    r = pools[pools.name == name].iloc[0]
+    grp = pools[(pools.race == r.race) & (pools.gender == r.gender)]
+    other = grp[(grp["rank"] == 1) & (grp["first"] != r["first"])]
+    if len(other):
+        d = (other.perceived_income_ord - r.perceived_income_ord).abs() + (other.perceived_edu_ord - r.perceived_edu_ord).abs()
+        return other.loc[d.idxmin()]["name"], "different_first_name"
+    alt = grp[(grp["first"] == r["first"]) & (grp.name != name)]
+    return (alt.iloc[0]["name"], "same_first_diff_surname") if len(alt) else (None, "none")
 
 
 def synth_profiles(kept, cfg, rng):
@@ -238,7 +265,7 @@ def synth_profiles(kept, cfg, rng):
                 "hmda_action_taken": int(r.action_taken), "hmda_dti_band": band, "dti_band_lo": dti_lo, "dti_band_hi": dti_hi,
                 "hmda_denial_reason_1": r["denial_reason-1"], "hmda_denial_reason_2": r["denial_reason-2"],
                 "hmda_denial_reason_3": r["denial_reason-3"], "hmda_denial_reason_4": r["denial_reason-4"],
-                "hmda_derived_race": r.derived_race, "hmda_census_tract": r.census_tract,
+                "hmda_derived_race": r.derived_race, "hmda_census_tract": r.census_tract, "hmda_state": r.state_code,
                 "annual_income": int(r.income * 1000), "loan_amount": int(r.loan_amount), "property_value": int(r.property_value),
                 "ltv_pct": round(float(r.loan_to_value_ratio), 1), "loan_term_months": 360,
                 "dti_pct": dti, "credit_score": cs,
@@ -274,33 +301,39 @@ PAIRS = [
 ]
 
 
-def build_variants(prof, name_pairs, tract_pairs, placebo_pairs, rng):
+def build_variants(prof, name_pairs, tract_pairs, placebo_pairs, rng, pools=None):
     rows = []
     np_by_g = {g: name_pairs[name_pairs.gender == g].reset_index(drop=True) for g in "FM"}
     for i, p in prof.reset_index(drop=True).iterrows():
         gen = "F" if i % 2 == 0 else "M"  # alternate gender strata
         npg = np_by_g[gen]
-        j = int(rng.integers(len(npg))); j2 = (j + 1 + int(rng.integers(len(npg) - 1))) % len(npg)
-        names = {"W": npg.name_w[j], "B": npg.name_b[j], "W2": npg.name_w[j2], "B2": npg.name_b[j2]}
-        tp = tract_pairs.iloc[int(rng.integers(len(tract_pairs)))]
+        j = int(rng.integers(len(npg)))
+        w2, w2kind = placebo_name(pools, npg.name_w[j]); b2, b2kind = placebo_name(pools, npg.name_b[j])
+        names = {"W": npg.name_w[j], "B": npg.name_b[j], "W2": w2, "B2": b2}
+        own = str(p.hmda_state)
+        tps = tract_pairs[tract_pairs.state == own]
+        if len(tps) == 0: tps = tract_pairs   # should not happen for DE/MD/PA (gate reports it)
+        tp = tps.iloc[int(rng.integers(len(tps)))]
         pp = placebo_pairs[(placebo_pairs.state == tp.state) & (placebo_pairs.tract_a != tp.tract_a) & (placebo_pairs.zip_a != tp.zip_a) & (placebo_pairs.zip_b != tp.zip_a)]
         pp = pp.iloc[int(rng.integers(len(pp)))] if len(pp) else None
         zips = {"A": tp.zip_a, "B": tp.zip_b, "A2": None if pp is None else pp.zip_a}
         tracts = {"A": tp.tract_a, "B": tp.tract_b, "A2": None if pp is None else pp.tract_a}
         for v, (ns, zs) in VARIANTS.items():
             if zs == "A2" and pp is None: continue
+            if ns in ("W2", "B2") and names[ns] is None: continue
             d = p.to_dict()
             d.update({"variant": v, "variant_id": f"{p.profile_id}-{v}", "name_gender": gen,
                       "applicant_name": names[ns] if ns else None, "name_slot": ns,
+                      "placebo_name_kind": {"W2": w2kind, "B2": b2kind}.get(ns),
                       "property_zip": zips[zs] if zs else None, "zip_slot": zs,
-                      "proxy_tract": tracts[zs] if zs else None, "proxy_state": tp.state})
+                      "proxy_tract": tracts[zs] if zs else None, "proxy_state": tp.state, "proxy_msa": tp.msa})
             rows.append(d)
     return pd.DataFrame(rows)
 
 
 def pair_diff_check(var):
     """Every defined pair must differ ONLY in proxy fields; returns DataFrame of violations (empty == pass)."""
-    meta = {"variant", "variant_id", "name_slot", "zip_slot", "proxy_tract"}  # proxy_state is identical within a profile
+    meta = {"variant", "variant_id", "name_slot", "zip_slot", "proxy_tract", "placebo_name_kind"}  # proxy_state is identical within a profile
     viol = []
     for pid, g in var.groupby("profile_id"):
         g = g.set_index("variant")
@@ -337,14 +370,14 @@ def build(cfg=None, outdir=None):
     pp = match_tract_pairs(tt, cfg, placebo=True)
     pools = name_pools(cfg); npairs = pair_names(pools)
     prof, n_border, n_appr, n_deny = synth_profiles(kept, cfg, rng)
-    var = build_variants(prof, npairs, tp, pp, rng)
+    var = build_variants(prof, npairs, tp, pp, rng, pools)
     out = dict(schema_problems=schema, missingness=miss, exclusions=excl, filter_steps=steps, tracts=tt, tract_pairs=tp,
-               placebo_tract_pairs=pp, name_pools=pools, name_pairs=npairs, profiles=prof, variants=var,
+               placebo_tract_pairs=pp, name_pools=pools, name_shortfall=pool_shortfall(pools, cfg), name_pairs=npairs, profiles=prof, variants=var,
                pool_sizes={"borderline": n_border, "control_approve": n_appr, "control_deny": n_deny})
     for k in ["missingness", "exclusions", "filter_steps", "tracts", "tract_pairs", "placebo_tract_pairs", "name_pools", "name_pairs", "profiles", "variants"]:
         out[k].to_csv(os.path.join(outdir, f"{k}.csv"), index=False)
     with open(os.path.join(outdir, "build_meta.json"), "w") as f:
-        json.dump({"seed": cfg["seed"], "schema_problems": schema, "pool_sizes": out["pool_sizes"],
+        json.dump({"seed": cfg["seed"], "schema_problems": schema, "name_shortfall": out["name_shortfall"], "pool_sizes": out["pool_sizes"],
                    "variants_sha256": hashlib.sha256(var.to_csv(index=False).encode()).hexdigest()}, f, indent=2)
     return out
 

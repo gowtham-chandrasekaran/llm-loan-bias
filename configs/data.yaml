@@ -13,5 +13,6 @@ tracts:
   high_minority_min: 50.0
   max_income_pct_diff: 10.0
   max_hpi_growth_diff: 10.0
+  placebo_max_minority_gap: 10.0
   hpi_base_year: 2019
   hpi_end_year: 2024

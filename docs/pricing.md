@@ -37,3 +37,23 @@ Per-model/setup breakdown for A: gpt-5.4-mini $2.36 per setup; claude-sonnet-5 $
 - OpenAI gpt-5.4-mini → resolved to `gpt-5.4-mini-2026-03-17`, 8 in / 5 out tokens.
 - Anthropic claude-sonnet-5 → call succeeded, but the response began with a ThinkingBlock even though thinking was not requested. My print code crashed on it, so I did not log the token counts. I did not retry, to stay within the one-call limit. Implication: Sonnet 5 may think by default, and the adapter's `thinking: disabled` path has not been verified.
 - Google gemini-3.8-flash → 3 in / 1 out / 58 thoughts tokens.
+
+## v2 re-estimate (2026-10-12): batch, all 3 setups, lowest reasoning setting (`python -m llmbias.batch --config configs/pilot_batch.yaml --plan-only`)
+Assumptions: 750 input / 350 visible output per call, 0 reasoning (thinking off, verified live). Setup 2 is assumed to always take 2 rounds, with tool overhead measured in the live tool checks (OpenAI ~300, Anthropic ~1,200, Google ~400 input tokens).
+
+| Vendor | Setup 3 | Setup 1 | Setup 2 (all 25 profiles) | Total untrimmed | Total as run (setup 2 trimmed to 17 profiles) |
+|---|---|---|---|---|---|
+| OpenAI gpt-5.4-mini (+ gpt-5-nano judge) | 0.64 | 0.64 | 0.96 | 2.53 (incl. judge 0.29) | 2.19 |
+| Anthropic claude-sonnet-5 | 1.50 | 1.50 | 2.85 | **5.85 (> $5 vendor cap)** | 4.94 |
+| Google gemini-3.8-flash | 0.56 | 0.56 | 0.89 | 2.01 | 1.73 |
+| **Total** | | | | **10.39** | **8.86** |
+
+Total is under the $15 cap. Only Anthropic's $5 per-vendor cap binds. The pre-seeded trim therefore drops 8 of 25 profiles from setup 2 for all vendors (P000, P005, P002, P006, P013, P017, P020, P007). Raising Anthropic's cap to $6 would keep all 25.
+
+## Live checks 2026-10-12 (~13:20 EDT), via the project adapters: one thinking-off call + one tool call per vendor (docs/live_checks_*.json)
+| Vendor/model | Lowest setting | Result | Tool call |
+|---|---|---|---|
+| OpenAI gpt-5.4-mini | reasoning.effort=none | OK; 18 in / 5 out / 0 reasoning | called score_application with correct args; final JSON approve, 60.129; 412 in / 59 out |
+| Anthropic claude-sonnet-5 | thinking disabled | OK; no thinking block; 19 in / 4 out | correct args; approve 60.129; 1,542 in / 169 out |
+| Google gemini-3.8-flash | thinking_budget=0 | OK; 0 thought tokens; 10 in / 1 out | correct args; approve 60.129; 534 in / 64 out |
+Total cost of these six calls: under $0.01 at list prices.

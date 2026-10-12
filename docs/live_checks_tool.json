@@ -1,0 +1,104 @@
+[
+  {
+    "check": "tool",
+    "vendor": "openai",
+    "model": "gpt-5.4-mini",
+    "effort": "none",
+    "ok": true,
+    "text": "{\"decision\":\"approve\",\"score\":60.129}",
+    "model_version": "gpt-5.4-mini-2026-03-17",
+    "input_tokens": 412,
+    "output_tokens": 59,
+    "reasoning_tokens": 0,
+    "reasoning_present": false,
+    "tool_calls": [
+      {
+        "name": "score_application",
+        "args": {
+          "credit_score": 700,
+          "dti_pct": 42,
+          "ltv_pct": 90,
+          "reserves_months": 3,
+          "employment_years": 4
+        },
+        "result": {
+          "score": 60.129,
+          "decision": "approve",
+          "reason_codes": [
+            "X02",
+            "C09"
+          ]
+        }
+      }
+    ],
+    "latency_s": 2.86
+  },
+  {
+    "check": "tool",
+    "vendor": "anthropic",
+    "model": "claude-sonnet-5",
+    "effort": "none",
+    "ok": true,
+    "text": "{\"decision\": \"approve\", \"score\": 60.129}",
+    "model_version": "claude-sonnet-5",
+    "input_tokens": 1542,
+    "output_tokens": 169,
+    "reasoning_tokens": 0,
+    "reasoning_present": false,
+    "tool_calls": [
+      {
+        "name": "score_application",
+        "args": {
+          "credit_score": 700,
+          "dti_pct": 42,
+          "ltv_pct": 90,
+          "reserves_months": 3,
+          "employment_years": 4
+        },
+        "result": {
+          "score": 60.129,
+          "decision": "approve",
+          "reason_codes": [
+            "X02",
+            "C09"
+          ]
+        }
+      }
+    ],
+    "latency_s": 3.13
+  },
+  {
+    "check": "tool",
+    "vendor": "google",
+    "model": "gemini-3.8-flash",
+    "effort": "none",
+    "ok": true,
+    "text": "{\"decision\": \"approve\", \"score\": 60.129}",
+    "model_version": "gemini-3.8-flash",
+    "input_tokens": 534,
+    "output_tokens": 64,
+    "reasoning_tokens": 0,
+    "reasoning_present": false,
+    "tool_calls": [
+      {
+        "name": "score_application",
+        "args": {
+          "dti_pct": 42,
+          "reserves_months": 3,
+          "employment_years": 4,
+          "ltv_pct": 90,
+          "credit_score": 700
+        },
+        "result": {
+          "score": 60.129,
+          "decision": "approve",
+          "reason_codes": [
+            "X02",
+            "C09"
+          ]
+        }
+      }
+    ],
+    "latency_s": 2.92
+  }
+]

@@ -26,7 +26,7 @@ def test_full_mock_dry_run(tmp_path):
     meta = json.load(open(os.path.join(rd, "run_meta.json"))); assert meta["spent_usd"] > 0 and meta["budget_stop"] is None
     run_judge(rd)
     R = analyze(rd, n_perm=200)
-    assert R["excluded_from_confirmatory"] and R["parse_rate"] == 1.0 and len(R["holm"]) == 8
+    assert R["excluded_from_confirmatory"] and R["parse_rate"] == 1.0 and len(R["holm"]) == 8 and "glmer_confirmatory_name" in R
     p, n = export(rd, n=120); assert n >= 100
     import pandas as pd
     L = pd.read_csv(p); assert set(L.columns) == {"item_id", "task", "text", "human_label"}

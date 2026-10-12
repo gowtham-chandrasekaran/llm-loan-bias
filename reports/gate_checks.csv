@@ -7,9 +7,14 @@ credit_score_range_300_850,True
 ltv_range_0_200,True
 income_positive,True
 no_missing_in_profile_fields,True
->=10_names_per_group_and_gender,True
+all_names_recognition_>=0.70,True
+name_first_names_distinct_within_group,True
+placebo_names_differ_from_base,True
 >=15_tract_pairs,True
 >=5_placebo_tract_pairs,True
 tract_pairs_same_state,True
+tract_pairs_same_metro_not_99999,True
+placebo_minority_gap_<=10pts,True
+profile_zip_pair_from_own_state,True
 tract_pairs_income_within_10pts,True
 tract_pairs_hpi_within_10pts,True

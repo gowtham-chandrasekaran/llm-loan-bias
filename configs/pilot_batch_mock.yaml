@@ -1,0 +1,28 @@
+# PILOT (pre-reg 15.3): batch APIs, setups 3 -> 1 -> 2, lowest reasoning setting per vendor, $15 hard cap.
+run_seed: 777
+trim_seed: 20261012            # pre-seeded order for dropping setup-2 profiles if projected cost > cap (repeats never cut)
+pilot: true                    # all outputs tagged excluded_from_confirmatory
+mode: batch
+budget_usd: 15.0
+per_vendor_budget_usd: {openai: 5.0, anthropic: 5.0, google: 5.0, mock: 15.0}
+repeats: 3
+setups: [3, 1, 2]
+variants: [base, control_dup, name_b, name_w_placebo, name_b_placebo, zip_b, zip_placebo, anchor]
+# Reasoning settings (15.3 #7), each verified with one live call on 2026-10-12 (docs/live_checks_thinking.json):
+#   openai  gpt-5.4-mini     reasoning.effort = "none"          -> 0 reasoning tokens
+#   anthropic claude-sonnet-5 thinking = {"type": "disabled"}    -> no thinking block
+#   google  gemini-3.8-flash thinking_budget = 0                -> 0 thought tokens
+models:
+  - {vendor: mock, model: mock-1, effort: none}
+judge: {vendor: mock, model: mock-1, effort: none}
+max_output_tokens: 800
+batch_chunk: 500
+poll_seconds: 0
+est_tokens:
+  input: 750
+  output_visible: 350
+  reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}
+  tool_overhead: {openai: 300, anthropic: 1200, google: 400, mock: 300}   # from live tool checks (2 rounds)
+  tool_call_output: 60
+  judge_input: 350
+  judge_output: 40

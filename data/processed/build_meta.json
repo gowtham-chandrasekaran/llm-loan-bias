@@ -1,10 +1,32 @@
 {
   "seed": 20261012,
   "schema_problems": [],
+  "name_shortfall": {
+    "B-F": {
+      "distinct_first_names": 7,
+      "target": 10,
+      "shortfall": 3
+    },
+    "B-M": {
+      "distinct_first_names": 1,
+      "target": 10,
+      "shortfall": 9
+    },
+    "W-F": {
+      "distinct_first_names": 1,
+      "target": 10,
+      "shortfall": 9
+    },
+    "W-M": {
+      "distinct_first_names": 9,
+      "target": 10,
+      "shortfall": 1
+    }
+  },
   "pool_sizes": {
     "borderline": 42943,
     "control_approve": 16284,
     "control_deny": 1535
   },
-  "variants_sha256": "ce5de3ac8953d37554bc67c5136248d6fa9775db89cf79f205d758065f1524e6"
+  "variants_sha256": "2fa9b52a3158136efb5172a31fb67cdf0c8b1940c28afd0b3e01cbac2c304410"
 }

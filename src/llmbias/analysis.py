@@ -41,6 +41,21 @@ def wilson(k, n, z=1.96):
     p = k / n; d = 1 + z * z / n; c = p + z * z / (2 * n); h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
     return ((c - h) / d, (c + h) / d)
 
+def newcombe_paired(x1, x2, z=1.96):
+    """Newcombe (1998) method 10: CI for p1 - p2 from paired binaries, using Wilson score limits for each margin.
+    Returns dict(diff, lo, hi, degenerate). Degenerate when n == 0 or a radicand is negative."""
+    x1, x2 = np.asarray(x1, bool), np.asarray(x2, bool); n = len(x1)
+    if n == 0: return {"diff": np.nan, "lo": np.nan, "hi": np.nan, "degenerate": True}
+    a, b, c, d = int((x1 & x2).sum()), int((x1 & ~x2).sum()), int((~x1 & x2).sum()), int((~x1 & ~x2).sum())
+    p1, p2 = (a + b) / n, (a + c) / n
+    l1, u1 = wilson(a + b, n, z); l2, u2 = wilson(a + c, n, z)
+    den = (a + b) * (c + d) * (a + c) * (b + d)
+    phi = 0.0 if den == 0 else (a * d - b * c) / math.sqrt(den)
+    r1 = (p1 - l1) ** 2 - 2 * phi * (p1 - l1) * (u2 - p2) + (u2 - p2) ** 2
+    r2 = (u1 - p1) ** 2 - 2 * phi * (u1 - p1) * (p2 - l2) + (p2 - l2) ** 2
+    if r1 < 0 or r2 < 0: return {"diff": p1 - p2, "lo": np.nan, "hi": np.nan, "degenerate": True}
+    return {"diff": p1 - p2, "lo": p1 - p2 - math.sqrt(r1), "hi": p1 - p2 + math.sqrt(r2), "degenerate": False, "abcd": [a, b, c, d]}
+
 def bootstrap_ci(values, groups=None, stat=np.mean, B=2000, seed=0):
     """Cluster bootstrap over profiles (groups) if given."""
     rng = np.random.default_rng(seed); v = np.asarray(values, float)
@@ -143,10 +158,15 @@ def m3(pairs, proxy, setup=1):
     if pr.empty: return None
     b, c, p = mcnemar(pr.dec_a == "deny", pr.dec_b == "deny")
     k, n = int(pr.flip.sum()), len(pr); ctrl = float(ct.flip.mean()) if len(ct) else 0.0
-    lo, hi = wilson(k, n)
-    return {"n_pairs": n, "flips": k, "flip_rate": k / n, "control_flip_rate": ctrl, "net_flip_rate": k / n - ctrl,
-            "net_flip_ci_boot": bootstrap_ci(pr.flip.astype(float) - ctrl, pr.profile_id), "wilson_raw": (lo, hi),
-            "wilson_upper_net": hi - ctrl, "b_deny_a_only": b, "c_deny_b_only": c, "p_mcnemar": p}
+    # paired (same model x profile) proxy flip vs control flip -> Newcombe paired-difference CI; bootstrap fallback
+    j = pr.merge(ct[KEYS + ["profile_id", "flip"]], on=KEYS + ["profile_id"], suffixes=("", "_ctrl"))
+    nc = newcombe_paired(j.flip, j.flip_ctrl)
+    boot = bootstrap_ci(j.flip.astype(float) - j.flip_ctrl.astype(float), j.profile_id)
+    upper = boot[1] if nc["degenerate"] else nc["hi"]
+    return {"n_pairs": n, "flips": k, "flip_rate": k / n, "control_flip_rate": ctrl, "n_paired_with_control": len(j),
+            "net_flip_rate": float((j.flip.astype(float) - j.flip_ctrl.astype(float)).mean()) if len(j) else np.nan,
+            "newcombe": nc, "net_flip_ci_boot": boot, "trigger_upper": upper, "trigger_method": "bootstrap" if nc["degenerate"] else "newcombe",
+            "wilson_raw": wilson(k, n), "b_deny_a_only": b, "c_deny_b_only": c, "p_mcnemar": p}
 
 def mixed_logit(df, proxy_variants, setup=1):
     """decision ~ proxy x model + effort + state + (1|profile)  [pre-reg 15.1 #3, 15.2]. Variational Bayes GLMM (statsmodels).
@@ -165,10 +185,29 @@ def mixed_logit(df, proxy_variants, setup=1):
     names = m.model.exog_names
     return {"formula": f + " + (1|profile)", "n": len(d), "fe": {n: {"mean": float(m.fe_mean[i]), "sd": float(m.fe_sd[i])} for i, n in enumerate(names)}}
 
+def glmer_fit(df, proxy_variants, setup=1, rscript="Rscript"):
+    """CONFIRMATORY model (15.3 #6): lme4::glmer via Rscript subprocess, Laplace. Same formula as mixed_logit (VB = sensitivity)."""
+    import subprocess, tempfile, shutil
+    if not shutil.which(rscript): return {"ok": False, "error": "Rscript not found"}
+    a, b = proxy_variants
+    d = df[(df.setup == setup) & df.variant.isin([a, b]) & df.decision.notna()].copy()
+    if d.empty or d.decision.nunique() < 2: return {"ok": False, "note": "not estimable (no outcome variation)"}
+    d["deny"] = (d.decision == "deny").astype(int); d["proxy"] = (d.variant == b).astype(int)
+    d["state"] = d.get("proxy_state", pd.Series("NA", index=d.index)).fillna("NA").astype(str)
+    terms = ["proxy"] + (["model", "proxy:model"] if d.model.nunique() > 1 else []) + (["effort"] if d.effort.nunique() > 1 else []) + (["state"] if d.state.nunique() > 1 else [])
+    f = "deny ~ " + " + ".join(terms) + " + (1 | profile_id)"
+    with tempfile.TemporaryDirectory() as td:
+        ci, co = os.path.join(td, "d.csv"), os.path.join(td, "o.json")
+        d[["deny", "proxy", "model", "effort", "state", "profile_id"]].to_csv(ci, index=False)
+        r = subprocess.run([rscript, os.path.join(os.path.dirname(__file__), "..", "..", "R", "glmer_fit.R"), ci, co, f], capture_output=True, text=True, timeout=600)
+        if not os.path.exists(co): return {"ok": False, "error": (r.stderr or r.stdout)[-800:]}
+        return json.loads(open(co).read(), strict=False)
+
 def fallback_trigger(m3_res):
-    """Pre-reg 15.1 #4: if upper bound of 95% Wilson CI on pilot net flip rate < 10% -> add bank-context condition."""
+    """Pre-reg 15.3 #5: net flip = proxy-pair flip rate - control-pair flip rate (paired); 95% Newcombe paired-difference CI
+    (paired cluster bootstrap if Newcombe is degenerate). Add bank context if the upper bound < 10%."""
     if not m3_res: return None
-    return {"wilson_upper_net": m3_res["wilson_upper_net"], "trigger_fallback": m3_res["wilson_upper_net"] < 0.10}
+    return {"upper": m3_res["trigger_upper"], "method": m3_res["trigger_method"], "trigger_fallback": bool(m3_res["trigger_upper"] < 0.10)}
 
 def analyze(run_dir, n_perm=10000):
     meta = json.load(open(os.path.join(run_dir, "run_meta.json")))
@@ -185,7 +224,8 @@ def analyze(run_dir, n_perm=10000):
         R[f"M1b_approve_exploratory_{proxy}"] = m1b(df, judg, va, vb, "approve", n_perm)
         pv[f"M1a_{proxy}"] = r1 and r1["p_perm"]; pv[f"M1b_{proxy}"] = r1b and r1b["p_perm"]
         pv[f"M2_{proxy}"] = r2 and r2["p_mcnemar"]; pv[f"M3_{proxy}"] = r3 and r3["p_mcnemar"]
-        R[f"mixed_logit_{proxy}"] = mixed_logit(df, (va, vb))
+        R[f"glmer_confirmatory_{proxy}"] = glmer_fit(df, (va, vb))
+        R[f"mixed_logit_vb_sensitivity_{proxy}"] = mixed_logit(df, (va, vb))
     R["placebo"] = {f"{p}": m3(pairs.assign(pair_type=pairs.pair_type.replace({"placebo": "proxy"})).query("pair_type=='proxy' or pair_type=='control'"), p)
                     for p in ("name", "name_black", "zip") if not pairs.empty}
     R["placebo_M1a"] = {"name": m1a(df, "base", "name_w_placebo", n_perm), "zip": m1a(df, "base", "zip_placebo", n_perm)}

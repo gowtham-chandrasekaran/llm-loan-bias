@@ -16,7 +16,8 @@ Downloaded 2026-10-12 (America/New_York, EDT) by the Developer agent on the shar
 HMDA year: 2024 Snapshot/public data via FFIEC Data Browser (filtered query: actions_taken 1 = originated, 3 = denied). The Data Browser serves the latest published dataset, so a later re-download could differ if CFPB republishes; the checksum detects that.
 
 ## Pre-data design change (2026-10-12, before any model run)
-- Scope was DE only (32,906 rows). DE yielded only 3 matched and 5 placebo tract pairs, so on Parent/Reviewer instruction MD and PA 2024 were added with identical filters. Result: 85 matched pairs (PA 42, MD 40, DE 3) and 283 placebo pairs (PA 231, MD 47, DE 5). Every pair is within one state and one MSA.
+- Scope was DE only (32,906 rows). DE yielded only 3 matched and 5 placebo tract pairs, so on Parent/Reviewer instruction MD and PA 2024 were added with identical filters. Result at data-gate-v1: 85 matched / 283 placebo pairs.
+- data-gate-v2 (2026-10-12, amendment 15.3 + Reviewer review): pairs with MSA code 99999 (non-metro) dropped; placebo minority-share gap capped at 10 pts. Result: **84 matched pairs (PA 42, MD 39, DE 3) and 256 placebo pairs (PA 211, MD 41, DE 4)**, all within one state and one real MSA. Each profile now draws its ZIP pairs from its own HMDA state.
 
 ## Citations for proxy sources
 - Names: Crabtree, C., Kim, J. Y., Gaddis, S. M., Holbein, J. B., Guage, C., & Marx, W. W. (2023). Validated names for experimental studies on race and ethnicity. *Scientific Data* 10 (2023). https://doi.org/10.1038/s41597-023-01947-0. Data: https://doi.org/10.7910/DVN/LP4EAR and Zenodo mirror above.

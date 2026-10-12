@@ -2,7 +2,7 @@
 The scorecard is author-defined (not a real lender's). Weights are fixed and documented here."""
 from dataclasses import dataclass
 
-THRESHOLD = 60.0  # approve if score >= THRESHOLD; see calibrate_threshold() and docs/design.md
+THRESHOLD = 54.5  # pre-reg 15.3 #2: median score of the 150 borderline profiles; fixed, not tuned on model output
 
 def _credit_pts(cs):  # 0..40
     return max(0.0, min(40.0, (cs - 580) / (760 - 580) * 40))

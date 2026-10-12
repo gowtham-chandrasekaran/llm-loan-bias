@@ -11,7 +11,7 @@ from .clients import make_client
 from .parsing import parse_output
 from .prompts import PROMPT_VERSION, setup1, setup2, setup3
 from .render import order_seed, render
-from .scoring import score_application, TOOL_SPEC
+from .scoring import score_application, TOOL_SPEC, THRESHOLD
 
 def _clean(o):
     if isinstance(o, float) and o != o: return None
@@ -36,6 +36,35 @@ def tool_fn_factory():
     def fn(args):
         r = score_application(args); return {"score": r.score, "decision": r.decision, "reason_codes": r.reason_codes}
     return fn
+
+def build_record(cfg, run_id, excluded, m, setup, app, rep):
+    """Shared by sync and batch runners: renders the prompt and builds the logged record (without the response)."""
+    oseed = order_seed(cfg["run_seed"], app["profile_id"], rep)
+    text = render(app, oseed)
+    tool = score_application(app); toold = {"score": tool.score, "decision": tool.decision, "reason_codes": tool.reason_codes}
+    sysm, user = {1: lambda: setup1(text), 2: lambda: setup2(text), 3: lambda: setup3(text, toold)}[setup]()
+    rec = {"run_id": run_id, "call_id": uuid.uuid4().hex, "ts": dt.datetime.now().astimezone().isoformat(),
+           "excluded_from_confirmatory": excluded, "prompt_version": PROMPT_VERSION,
+           "vendor": m["vendor"], "model": m["model"], "effort": m.get("effort"), "setup": setup,
+           "profile_id": app["profile_id"], "stratum": app["stratum"], "variant": app["variant"], "variant_id": app["variant_id"],
+           "repeat": rep, "order_seed": oseed, "applicant_name": app.get("applicant_name"),
+           "property_zip": app.get("property_zip") if isinstance(app.get("property_zip"), str) else None,
+           "tool_decision": toold["decision"], "tool_score": toold["score"], "tool_reason_codes": toold["reason_codes"],
+           "tool_threshold": THRESHOLD,
+           "hmda_denial_reasons": [None if pd.isna(app.get(f"hmda_denial_reason_{i}")) else str(app.get(f"hmda_denial_reason_{i}")).split(".")[0] for i in range(1, 5)],
+           "proxy_state": None if pd.isna(app.get("proxy_state")) else str(app.get("proxy_state")).split(".")[0],
+           "system": sysm, "prompt": user, "prompt_sha256": hashlib.sha256((sysm + user).encode()).hexdigest()}
+    return rec, sysm, user
+
+def finish_record(rec, res, cost):
+    setup = rec["setup"]
+    rec.update(response=res.text, reasoning=res.reasoning, reasoning_kind=res.reasoning_kind, model_version=res.model_version,
+               input_tokens=res.input_tokens, output_tokens=res.output_tokens, reasoning_tokens=res.reasoning_tokens,
+               visible_output_tokens=None if res.reasoning_tokens is None else res.output_tokens - res.reasoning_tokens,
+               tool_calls=res.tool_calls, tool_called=bool(res.tool_calls) if setup == 2 else None, cost_usd=cost)
+    p = parse_output(res.text); rec["parsed"] = p
+    rec["override"] = (p.get("decision") != rec["tool_decision"]) if setup in (2, 3) and p.get("decision") else None
+    return rec
 
 def run(cfg_path, allow_paid=False, out_root=None, limit=None, variants_csv=None):
     cfg = yaml.safe_load(open(cfg_path))
@@ -62,21 +91,8 @@ def run(cfg_path, allow_paid=False, out_root=None, limit=None, variants_csv=None
                 for rep in range(cfg["repeats"]):
                     for _, it in items.iterrows():
                         app = _clean(it.to_dict())
-                        oseed = order_seed(cfg["run_seed"], app["profile_id"], rep)
-                        text = render(app, oseed)
-                        tool = score_application(app); toold = {"score": tool.score, "decision": tool.decision, "reason_codes": tool.reason_codes}
-                        sysm, user = {1: lambda: setup1(text), 2: lambda: setup2(text), 3: lambda: setup3(text, toold)}[setup]()
-                        call_id = uuid.uuid4().hex
-                        rec = {"run_id": run_id, "call_id": call_id, "ts": dt.datetime.now().astimezone().isoformat(),
-                               "excluded_from_confirmatory": meta["excluded_from_confirmatory"], "prompt_version": PROMPT_VERSION,
-                               "vendor": m["vendor"], "model": m["model"], "effort": m.get("effort"), "setup": setup,
-                               "profile_id": app["profile_id"], "stratum": app["stratum"], "variant": app["variant"], "variant_id": app["variant_id"],
-                               "repeat": rep, "order_seed": oseed, "applicant_name": app.get("applicant_name"),
-                               "property_zip": app.get("property_zip") if isinstance(app.get("property_zip"), str) else None,
-                               "tool_decision": toold["decision"], "tool_score": toold["score"], "tool_reason_codes": toold["reason_codes"],
-                               "hmda_denial_reasons": [None if pd.isna(app.get(f"hmda_denial_reason_{i}")) else str(app.get(f"hmda_denial_reason_{i}")).split(".")[0] for i in range(1, 5)],
-                               "proxy_state": None if pd.isna(app.get("proxy_state")) else str(app.get("proxy_state")).split(".")[0],
-                               "system": sysm, "prompt": user, "prompt_sha256": hashlib.sha256((sysm + user).encode()).hexdigest()}
+                        rec, sysm, user = build_record(cfg, run_id, meta["excluded_from_confirmatory"], m, setup, app, rep)
+                        call_id = rec["call_id"]; toold = {"decision": rec["tool_decision"]}
                         try:
                             guard.check(m["vendor"], m["model"], len(sysm + user) // 3, cfg["max_output_tokens"], 2 if setup == 2 else 1)
                         except BudgetExceeded as e:
@@ -84,12 +100,7 @@ def run(cfg_path, allow_paid=False, out_root=None, limit=None, variants_csv=None
                         t0 = time.time()
                         try:
                             res = client.complete(sysm, user, TOOL_SPEC if setup == 2 else None, tool_fn if setup == 2 else None)
-                            rec.update(response=res.text, reasoning=res.reasoning, reasoning_kind=res.reasoning_kind, model_version=res.model_version,
-                                       input_tokens=res.input_tokens, output_tokens=res.output_tokens, reasoning_tokens=res.reasoning_tokens,
-                                       tool_calls=res.tool_calls, tool_called=bool(res.tool_calls) if setup == 2 else None)
-                            rec["cost_usd"] = guard.record(m["vendor"], m["model"], res.input_tokens, res.output_tokens, call_id)
-                            p = parse_output(res.text); rec["parsed"] = p
-                            rec["override"] = (p.get("decision") != toold["decision"]) if setup in (2, 3) and p.get("decision") else None
+                            finish_record(rec, res, guard.record(m["vendor"], m["model"], res.input_tokens, res.output_tokens, call_id))
                         except Exception as e:
                             rec["error"] = f"{type(e).__name__}: {str(e)[:500]}"
                         rec["latency_s"] = round(time.time() - t0, 3)
