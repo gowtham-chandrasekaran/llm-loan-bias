@@ -36,7 +36,8 @@ def test_full_mock_dry_run(tmp_path):
         assert list(d.columns) == ["item_id", "task", "text", "label", "comment"]
         d["label"] = [str(key["labelers"][lab]["map"][i]["judge"]) for i in d.item_id]; d.to_csv(paths[lab][1], index=False)
     res = LB.agreement(rd, paths["A"][1], paths["B"][1], B=200)
-    assert res["per_task"]["hedging"]["A_vs_judge"]["kappa"] == 1.0 and res["per_task"]["hedging"]["human_human"]["raw_agreement"] == 1.0
+    hj = res["per_task"]["hedging"]["A_vs_judge"]   # 15.8.3: mock letters may be constant -> kappa undefined, gate not evaluable
+    assert (hj["kappa"] == 1.0 or (hj["kappa"] is None and hj["gate_status"] == LB.NOT_EVALUABLE)) and hj["raw_agreement"] == 1.0 and res["per_task"]["hedging"]["human_human"]["raw_agreement"] == 1.0
 
 def test_budget_stop_in_run(tmp_path):
     rd = run(_cfg(tmp_path, budget_usd=0.02, per_vendor_budget_usd={"mock": 0.02}), out_root=str(tmp_path), limit=3)

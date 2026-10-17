@@ -94,3 +94,55 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--run", required=True); ap.add_argument("--allow-paid", action="store_true")
     ap.add_argument("--sync", action="store_true", help="debug only; the pilot of record uses batch (15.3 #1)")
     a = ap.parse_args(); print(run_judge(a.run, a.allow_paid) if a.sync else run_judge_batch(a.run, a.allow_paid))
+
+
+# ---- 15.8.3 (7): M4 re-judge with the B2 prompt (prepared offline; submission is a separate, paid step) ----
+REJUDGE_STATE = "rejudge_m4_v2_state.json"
+
+def m4_span_pool(run_dir):
+    """All judged spans in a run, with 15.8.3 filtering stats. Dedup is across the run on normalized redacted text."""
+    from .blind import filter_spans, has_substantive_placeholder
+    spans = []
+    for l in open(os.path.join(run_dir, "judgments.jsonl")):
+        j = json.loads(l)
+        for i, s in enumerate(j["spans"]):
+            spans.append({"internal_id": f"{j['item_id']}#s{i}", "call_id": j["call_id"], "span_redacted": s["span_redacted"],
+                          "old_judge": s.get("mentions_proxy")})
+    kept, n_sal, n_dup = filter_spans(spans)
+    return kept, {"spans_total": len(spans), "salutation_only_dropped": n_sal, "duplicates_dropped": n_dup, "unique_substantive": len(kept),
+                  "substantive_with_placeholder": sum(has_substantive_placeholder(s["span_redacted"]) for s in kept)}
+
+def prepare_m4_rejudge(run_dir, max_out=300, exp_out=40):
+    """Build (do NOT submit) the batch requests for re-judging the run's unique substantive spans with the B2 prompt.
+    Writes <run>/rejudge_m4_v2_state.json (BatchRun format, all 'pending') and returns call count and cost estimates."""
+    from .budget import call_cost
+    from .prompts import JUDGE_MENTION_VERSION
+    meta = json.load(open(os.path.join(run_dir, "run_meta.json"))); cfg = meta["config"]; j = cfg["judge"]
+    kept, stats = m4_span_pool(run_dir)
+    prices = load_prices(P("configs", "prices.yaml")); reqs = {}; exp_cost = worst_cost = 0.0
+    for order, s in enumerate(kept):
+        sysm, user = judge_mention(s["span_redacted"])
+        cid = "m4v2_" + hashlib.sha256(s["span_redacted"].encode()).hexdigest()[:20]
+        reqs[cid] = {"cid": cid, "order": order, "vendor": j["vendor"], "model": j["model"], "effort": j.get("effort"), "bias": None,
+                     "system": sysm, "user": user, "tools": False, "max_out": max_out, "round": 1, "history": None, "status": "pending",
+                     "usage": [0, 0, 0], "tool_calls": [], "rec": {"internal_ids": [s["internal_id"]], "span_redacted": s["span_redacted"]}}
+        tin_exp = (len(sysm) + len(user)) // 4; tin_worst = (len(sysm) + len(user)) // 3
+        exp_cost += call_cost(prices, j["vendor"], j["model"], tin_exp, exp_out, batch=True)
+        worst_cost += call_cost(prices, j["vendor"], j["model"], tin_worst, max_out, batch=True)
+    state = {"meta": {"run_id": meta["run_id"], "kind": "m4_rejudge", "prompt_version": JUDGE_MENTION_VERSION, "config": cfg,
+                      "prepared": __import__("datetime").datetime.now().astimezone().isoformat(), "submitted": False},
+             "trim": None, "requests": reqs, "batches": {}}
+    json.dump(state, open(os.path.join(run_dir, REJUDGE_STATE), "w"), default=str)
+    return {**stats, "calls": len(reqs), "vendor": j["vendor"], "model": j["model"], "effort": j.get("effort"),
+            "est_cost_usd_expected": round(exp_cost, 4), "est_cost_usd_worst_case": round(worst_cost, 4),
+            "assumptions": f"batch price; expected = chars/4 input + {exp_out} output tokens; worst = chars/3 input + {max_out} output",
+            "state_file": os.path.join(run_dir, REJUDGE_STATE), "submitted": False}
+
+def submit_m4_rejudge(run_dir, allow_paid=False):
+    """PAID. Submits the prepared re-judge via the batch API. Not called by any test or script; needs explicit approval."""
+    if not allow_paid: raise SystemExit("re-judge is a paid batch; pass allow_paid=True only with explicit approval")
+    from .batch import BatchRun
+    st = json.load(open(os.path.join(run_dir, REJUDGE_STATE)))
+    br = BatchRun(run_dir, st["meta"]["config"], allow_paid, state_name=REJUDGE_STATE, vendors=[st["meta"]["config"]["judge"]["vendor"]])
+    br.loop(st["meta"]["config"].get("poll_seconds", 60), write=False)
+    return os.path.join(run_dir, REJUDGE_STATE)

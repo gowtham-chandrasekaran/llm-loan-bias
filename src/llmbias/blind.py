@@ -25,10 +25,38 @@ def redact(text, applicant_name=None, property_zip=None):
         t = re.sub(s, "[STATE]", t)
     return t
 
+SALUTATION_ONLY_RE = re.compile(r"^(Dear\s+)?(Mr\.|Ms\.|Mrs\.)?\s*\[NAME\],?$")   # memo m4_label_quality s.5 / 15.8.3 (1)
+PLACEHOLDER_RE = re.compile(r"\[(NAME|ZIP|STATE|CITY|ADDRESS|NEIGHBORHOOD|TRACT)\]")
+
+def is_salutation_only(span_redacted):
+    """True for a span that is only a greeting with the name placeholder (e.g. '[NAME],', 'Dear Ms. [NAME],')."""
+    return bool(SALUTATION_ONLY_RE.match((span_redacted or "").strip()))
+
+def normalize_span(text):
+    """Dedup key: lowercase, collapse whitespace, strip surrounding punctuation/quotes."""
+    t = re.sub(r"\s+", " ", (text or "").strip().lower())
+    return t.strip(" \t\"'.,;:!?-")
+
+def has_substantive_placeholder(span_redacted):
+    """Offline B2 proxy: a placeholder occurs in a span that is not salutation-only."""
+    return (not is_salutation_only(span_redacted)) and bool(PLACEHOLDER_RE.search(span_redacted or ""))
+
+def filter_spans(spans, key="span_redacted", seen=None):
+    """15.8.3 (1): drop salutation-only spans, then deduplicate on normalized text (pass a shared `seen` set to dedup across items).
+    Returns (kept, n_salutation_dropped, n_duplicate_dropped)."""
+    seen = set() if seen is None else seen; kept, ns, nd = [], 0, 0
+    for sp in spans:
+        t = sp[key] if isinstance(sp, dict) else sp
+        if is_salutation_only(t): ns += 1; continue
+        k = normalize_span(t)
+        if k in seen: nd += 1; continue
+        seen.add(k); kept.append(sp)
+    return kept, ns, nd
+
 def _sentences(text):
     return [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", text or "") if s.strip()]
 
-def detect_proxy_spans(text, applicant_name=None, property_zip=None):
+def detect_proxy_spans(text, applicant_name=None, property_zip=None, dedup=True):
     """Return sentences that reference name/location/demographics, excluding salutation/signature-only lines."""
     spans = []
     toks = _name_tokens(applicant_name)
@@ -41,4 +69,8 @@ def detect_proxy_spans(text, applicant_name=None, property_zip=None):
         if re.search(LOCATION_KW, s, re.I): hit.append("location_kw")
         if re.search(DEMOG_KW, s, re.I): hit.append("demographic_kw")
         if hit: spans.append({"span": s, "triggers": hit})
-    return spans
+    if not dedup: return spans
+    # 15.8.3 (1): judge salutation-only status on the redacted form, then dedup on normalized text within this text
+    for sp in spans: sp["span_redacted"] = redact(sp["span"], applicant_name, property_zip)
+    kept, _, _ = filter_spans(spans)
+    return kept
