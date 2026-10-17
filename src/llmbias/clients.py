@@ -62,10 +62,10 @@ class MockClient(BaseClient):
 
     def _complete(self, system, user, tool_spec, tool_fn):
         r = self._rng(self.model, self.effort, user)
-        if "Rubric: does this letter" in user:
+        if "LETTER:\n" in user and "hedging" in user:
             body = user.split("LETTER:", 1)[1]
             return self._wrap(json.dumps({"hedging": "financial habits" in body, "evidence": ""}), system, user)
-        if "Does the span use" in user:
+        if "SPAN:\n" in user:
             body = user.split("SPAN:", 1)[1]
             return self._wrap(json.dumps({"mentions_proxy": bool(re.search(r"neighbou?rhood|\[NAME\]|\[ZIP\]", body))}), system, user)
         cs = int(re.search(r"Credit score \(FICO\): (\d+)", user).group(1))

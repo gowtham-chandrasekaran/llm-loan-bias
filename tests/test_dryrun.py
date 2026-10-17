@@ -27,7 +27,7 @@ def test_full_mock_dry_run(tmp_path):
     run_judge(rd)
     R = analyze(rd, n_perm=200)
     assert R["excluded_from_confirmatory"] and R["parse_rate"] == 1.0 and len(R["holm"]) == 8 and "glmer_confirmatory_name" in R
-    LB.PRIVATE = str(tmp_path / "private")   # never touch the real private store from tests
+    assert LB.PRIVATE.startswith(str(tmp_path))   # conftest redirects the private store into a throw-away dir
     paths, kp = LB.export(rd, str(tmp_path / "labeling"))
     import pandas as pd
     key = json.load(open(kp))

@@ -101,14 +101,14 @@ REJUDGE_STATE = "rejudge_m4_v2_state.json"
 
 def m4_span_pool(run_dir):
     """All judged spans in a run, with 15.8.3 filtering stats. Dedup is across the run on normalized redacted text."""
-    from .blind import filter_spans, has_substantive_placeholder
+    from .blind import filter_spans_random, has_substantive_placeholder, reredact
     spans = []
     for l in open(os.path.join(run_dir, "judgments.jsonl")):
         j = json.loads(l)
         for i, s in enumerate(j["spans"]):
-            spans.append({"internal_id": f"{j['item_id']}#s{i}", "call_id": j["call_id"], "span_redacted": s["span_redacted"],
+            spans.append({"internal_id": f"{j['item_id']}#s{i}", "call_id": j["call_id"], "span_redacted": reredact(s["span_redacted"]),
                           "old_judge": s.get("mentions_proxy")})
-    kept, n_sal, n_dup = filter_spans(spans)
+    kept, n_sal, n_dup = filter_spans_random(spans, seed=15820)   # 15.8.4 as revised: random keep, judge labels ignored
     return kept, {"spans_total": len(spans), "salutation_only_dropped": n_sal, "duplicates_dropped": n_dup, "unique_substantive": len(kept),
                   "substantive_with_placeholder": sum(has_substantive_placeholder(s["span_redacted"]) for s in kept)}
 
@@ -146,3 +146,33 @@ def submit_m4_rejudge(run_dir, allow_paid=False):
     br = BatchRun(run_dir, st["meta"]["config"], allow_paid, state_name=REJUDGE_STATE, vendors=[st["meta"]["config"]["judge"]["vendor"]])
     br.loop(st["meta"]["config"].get("poll_seconds", 60), write=False)
     return os.path.join(run_dir, REJUDGE_STATE)
+
+
+# ---- 15.8.4 (6): hedging re-score with the rubric-v1.2 prompt (prepared offline; submission is a separate, paid step)
+REJUDGE_HEDGING_STATE = "rejudge_hedging_v3_state.json"
+
+def prepare_hedging_rejudge(run_dir, constructed=None, max_out=300, exp_out=60):
+    """Requests for every setup-3 deny letter in the pilot pool (re-redacted, salutation normalized) plus constructed
+    letters; written as a BatchRun state file, all 'pending'. Not submitted. Returns call count and cost estimate."""
+    from .budget import call_cost
+    from .prompts import JUDGE_HEDGING_VERSION, judge_hedging
+    from .labels import item_pool
+    from .labels_v21 import normalize_salutation, load_constructed
+    from .blind import reredact
+    meta = json.load(open(os.path.join(run_dir, "run_meta.json"))); cfg = meta["config"]; j = cfg["judge"]
+    pool = item_pool(run_dir); h = pool[pool.task == "hedging"]
+    letters = [(r.internal_id, normalize_salutation(reredact(r.text))) for r in h.itertuples()]
+    letters += [(f"constructed:{cid}", normalize_salutation(reredact(t))) for cid, t in (constructed if constructed is not None else load_constructed())]
+    prices = load_prices(P("configs", "prices.yaml")); reqs = {}; e = w = 0.0
+    for order, (iid, txt) in enumerate(letters):
+        sysm, user = judge_hedging(txt); cid = "m1bv3_" + hashlib.sha256(iid.encode()).hexdigest()[:20]
+        reqs[cid] = {"cid": cid, "order": order, "vendor": j["vendor"], "model": j["model"], "effort": j.get("effort"), "bias": None,
+                     "system": sysm, "user": user, "tools": False, "max_out": max_out, "round": 1, "history": None, "status": "pending",
+                     "usage": [0, 0, 0], "tool_calls": [], "rec": {"internal_id": iid}}
+        e += call_cost(prices, j["vendor"], j["model"], (len(sysm) + len(user)) // 4, exp_out, batch=True)
+        w += call_cost(prices, j["vendor"], j["model"], (len(sysm) + len(user)) // 3, max_out, batch=True)
+    json.dump({"meta": {"run_id": meta["run_id"], "kind": "hedging_rejudge", "prompt_version": JUDGE_HEDGING_VERSION, "config": cfg,
+                        "submitted": False}, "trim": None, "requests": reqs, "batches": {}}, open(os.path.join(run_dir, REJUDGE_HEDGING_STATE), "w"), default=str)
+    return {"calls": len(reqs), "pool_letters": len(h), "constructed": len(letters) - len(h), "model": j["model"], "effort": j.get("effort"),
+            "est_cost_usd_expected": round(e, 4), "est_cost_usd_worst_case": round(w, 4), "submitted": False,
+            "state_file": os.path.join(run_dir, REJUDGE_HEDGING_STATE)}

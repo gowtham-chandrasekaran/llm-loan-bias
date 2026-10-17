@@ -32,3 +32,6 @@ HMDA year: 2024 Snapshot/public data via FFIEC Data Browser (filtered query: act
   traits.tsv sha256 f753a9fa269729c173d48db35fd853df5d1f5072e03f4e3ce6545d9d31c3164f.
 - SSA baby names via CRAN babynames 1.0.1 (https://cloud.r-project.org/src/contrib/babynames_1.0.1.tar.gz, retrieved 2026-10-12, sha256 70d8841a8dcd6e05ca9bd4935404352661c418342aa3f40bf8926366a96997bd; SSA 1880-2017). ssa.gov returned 403 (Access Denied) to our egress. Aggregated to data/raw/ssa_name_decade.csv for era matching.
 - Candidate (not integrated): Vaseiezadeh et al. wba.csv, https://osf.io/download/7yn9d/, sha256 8d29a85788c47a57045bb358d9791e8ecf8d0f63dad2d7f6f43bf35de30b9d5c.
+
+## Gazetteer (15.8.4, Oct 17 2026)
+Census 2020 Gazetteer place + county files (www2.census.gov/geo/docs/maps-data/data/gazetteer/2020_Gazetteer/2020_Gaz_place_national.zip, 2020_Gaz_counties_national.zip) -> data/processed/gazetteer_de_md_pa.csv (DE/MD/PA, LSAD suffix stripped; common_word = curated context-only list; place_supplement = USPS localities without a Census place, e.g. Hunt Valley).

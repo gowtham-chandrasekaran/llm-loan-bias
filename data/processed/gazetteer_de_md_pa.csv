@@ -1,0 +1,2555 @@
+state,geoid,name,kind,common_word
+DE,10001,Kent County,county,False
+DE,10003,New Castle County,county,False
+DE,10005,Sussex County,county,False
+MD,24001,Allegany County,county,False
+MD,24003,Anne Arundel County,county,False
+MD,24005,Baltimore County,county,False
+MD,24510,Baltimore city,county,False
+MD,24009,Calvert County,county,False
+MD,24011,Caroline County,county,False
+MD,24013,Carroll County,county,False
+MD,24015,Cecil County,county,False
+MD,24017,Charles County,county,False
+MD,24019,Dorchester County,county,False
+MD,24021,Frederick County,county,False
+MD,24023,Garrett County,county,False
+MD,24025,Harford County,county,False
+MD,24027,Howard County,county,False
+MD,24029,Kent County,county,False
+MD,24031,Montgomery County,county,False
+MD,24033,Prince George's County,county,False
+MD,24035,Queen Anne's County,county,False
+MD,24039,Somerset County,county,False
+MD,24037,St. Mary's County,county,False
+MD,24041,Talbot County,county,False
+MD,24043,Washington County,county,False
+MD,24045,Wicomico County,county,False
+MD,24047,Worcester County,county,False
+PA,42001,Adams County,county,False
+PA,42003,Allegheny County,county,False
+PA,42005,Armstrong County,county,False
+PA,42007,Beaver County,county,False
+PA,42009,Bedford County,county,False
+PA,42011,Berks County,county,False
+PA,42013,Blair County,county,False
+PA,42015,Bradford County,county,False
+PA,42017,Bucks County,county,False
+PA,42019,Butler County,county,False
+PA,42021,Cambria County,county,False
+PA,42023,Cameron County,county,False
+PA,42025,Carbon County,county,False
+PA,42027,Centre County,county,False
+PA,42029,Chester County,county,False
+PA,42031,Clarion County,county,False
+PA,42033,Clearfield County,county,False
+PA,42035,Clinton County,county,False
+PA,42037,Columbia County,county,False
+PA,42039,Crawford County,county,False
+PA,42041,Cumberland County,county,False
+PA,42043,Dauphin County,county,False
+PA,42045,Delaware County,county,False
+PA,42047,Elk County,county,False
+PA,42049,Erie County,county,False
+PA,42051,Fayette County,county,False
+PA,42053,Forest County,county,False
+PA,42055,Franklin County,county,False
+PA,42057,Fulton County,county,False
+PA,42059,Greene County,county,False
+PA,42061,Huntingdon County,county,False
+PA,42063,Indiana County,county,False
+PA,42065,Jefferson County,county,False
+PA,42067,Juniata County,county,False
+PA,42069,Lackawanna County,county,False
+PA,42071,Lancaster County,county,False
+PA,42073,Lawrence County,county,False
+PA,42075,Lebanon County,county,False
+PA,42077,Lehigh County,county,False
+PA,42079,Luzerne County,county,False
+PA,42081,Lycoming County,county,False
+PA,42083,McKean County,county,False
+PA,42085,Mercer County,county,False
+PA,42087,Mifflin County,county,False
+PA,42089,Monroe County,county,False
+PA,42091,Montgomery County,county,False
+PA,42093,Montour County,county,False
+PA,42095,Northampton County,county,False
+PA,42097,Northumberland County,county,False
+PA,42099,Perry County,county,False
+PA,42101,Philadelphia County,county,False
+PA,42103,Pike County,county,False
+PA,42105,Potter County,county,False
+PA,42107,Schuylkill County,county,False
+PA,42109,Snyder County,county,False
+PA,42111,Somerset County,county,False
+PA,42113,Sullivan County,county,False
+PA,42115,Susquehanna County,county,False
+PA,42117,Tioga County,county,False
+PA,42119,Union County,county,False
+PA,42121,Venango County,county,False
+PA,42123,Warren County,county,False
+PA,42125,Washington County,county,False
+PA,42127,Wayne County,county,False
+PA,42129,Westmoreland County,county,False
+PA,42131,Wyoming County,county,False
+PA,42133,York County,county,False
+DE,1001400,Arden,place,False
+DE,1001530,Ardencroft,place,False
+DE,1001660,Ardentown,place,False
+DE,1004130,Bear,place,True
+DE,1004650,Bellefonte,place,False
+DE,1005690,Bethany Beach,place,False
+DE,1005820,Bethel,place,False
+DE,1006730,Blades,place,False
+DE,1007250,Bowers,place,False
+DE,1008680,Bridgeville,place,False
+DE,1009850,Brookside,place,False
+DE,1010760,Camden,place,False
+DE,1014660,Cheswold,place,False
+DE,1015310,Claymont,place,False
+DE,1015440,Clayton,place,False
+DE,1018950,Dagsboro,place,False
+DE,1019730,Delaware City,place,False
+DE,1020380,Delmar,place,False
+DE,1020900,Dewey Beach,place,False
+DE,1021200,Dover,place,False
+DE,1021387,Dover Base Housing,place,False
+DE,1023240,Edgemoor,place,False
+DE,1024020,Ellendale,place,False
+DE,1024540,Elsmere,place,False
+DE,1025840,Farmington,place,False
+DE,1026620,Felton,place,False
+DE,1026880,Fenwick Island,place,False
+DE,1028310,Frankford,place,False
+DE,1028440,Frederica,place,False
+DE,1029090,Georgetown,place,False
+DE,1029350,Glasgow,place,True
+DE,1031430,Greenville,place,False
+DE,1031560,Greenwood,place,False
+DE,1033120,Harrington,place,False
+DE,1033250,Hartly,place,False
+DE,1033900,Henlopen Acres,place,False
+DE,1034810,Highland Acres,place,False
+DE,1035850,Hockessin,place,False
+DE,1036760,Houston,place,True
+DE,1038710,Kent Acres,place,False
+DE,1039100,Kenton,place,False
+DE,1041310,Laurel,place,False
+DE,1041700,Leipsic,place,False
+DE,1041830,Lewes,place,False
+DE,1042480,Lincoln,place,True
+DE,1042870,Little Creek,place,False
+DE,1043245,Long Neck,place,False
+DE,1044430,Magnolia,place,False
+DE,1047030,Middletown,place,False
+DE,1047420,Milford,place,False
+DE,1047940,Millsboro,place,False
+DE,1048200,Millville,place,False
+DE,1048330,Milton,place,False
+DE,1050800,New Castle,place,False
+DE,1050670,Newark,place,False
+DE,1051190,Newport,place,False
+DE,1052490,North Star,place,False
+DE,1053920,Ocean View,place,False
+DE,1054050,Odessa,place,False
+DE,1056490,Pike Creek,place,False
+DE,1056500,Pike Creek Valley,place,False
+DE,1058600,Port Penn,place,False
+DE,1060290,Rehoboth Beach,place,False
+DE,1061265,Rising Sun-Lebanon,place,False
+DE,1061480,Riverview,place,False
+DE,1061720,Rodney Village,place,False
+DE,1064320,Seaford,place,False
+DE,1064840,Selbyville,place,False
+DE,1067050,Slaughter Beach,place,False
+DE,1067310,Smyrna,place,False
+DE,1067700,South Bethany,place,False
+DE,1063800,St. Georges,place,False
+DE,1072510,Townsend,place,False
+DE,1074330,Viola,place,False
+DE,1077580,Wilmington,place,False
+DE,1077840,Wilmington Manor,place,False
+DE,1080830,Woodside,place,False
+DE,1080895,Woodside East,place,False
+DE,1081350,Wyoming,place,False
+MD,2400125,Aberdeen,place,False
+MD,2400175,Aberdeen Proving Ground,place,False
+MD,2400200,Abingdon,place,False
+MD,2400225,Accident,place,True
+MD,2400250,Accokeek,place,False
+MD,2400350,Adamstown,place,False
+MD,2400400,Adelphi,place,False
+MD,2400712,Algonquin,place,False
+MD,2400800,Allen,place,True
+MD,2401450,Andrews AFB,place,False
+MD,2401600,Annapolis,place,False
+MD,2401635,Annapolis Neck,place,False
+MD,2401750,Antietam,place,False
+MD,2401925,Aquasco,place,False
+MD,2401975,Arbutus,place,False
+MD,2402025,Arden on the Severn,place,False
+MD,2402275,Arnold,place,True
+MD,2402762,Ashton-Sandy Spring,place,False
+MD,2402825,Aspen Hill,place,False
+MD,2403500,Baden,place,False
+MD,2403514,Bagtown,place,False
+MD,2403575,Bakersville,place,False
+MD,2403800,Ballenger Creek,place,False
+MD,2404000,Baltimore,place,False
+MD,2404050,Baltimore Highlands,place,False
+MD,2404250,Barclay,place,False
+MD,2404475,Barnesville,place,False
+MD,2404525,Barrelville,place,False
+MD,2404625,Barton,place,False
+MD,2404650,Bartonsville,place,False
+MD,2405250,Beaver Creek,place,False
+MD,2405525,Bel Air,place,False
+MD,2405825,Bel Air North,place,False
+MD,2405950,Bel Air South,place,False
+MD,2406400,Beltsville,place,False
+MD,2406550,Benedict,place,False
+MD,2406662,Bensville,place,False
+MD,2406800,Berlin,place,True
+MD,2406925,Berwyn Heights,place,False
+MD,2407125,Bethesda,place,False
+MD,2407200,Betterton,place,False
+MD,2407285,Bier,place,False
+MD,2407375,Big Pool,place,False
+MD,2407400,Big Spring,place,False
+MD,2407625,Bishopville,place,False
+MD,2407675,Bivalve,place,False
+MD,2407850,Bladensburg,place,False
+MD,2408050,Bloomington,place,False
+MD,2408625,Boonsboro,place,False
+MD,2408775,Bowie,place,False
+MD,2408800,Bowleys Quarters,place,False
+MD,2408850,Bowling Green,place,False
+MD,2408862,Bowmans Addition,place,False
+MD,2409100,Braddock Heights,place,False
+MD,2409325,Brandywine,place,False
+MD,2409400,Breathedsville,place,False
+MD,2409500,Brentwood,place,False
+MD,2410150,Brock Hall,place,False
+MD,2410225,Brookeville,place,False
+MD,2410475,Brooklyn Park,place,False
+MD,2410500,Brookmont,place,False
+MD,2410575,Brookview,place,False
+MD,2410650,Broomes Island,place,False
+MD,2410737,Brown Station,place,False
+MD,2410800,Brownsville,place,False
+MD,2410900,Brunswick,place,False
+MD,2410925,Bryans Road,place,False
+MD,2410950,Bryantown,place,False
+MD,2411050,Buckeystown,place,False
+MD,2411400,Burkittsville,place,False
+MD,2411550,Burnt Mills,place,False
+MD,2411750,Burtonsville,place,False
+MD,2411900,Butlertown,place,False
+MD,2412075,Cabin John,place,False
+MD,2412150,California,place,True
+MD,2412175,Callaway,place,False
+MD,2412300,Calvert Beach,place,False
+MD,2412350,Calverton,place,False
+MD,2412400,Cambridge,place,True
+MD,2412600,Camp Springs,place,False
+MD,2412912,Cape St. Claire,place,False
+MD,2413000,Capitol Heights,place,False
+MD,2413225,Carlos,place,True
+MD,2413325,Carney,place,False
+MD,2414125,Catonsville,place,False
+MD,2414225,Cavetown,place,False
+MD,2414300,Cearfoss,place,False
+MD,2414325,Cecilton,place,False
+MD,2414550,Cedar Heights,place,False
+MD,2414800,Cedarville,place,False
+MD,2414950,Centreville,place,False
+MD,2415075,Chance,place,True
+MD,2415400,Charlestown,place,False
+MD,2415475,Charlotte Hall,place,False
+MD,2415500,Charlton,place,False
+MD,2415925,Chesapeake Beach,place,False
+MD,2415950,Chesapeake City,place,False
+MD,2416025,Chesapeake Landing,place,False
+MD,2416050,Chesapeake Ranch Estates,place,False
+MD,2416125,Chester,place,False
+MD,2416225,Chestertown,place,False
+MD,2416550,Cheverly,place,False
+MD,2416620,Chevy Chase,place,False
+MD,2416720,Chevy Chase Section Five,place,False
+MD,2416730,Chevy Chase Section Three,place,False
+MD,2416775,Chevy Chase View,place,False
+MD,2416787,Chevy Chase Village,place,False
+MD,2416800,Chewsville,place,False
+MD,2416875,Chillum,place,False
+MD,2417000,Choptank,place,False
+MD,2417050,Church Creek,place,False
+MD,2417100,Church Hill,place,False
+MD,2417350,Clarksburg,place,False
+MD,2417475,Clarysville,place,False
+MD,2417600,Clear Spring,place,False
+MD,2417900,Clinton,place,True
+MD,2418150,Cloverly,place,False
+MD,2418200,Cobb Island,place,False
+MD,2418250,Cockeysville,place,False
+MD,2418475,Colesville,place,False
+MD,2418750,College Park,place,True
+MD,2418850,Colmar Manor,place,False
+MD,2419125,Columbia,place,True
+MD,2419825,Coral Hills,place,False
+MD,2419900,Cordova,place,False
+MD,2419975,Corriganville,place,False
+MD,2420050,Cottage City,place,False
+MD,2420500,Crellin,place,False
+MD,2420525,Cresaptown,place,False
+MD,2420775,Crisfield,place,False
+MD,2420875,Crofton,place,False
+MD,2420925,Croom,place,False
+MD,2421075,Crownsville,place,False
+MD,2421150,Crumpton,place,False
+MD,2421325,Cumberland,place,False
+MD,2421475,Damascus,place,False
+MD,2421550,Dames Quarter,place,False
+MD,2421675,Danville,place,False
+MD,2421750,Dargan,place,False
+MD,2421800,Darlington,place,False
+MD,2421825,Darnestown,place,False
+MD,2421925,Dawson,place,False
+MD,2422100,Deal Island,place,False
+MD,2422050,Deale,place,False
+MD,2422275,Deer Park,place,False
+MD,2422600,Delmar,place,False
+MD,2422725,Denton,place,False
+MD,2422775,Derwood,place,False
+MD,2422825,Detmold,place,False
+MD,2423025,District Heights,place,False
+MD,2423500,Downsville,place,False
+MD,2423700,Drum Point,place,False
+MD,2423975,Dundalk,place,False
+MD,2424050,Dunkirk,place,False
+MD,2424200,Eagle Harbor,place,False
+MD,2424250,Eakles Mill,place,False
+MD,2424450,East New Market,place,False
+MD,2424650,East Riverdale,place,False
+MD,2424475,Easton,place,False
+MD,2424825,Eckhart Mines,place,False
+MD,2424850,Eden,place,False
+MD,2424925,Edesville,place,False
+MD,2424950,Edgemere,place,False
+MD,2425000,Edgemont,place,False
+MD,2425050,Edgewater,place,False
+MD,2425150,Edgewood,place,False
+MD,2425425,Edmonston,place,False
+MD,2425575,Eldersburg,place,False
+MD,2425600,Eldorado,place,False
+MD,2425750,Elkridge,place,False
+MD,2425800,Elkton,place,False
+MD,2425925,Ellerslie,place,False
+MD,2426000,Ellicott City,place,False
+MD,2426025,Elliott,place,False
+MD,2426200,Emmitsburg,place,False
+MD,2426550,Ernstville,place,False
+MD,2426600,Essex,place,False
+MD,2427250,Fairland,place,False
+MD,2427325,Fairlee,place,False
+MD,2427375,Fairmount,place,False
+MD,2427400,Fairmount Heights,place,False
+MD,2427425,Fairplay,place,False
+MD,2427500,Fairview,place,True
+MD,2427580,Fairwood,place,False
+MD,2427700,Fallston,place,False
+MD,2427900,Federalsburg,place,False
+MD,2428075,Ferndale,place,False
+MD,2428275,Finzel,place,False
+MD,2428300,Fishing Creek,place,False
+MD,2428425,Flintstone,place,False
+MD,2428512,Flower Hill,place,False
+MD,2428640,Forest Glen,place,False
+MD,2428725,Forest Heights,place,False
+MD,2429000,Forestville,place,False
+MD,2429400,Fort Meade,place,False
+MD,2429450,Fort Ritchie,place,False
+MD,2429525,Fort Washington,place,False
+MD,2429712,Fountainhead-Orchard Hills,place,False
+MD,2429790,Four Corners,place,True
+MD,2430100,Franklin,place,True
+MD,2430325,Frederick,place,False
+MD,2430567,Frenchtown-Rumbly,place,False
+MD,2430575,Friendly,place,True
+MD,2430650,Friendship,place,True
+MD,2430800,Friendship Heights Village,place,False
+MD,2430850,Friendsville,place,False
+MD,2430900,Frostburg,place,False
+MD,2430950,Fruitland,place,False
+MD,2431025,Fulton,place,False
+MD,2431100,Funkstown,place,False
+MD,2431175,Gaithersburg,place,False
+MD,2431225,Galena,place,False
+MD,2431250,Galestown,place,False
+MD,2431275,Galesville,place,False
+MD,2431350,Gambrills,place,False
+MD,2431400,Gapland,place,False
+MD,2431525,Garrett Park,place,False
+MD,2431575,Garretts Mill,place,False
+MD,2431625,Garrison,place,False
+MD,2431875,Georgetown,place,False
+MD,2432025,Germantown,place,False
+MD,2432175,Gilmore,place,False
+MD,2432250,Girdletree,place,False
+MD,2432350,Glassmanor,place,False
+MD,2432650,Glen Burnie,place,False
+MD,2432900,Glen Echo,place,False
+MD,2432500,Glenarden,place,False
+MD,2433250,Glenmont,place,False
+MD,2433400,Glenn Dale,place,False
+MD,2433850,Golden Beach,place,False
+MD,2433950,Goldsboro,place,False
+MD,2434150,Gorman,place,False
+MD,2434350,Graceham,place,False
+MD,2434425,Grahamtown,place,False
+MD,2434525,Grantsville,place,False
+MD,2434550,Grasonville,place,False
+MD,2435412,Green Valley,place,True
+MD,2434775,Greenbelt,place,False
+MD,2435200,Greensboro,place,False
+MD,2435225,Greensburg,place,False
+MD,2436075,Hagerstown,place,False
+MD,2436125,Halfway,place,True
+MD,2436500,Hampstead,place,False
+MD,2436512,Hampton,place,False
+MD,2436600,Hancock,place,False
+MD,2437600,Havre de Grace,place,False
+MD,2437875,Hebron,place,False
+MD,2437925,Henderson,place,False
+MD,2438025,Herald Harbor,place,False
+MD,2438437,Highfield-Cascade,place,False
+MD,2438475,Highland,place,True
+MD,2438500,Highland Beach,place,False
+MD,2438850,Hillandale,place,False
+MD,2438975,Hillcrest Heights,place,False
+MD,2439175,Hillsboro,place,False
+MD,2440200,Honeygo,place,False
+MD,2440700,Hughesville,place,False
+MD,2441025,Huntingtown,place,False
+MD,2441125,Hurlock,place,False
+MD,2441175,Hutton,place,False
+MD,2441250,Hyattsville,place,False
+MD,2441475,Ilchester,place,False
+MD,2441500,Indian Head,place,False
+MD,2441700,Indian Springs,place,False
+MD,2442325,Jarrettsville,place,False
+MD,2442350,Jefferson,place,True
+MD,2442450,Jennings,place,False
+MD,2442550,Jessup,place,False
+MD,2442575,Jesterville,place,False
+MD,2442875,Joppatowne,place,False
+MD,2442950,Jugtown,place,False
+MD,2443100,Keedysville,place,False
+MD,2443200,Kemp Mill,place,False
+MD,2443280,Kemps Mill,place,False
+MD,2443475,Kennedyville,place,False
+MD,2443500,Kensington,place,False
+MD,2443725,Kent Narrows,place,False
+MD,2443900,Kettering,place,False
+MD,2444325,Kingstown,place,False
+MD,2444350,Kingsville,place,False
+MD,2444450,Kitzmiller,place,False
+MD,2444525,Klondike,place,False
+MD,2444715,Konterra,place,False
+MD,2445750,La Plata,place,False
+MD,2446075,La Vale,place,False
+MD,2444817,Lake Arbor,place,False
+MD,2444975,Lake Shore,place,False
+MD,2445325,Landover,place,False
+MD,2445400,Landover Hills,place,False
+MD,2445525,Langley Park,place,False
+MD,2445550,Lanham,place,False
+MD,2445650,Lansdowne,place,False
+MD,2445825,Largo,place,False
+MD,2445900,Laurel,place,False
+MD,2446150,Layhill,place,False
+MD,2446250,Laytonsville,place,False
+MD,2446375,Leisure World,place,False
+MD,2446400,Leitersburg,place,False
+MD,2446475,Leonardtown,place,False
+MD,2446650,Lewistown,place,False
+MD,2446725,Lexington Park,place,False
+MD,2446800,Libertytown,place,False
+MD,2447040,Linganore,place,False
+MD,2447125,Linthicum,place,False
+MD,2447250,Lisbon,place,False
+MD,2447275,Little Orleans,place,False
+MD,2447525,Loch Lynn Heights,place,False
+MD,2447450,Lochearn,place,False
+MD,2447875,Lonaconing,place,False
+MD,2448025,Long Beach,place,False
+MD,2448775,Luke,place,True
+MD,2448800,Lusby,place,False
+MD,2448875,Lutherville,place,False
+MD,2449700,Madison,place,True
+MD,2449950,Manchester,place,True
+MD,2450375,Mapleville,place,False
+MD,2450525,Mardela Springs,place,False
+MD,2450680,Marlboro Meadows,place,False
+MD,2450685,Marlboro Village,place,False
+MD,2450750,Marlow Heights,place,False
+MD,2450775,Marlton,place,False
+MD,2450965,Martin's Additions,place,False
+MD,2451025,Marydel,place,False
+MD,2451075,Maryland City,place,False
+MD,2451125,Maryland Park,place,False
+MD,2451425,Maugansville,place,False
+MD,2451575,Mayo,place,False
+MD,2451587,Mays Chapel,place,False
+MD,2449325,McCoole,place,False
+MD,2451800,Mechanicsville,place,False
+MD,2451940,Melwood,place,False
+MD,2451945,Mercersville,place,False
+MD,2452300,Middle River,place,False
+MD,2452225,Middleburg,place,False
+MD,2452425,Middletown,place,False
+MD,2452475,Midland,place,False
+MD,2452525,Midlothian,place,False
+MD,2452562,Milford Mill,place,False
+MD,2452825,Millington,place,False
+MD,2452975,Mitchellville,place,False
+MD,2453100,Monrovia,place,False
+MD,2453325,Montgomery Village,place,False
+MD,2453625,Morningside,place,False
+MD,2453700,Moscow,place,True
+MD,2453750,Mount Aetna,place,False
+MD,2453875,Mount Airy,place,False
+MD,2453925,Mount Briar,place,False
+MD,2454125,Mount Lena,place,False
+MD,2454275,Mount Rainier,place,False
+MD,2454325,Mount Savage,place,False
+MD,2454375,Mount Vernon,place,False
+MD,2453800,Mountain Lake Park,place,False
+MD,2454875,Myersville,place,False
+MD,2454925,Nanticoke,place,False
+MD,2454930,Nanticoke Acres,place,False
+MD,2455000,National,place,True
+MD,2455018,National Harbor,place,True
+MD,2455050,Naval Academy,place,True
+MD,2455400,New Carrollton,place,False
+MD,2455650,New Market,place,True
+MD,2455925,New Windsor,place,False
+MD,2455325,Newark,place,False
+MD,2455950,Nikep,place,False
+MD,2456300,North Beach,place,False
+MD,2456337,North Bethesda,place,False
+MD,2456375,North Brentwood,place,False
+MD,2456400,North Chevy Chase,place,False
+MD,2456450,North East,place,True
+MD,2456712,North Kensington,place,False
+MD,2456725,North Laurel,place,False
+MD,2456875,North Potomac,place,False
+MD,2457650,Oakland,place,False
+MD,2458215,Ocean,place,True
+MD,2458225,Ocean City,place,False
+MD,2458275,Ocean Pines,place,False
+MD,2458300,Odenton,place,False
+MD,2458775,Oldtown,place,False
+MD,2458900,Olney,place,False
+MD,2459325,Overlea,place,False
+MD,2459375,Owings,place,False
+MD,2459425,Owings Mills,place,False
+MD,2459450,Oxford,place,True
+MD,2459500,Oxon Hill,place,False
+MD,2459787,Paramount-Long Meadow,place,False
+MD,2460275,Parkville,place,False
+MD,2460325,Parole,place,False
+MD,2460425,Parsonsburg,place,False
+MD,2460475,Pasadena,place,False
+MD,2460770,Pecktonville,place,False
+MD,2460950,Peppermill Village,place,False
+MD,2460975,Perry Hall,place,False
+MD,2461075,Perryman,place,False
+MD,2461150,Perryville,place,False
+MD,2461400,Pikesville,place,False
+MD,2461700,Pinesburg,place,False
+MD,2461875,Piney Point,place,False
+MD,2462025,Pittsville,place,False
+MD,2462100,Pleasant Grove,place,False
+MD,2462175,Pleasant Hills,place,False
+MD,2462475,Pocomoke City,place,False
+MD,2462575,Point of Rocks,place,False
+MD,2462675,Pomfret,place,False
+MD,2462775,Pondsville,place,False
+MD,2462850,Poolesville,place,False
+MD,2463075,Port Deposit,place,False
+MD,2463225,Port Tobacco Village,place,False
+MD,2463300,Potomac,place,False
+MD,2463375,Potomac Heights,place,False
+MD,2463425,Potomac Park,place,False
+MD,2463725,Powellville,place,False
+MD,2463825,Preston,place,False
+MD,2463950,Prince Frederick,place,False
+MD,2464000,Princess Anne,place,False
+MD,2464375,Pylesville,place,False
+MD,2464475,Quantico,place,False
+MD,2464495,Queen Anne,place,False
+MD,2464568,Queensland,place,False
+MD,2464600,Queenstown,place,False
+MD,2464950,Randallstown,place,False
+MD,2465150,Rawlings,place,False
+MD,2465312,Redland,place,False
+MD,2465550,Reid,place,False
+MD,2465600,Reisterstown,place,False
+MD,2466000,Ridgely,place,False
+MD,2466150,Ringgold,place,False
+MD,2466275,Rising Sun,place,False
+MD,2466400,Riva,place,False
+MD,2466635,Riverdale Park,place,False
+MD,2466762,Riverside,place,False
+MD,2466850,Riviera Beach,place,False
+MD,2467000,Robinwood,place,False
+MD,2467400,Rock Hall,place,False
+MD,2467500,Rock Point,place,False
+MD,2467675,Rockville,place,False
+MD,2467950,Rohrersville,place,False
+MD,2468265,Romancoke,place,False
+MD,2468300,Rosaryville,place,False
+MD,2468400,Rosedale,place,False
+MD,2468600,Rosemont,place,False
+MD,2468700,Rossville,place,False
+MD,2469200,Sabillasville,place,False
+MD,2469925,Salisbury,place,False
+MD,2470300,San Mar,place,False
+MD,2470175,Sandy Hook,place,False
+MD,2470475,Savage,place,True
+MD,2470525,Scaggsville,place,False
+MD,2470775,Seabrook,place,False
+MD,2470850,Seat Pleasant,place,False
+MD,2470900,Secretary,place,True
+MD,2471150,Severn,place,False
+MD,2471200,Severna Park,place,False
+MD,2471450,Shady Side,place,False
+MD,2471460,Shaft,place,False
+MD,2471600,Sharpsburg,place,False
+MD,2471650,Sharptown,place,False
+MD,2472350,Silver Hill,place,False
+MD,2472450,Silver Spring,place,False
+MD,2472887,Smith Island,place,False
+MD,2472900,Smithsburg,place,False
+MD,2473075,Snow Hill,place,False
+MD,2473325,Solomons,place,False
+MD,2473350,Somerset,place,False
+MD,2473600,South Kensington,place,False
+MD,2473650,South Laurel,place,False
+MD,2474050,Spencerville,place,False
+MD,2474350,Spring Gap,place,False
+MD,2474560,Spring Ridge,place,False
+MD,2474282,Springdale,place,False
+MD,2469425,St. George Island,place,False
+MD,2469550,St. James,place,False
+MD,2469675,St. Leonard,place,False
+MD,2469825,St. Michaels,place,False
+MD,2475025,Stevensville,place,False
+MD,2475150,Still Pond,place,False
+MD,2475200,Stockton,place,False
+MD,2475650,Sudlersville,place,False
+MD,2475725,Suitland,place,False
+MD,2475810,Summerfield,place,False
+MD,2476450,Swanton,place,False
+MD,2476550,Sykesville,place,False
+MD,2476650,Takoma Park,place,False
+MD,2476675,Tall Timbers,place,False
+MD,2476725,Taneytown,place,False
+MD,2476925,Taylors Island,place,False
+MD,2477100,Temple Hills,place,False
+MD,2477200,Templeville,place,False
+MD,2477262,Ten Mile Creek,place,False
+MD,2477825,Thurmont,place,False
+MD,2477912,Tilghman Island,place,False
+MD,2477925,Tilghmanton,place,False
+MD,2478050,Timonium,place,False
+MD,2478120,Tolchester,place,False
+MD,2478425,Towson,place,False
+MD,2478575,Trappe,place,False
+MD,2478650,Travilah,place,False
+MD,2478705,Trego-Rohrersville Station,place,False
+MD,2479225,Tyaskin,place,False
+MD,2479350,Union Bridge,place,False
+MD,2479675,University Park,place,True
+MD,2479875,Upper Marlboro,place,False
+MD,2479900,Urbana,place,False
+MD,2480075,Vale Summit,place,False
+MD,2480600,Vienna,place,False
+MD,2481175,Waldorf,place,False
+MD,2481250,Walker Mill,place,False
+MD,2481275,Walkersville,place,False
+MD,2481675,Washington Grove,place,False
+MD,2481925,Waterview,place,False
+MD,2482625,West Denton,place,False
+MD,2483025,West Laurel,place,False
+MD,2483225,West Ocean City,place,False
+MD,2483337,West Pocomoke,place,False
+MD,2482750,Westernport,place,False
+MD,2483100,Westminster,place,False
+MD,2483290,Westphalia,place,False
+MD,2483746,Whaleyville,place,False
+MD,2483775,Wheaton,place,False
+MD,2484350,White Marsh,place,False
+MD,2484375,White Oak,place,True
+MD,2484225,Whitehaven,place,False
+MD,2484784,Wildewood,place,False
+MD,2484950,Willards,place,False
+MD,2485100,Williamsport,place,False
+MD,2485175,Williston,place,False
+MD,2485395,Wilson-Conococheague,place,False
+MD,2486275,Woodland,place,False
+MD,2486475,Woodlawn,place,False
+MD,2486710,Woodmore,place,False
+MD,2486750,Woodsboro,place,False
+MD,2487000,Worton,place,False
+MD,2487150,Yarrowsburg,place,False
+MD,2487275,Zihlman,place,False
+PA,4200100,Aaronsburg,place,False
+PA,4200116,Abbottstown,place,False
+PA,4200244,Ackermanville,place,False
+PA,4200332,Adamsburg,place,False
+PA,4200364,Adamstown,place,False
+PA,4200372,Adamsville,place,False
+PA,4200396,Addison,place,False
+PA,4200540,Akron,place,False
+PA,4200572,Alba,place,False
+PA,4200628,Albion,place,False
+PA,4200652,Albrightsville,place,False
+PA,4200660,Alburtis,place,False
+PA,4200676,Aldan,place,False
+PA,4200756,Alexandria,place,False
+PA,4200764,Alfarata,place,False
+PA,4200820,Aliquippa,place,False
+PA,4200924,Alleghenyville,place,False
+PA,4200980,Allenport,place,False
+PA,4201004,Allensville,place,False
+PA,4202000,Allentown,place,False
+PA,4202016,Allenwood,place,False
+PA,4202040,Allison,place,False
+PA,4202056,Allison Park,place,False
+PA,4202072,Allport,place,False
+PA,4202088,Almedia,place,False
+PA,4202128,Alsace Manor,place,False
+PA,4202144,Altamont,place,False
+PA,4202184,Altoona,place,False
+PA,4202216,Alverda,place,False
+PA,4202264,Ambler,place,False
+PA,4202288,Ambridge,place,False
+PA,4202349,Amity Gardens,place,False
+PA,4202416,Ancient Oaks,place,False
+PA,4202608,Annville,place,False
+PA,4202720,Apollo,place,False
+PA,4202752,Applewold,place,False
+PA,4202826,Arcadia University,place,False
+PA,4202832,Archbald,place,False
+PA,4202896,Ardmore,place,False
+PA,4202928,Arendtsville,place,False
+PA,4202968,Aristes,place,False
+PA,4203008,Arlington Heights,place,False
+PA,4203032,Armagh,place,False
+PA,4203088,Arnold,place,True
+PA,4203096,Arnold City,place,False
+PA,4203104,Arnot,place,False
+PA,4203120,Arona,place,False
+PA,4203264,Ashland,place,False
+PA,4203272,Ashley,place,True
+PA,4203296,Ashville,place,False
+PA,4203312,Aspers,place,False
+PA,4203320,Aspinwall,place,False
+PA,4203384,Atglen,place,False
+PA,4203392,Athens,place,False
+PA,4203424,Atkinson Mills,place,False
+PA,4203440,Atlantic,place,True
+PA,4203464,Atlas,place,False
+PA,4203472,Atlasburg,place,False
+PA,4203480,Atwood,place,False
+PA,4203488,Auburn,place,False
+PA,4203544,Audubon,place,False
+PA,4203576,Austin,place,True
+PA,4203608,Avalon,place,False
+PA,4203616,Avella,place,False
+PA,4203632,Avis,place,False
+PA,4203640,Avoca,place,False
+PA,4203648,Avon,place,False
+PA,4203656,Avondale,place,False
+PA,4203676,Avonia,place,False
+PA,4203688,Avonmore,place,False
+PA,4203736,Baden,place,False
+PA,4203768,Baidland,place,False
+PA,4203792,Baileyville,place,False
+PA,4203800,Bainbridge,place,False
+PA,4203816,Bairdford,place,False
+PA,4203864,Bakerstown,place,False
+PA,4203895,Bala Cynwyd,place,False
+PA,4203904,Bald Eagle,place,False
+PA,4203928,Baldwin,place,False
+PA,4203984,Bally,place,False
+PA,4204032,Bangor,place,False
+PA,4204136,Barkeyville,place,False
+PA,4204344,Barrville,place,False
+PA,4204432,Bath,place,True
+PA,4204488,Baumstown,place,False
+PA,4204568,Beallsville,place,False
+PA,4204599,Bear Creek Village,place,False
+PA,4204608,Bear Lake,place,False
+PA,4204616,Bear Rocks,place,False
+PA,4204688,Beaver,place,False
+PA,4204792,Beaver Falls,place,False
+PA,4204816,Beaver Meadows,place,False
+PA,4204824,Beaver Springs,place,False
+PA,4204768,Beaverdale,place,False
+PA,4204832,Beavertown,place,False
+PA,4204896,Bechtelsville,place,False
+PA,4204944,Bedford,place,False
+PA,4204984,Beech Creek,place,False
+PA,4205028,Beech Mountain Lakes,place,False
+PA,4205152,Belfast,place,False
+PA,4205216,Bell Acres,place,False
+PA,4205288,Belle Vernon,place,False
+PA,4205256,Bellefonte,place,False
+PA,4205304,Belleville,place,False
+PA,4205312,Bellevue,place,False
+PA,4205384,Bellwood,place,False
+PA,4205400,Belmont,place,False
+PA,4205504,Ben Avon,place,False
+PA,4205520,Ben Avon Heights,place,False
+PA,4205536,Bendersville,place,False
+PA,4205648,Benson,place,False
+PA,4205672,Bentleyville,place,False
+PA,4205680,Benton,place,False
+PA,4205776,Berlin,place,True
+PA,4205848,Bernville,place,False
+PA,4205856,Berrysburg,place,False
+PA,4205888,Berwick,place,False
+PA,4205904,Berwyn,place,False
+PA,4205936,Bessemer,place,False
+PA,4205976,Bethany,place,False
+PA,4206000,Bethel,place,False
+PA,4206064,Bethel Park,place,False
+PA,4206088,Bethlehem,place,False
+PA,4206171,Beurys Lake,place,False
+PA,4206236,Big Bass Lake,place,False
+PA,4206240,Big Beaver,place,False
+PA,4206344,Big Run,place,False
+PA,4206280,Bigler,place,False
+PA,4206296,Biglerville,place,False
+PA,4206490,Birchwood Lakes,place,False
+PA,4206496,Bird-in-Hand,place,False
+PA,4206504,Birdsboro,place,False
+PA,4206560,Birmingham,place,True
+PA,4206744,Black Lick,place,False
+PA,4206824,Blain,place,False
+PA,4206904,Blairsville,place,False
+PA,4206928,Blakely,place,False
+PA,4206960,Blanchard,place,False
+PA,4206976,Blandburg,place,False
+PA,4206984,Blandon,place,False
+PA,4207000,Blawnox,place,False
+PA,4207040,Bloomfield,place,False
+PA,4207120,Blooming Valley,place,False
+PA,4207128,Bloomsburg,place,False
+PA,4207160,Blossburg,place,False
+PA,4207208,Blue Ball,place,False
+PA,4207224,Blue Bell,place,False
+PA,4207272,Blue Knob,place,False
+PA,4207312,Blue Ridge Summit,place,False
+PA,4207368,Boalsburg,place,False
+PA,4207384,Bobtown,place,False
+PA,4207472,Boiling Springs,place,False
+PA,4207480,Bolivar,place,False
+PA,4207560,Bonneauville,place,False
+PA,4207616,Boothwyn,place,False
+PA,4207688,Boston,place,True
+PA,4207712,Boswell,place,False
+PA,4207800,Bowers,place,False
+PA,4207880,Bowmanstown,place,False
+PA,4207896,Bowmansville,place,False
+PA,4207960,Boyertown,place,False
+PA,4207976,Brackenridge,place,False
+PA,4207992,Braddock,place,False
+PA,4208008,Braddock Hills,place,False
+PA,4208024,Bradenville,place,False
+PA,4208040,Bradford,place,False
+PA,4208064,Bradford Woods,place,False
+PA,4208208,Branchdale,place,False
+PA,4208240,Brandonville,place,False
+PA,4208312,Brave,place,True
+PA,4208392,Breinigsville,place,False
+PA,4208416,Brentwood,place,False
+PA,4208432,Bressler,place,False
+PA,4208472,Briar Creek,place,False
+PA,4208504,Brickerville,place,False
+PA,4208568,Bridgeport,place,False
+PA,4208624,Bridgeville,place,False
+PA,4208632,Bridgewater,place,False
+PA,4208744,Brisbin,place,False
+PA,4208760,Bristol,place,True
+PA,4208819,Brittany Farms-The Highlands,place,False
+PA,4208896,Broad Top City,place,False
+PA,4208960,Brockway,place,False
+PA,4209000,Brodheadsville,place,False
+PA,4209080,Brookhaven,place,False
+PA,4209196,Brooks Mill,place,False
+PA,4209224,Brookville,place,False
+PA,4209248,Broomall,place,False
+PA,4209400,Brownstown,place,False
+PA,4209432,Brownsville,place,False
+PA,4209496,Browntown,place,False
+PA,4209528,Bruin,place,False
+PA,4209696,Bryn Athyn,place,False
+PA,4209728,Bryn Mawr,place,False
+PA,4209896,Buck Run,place,False
+PA,4209792,Buckhorn,place,False
+PA,4210096,Buffington,place,False
+PA,4210128,Bulger,place,False
+PA,4210224,Burgettstown,place,False
+PA,4210240,Burlington,place,False
+PA,4210256,Burnham,place,False
+PA,4210280,Burnside,place,False
+PA,4210464,Butler,place,True
+PA,4210600,Byrnedale,place,False
+PA,4210720,Cairnbrook,place,False
+PA,4210768,California,place,True
+PA,4210792,Callensburg,place,False
+PA,4210800,Callery,place,False
+PA,4210808,Callimont,place,False
+PA,4210816,Caln,place,False
+PA,4210832,Calumet,place,False
+PA,4210912,Cambridge Springs,place,False
+PA,4211000,Camp Hill,place,False
+PA,4210960,Campbelltown,place,False
+PA,4211072,Canadohta Lake,place,False
+PA,4211088,Canan Station,place,False
+PA,4211136,Canoe Creek,place,False
+PA,4211152,Canonsburg,place,False
+PA,4211160,Canton,place,False
+PA,4211232,Carbondale,place,False
+PA,4211272,Carlisle,place,False
+PA,4211280,Carlisle Barracks,place,False
+PA,4211328,Carmichaels,place,False
+PA,4211336,Carnegie,place,False
+PA,4211348,Carnot-Moon,place,False
+PA,4211472,Carroll Valley,place,False
+PA,4211456,Carrolltown,place,False
+PA,4211492,Carson Valley,place,False
+PA,4211544,Casanova,place,False
+PA,4211576,Cashtown,place,False
+PA,4211616,Cassandra,place,False
+PA,4211624,Casselman,place,False
+PA,4211632,Cassville,place,False
+PA,4211648,Castanea,place,False
+PA,4211680,Castle Shannon,place,False
+PA,4211720,Catasauqua,place,False
+PA,4211736,Catawissa,place,False
+PA,4211804,Cecil-Bishop,place,False
+PA,4211836,Cedar Crest,place,False
+PA,4211976,Cementon,place,False
+PA,4212104,Centerport,place,False
+PA,4212184,Centerville,place,False
+PA,4212296,Central City,place,True
+PA,4212312,Centralia,place,False
+PA,4212376,Centre Hall,place,False
+PA,4212424,Cetronia,place,False
+PA,4212440,Chadds Ford,place,False
+PA,4212496,Chalfant,place,False
+PA,4212504,Chalfont,place,False
+PA,4212512,Chalkhill,place,False
+PA,4212536,Chambersburg,place,False
+PA,4212656,Chapman,place,False
+PA,4212704,Charleroi,place,False
+PA,4212768,Charlottsville,place,False
+PA,4212864,Chase,place,True
+PA,4212973,Cheltenham Village,place,False
+PA,4213120,Cherry Tree,place,False
+PA,4213152,Cherry Valley,place,False
+PA,4213168,Cherryville,place,False
+PA,4213384,Chest Springs,place,False
+PA,4213208,Chester,place,False
+PA,4213232,Chester Heights,place,False
+PA,4213240,Chester Hill,place,False
+PA,4213216,Chesterbrook,place,False
+PA,4213336,Chestnut Hill,place,False
+PA,4213392,Cheswick,place,False
+PA,4213400,Chevy Chase Heights,place,False
+PA,4213408,Chewton,place,False
+PA,4213418,Cheyney University,place,False
+PA,4213440,Chicora,place,False
+PA,4213480,Chinchilla,place,False
+PA,4213512,Christiana,place,False
+PA,4213596,Church Hill,place,False
+PA,4213608,Churchill,place,False
+PA,4213632,Churchtown,place,False
+PA,4213648,Churchville,place,False
+PA,4213704,Clairton,place,False
+PA,4213728,Clappertown,place,False
+PA,4213768,Clarence,place,False
+PA,4213776,Clarendon,place,False
+PA,4213800,Clarion,place,False
+PA,4213832,Clark,place,True
+PA,4213864,Clarks Green,place,False
+PA,4213880,Clarks Summit,place,False
+PA,4213896,Clarksville,place,False
+PA,4213952,Clay,place,True
+PA,4213992,Claysburg,place,False
+PA,4214000,Claysville,place,False
+PA,4214064,Clearfield,place,False
+PA,4214160,Cleona,place,False
+PA,4214264,Clifton Heights,place,False
+PA,4214296,Clinton,place,True
+PA,4214368,Clintondale,place,False
+PA,4214376,Clintonville,place,False
+PA,4214520,Clymer,place,False
+PA,4214568,Coal Center,place,False
+PA,4214584,Coaldale,place,False
+PA,4214640,Coalmont,place,False
+PA,4214656,Coalport,place,False
+PA,4214712,Coatesville,place,False
+PA,4214760,Coburn,place,False
+PA,4214800,Cochranton,place,False
+PA,4214808,Cochranville,place,False
+PA,4214896,Cokeburg,place,False
+PA,4215192,Collegeville,place,False
+PA,4215232,Collingdale,place,False
+PA,4215248,Collinsburg,place,False
+PA,4215328,Colonial Park,place,False
+PA,4215368,Colony Park,place,False
+PA,4215384,Columbia,place,True
+PA,4215400,Columbus,place,True
+PA,4215416,Colver,place,False
+PA,4215432,Colwyn,place,False
+PA,4215464,Commodore,place,True
+PA,4215479,Conashaugh Lakes,place,False
+PA,4215584,Conestoga,place,False
+PA,4215680,Confluence,place,False
+PA,4215744,Conneaut Lake,place,False
+PA,4215755,Conneaut Lakeshore,place,False
+PA,4215760,Conneautville,place,False
+PA,4215776,Connellsville,place,False
+PA,4215808,Connoquenessing,place,False
+PA,4215848,Conshohocken,place,False
+PA,4215860,Continental Courts,place,False
+PA,4215872,Conway,place,False
+PA,4215888,Conyngham,place,False
+PA,4216056,Coopersburg,place,False
+PA,4216080,Cooperstown,place,False
+PA,4216128,Coplay,place,False
+PA,4216136,Coral,place,False
+PA,4216144,Coraopolis,place,False
+PA,4216256,Cornwall,place,False
+PA,4216272,Cornwells Heights,place,False
+PA,4216296,Corry,place,False
+PA,4216304,Corsica,place,False
+PA,4216432,Cotton Town,place,False
+PA,4216448,Coudersport,place,False
+PA,4216568,Courtdale,place,False
+PA,4216590,Cove Forge,place,False
+PA,4216816,Crabtree,place,False
+PA,4216848,Crafton,place,False
+PA,4216960,Cranesville,place,False
+PA,4217024,Creekside,place,False
+PA,4217040,Crenshaw,place,False
+PA,4217136,Cresson,place,False
+PA,4217152,Cressona,place,False
+PA,4217320,Cross Creek,place,False
+PA,4217368,Cross Keys,place,False
+PA,4217416,Cross Roads,place,True
+PA,4217440,Crown,place,True
+PA,4217448,Croydon,place,False
+PA,4217528,Crucible,place,False
+PA,4217624,Culp,place,False
+PA,4217680,Cumbola,place,False
+PA,4217784,Curryville,place,False
+PA,4217832,Curtisville,place,False
+PA,4217840,Curwensville,place,False
+PA,4217976,Daisytown,place,False
+PA,4218000,Dale,place,False
+PA,4218048,Dallas,place,True
+PA,4218072,Dallastown,place,False
+PA,4218080,Dalmatia,place,False
+PA,4218088,Dalton,place,False
+PA,4218136,Danville,place,False
+PA,4218152,Darby,place,False
+PA,4218192,Darlington,place,False
+PA,4218256,Dauberville,place,False
+PA,4218272,Dauphin,place,False
+PA,4218312,Davidsville,place,False
+PA,4218360,Dawson,place,False
+PA,4218400,Dayton,place,False
+PA,4218998,DeSales University,place,False
+PA,4218496,Deemston,place,False
+PA,4218568,Deer Lake,place,False
+PA,4218608,Defiance,place,False
+PA,4218664,Delano,place,False
+PA,4218736,Delaware Water Gap,place,False
+PA,4218768,Delmont,place,False
+PA,4218800,Delta,place,True
+PA,4218888,Denver,place,True
+PA,4218960,Derry,place,False
+PA,4219040,Devon,place,False
+PA,4219048,Dewart,place,False
+PA,4219160,Dickson City,place,False
+PA,4219208,Dillsburg,place,False
+PA,4219232,Dilworthtown,place,False
+PA,4219344,Dixonville,place,False
+PA,4219432,Donaldson,place,False
+PA,4219472,Donegal,place,False
+PA,4219536,Donora,place,False
+PA,4219576,Dormont,place,False
+PA,4219584,Dorneyville,place,False
+PA,4219680,Douglassville,place,False
+PA,4219696,Dover,place,False
+PA,4219752,Downingtown,place,False
+PA,4219784,Doylestown,place,False
+PA,4219856,Dravosburg,place,False
+PA,4219920,Drexel Hill,place,False
+PA,4219976,Driftwood,place,False
+PA,4220080,Dry Tavern,place,False
+PA,4220096,Dryville,place,False
+PA,4220136,DuBois,place,False
+PA,4220104,Dublin,place,True
+PA,4220144,Duboistown,place,False
+PA,4220152,Dudley,place,False
+PA,4220214,Dumb Hundred,place,False
+PA,4220216,Dunbar,place,False
+PA,4220240,Duncannon,place,False
+PA,4220248,Duncansville,place,False
+PA,4220328,Dunlevy,place,False
+PA,4220336,Dunlo,place,False
+PA,4220352,Dunmore,place,False
+PA,4220416,Dunnstown,place,False
+PA,4220424,Dupont,place,False
+PA,4220432,Duquesne,place,False
+PA,4220512,Duryea,place,False
+PA,4220528,Dushore,place,False
+PA,4220600,Eagle,place,True
+PA,4220604,Eagle Creek,place,False
+PA,4220634,Eagle Lake,place,False
+PA,4220648,Eagles Mere,place,False
+PA,4220662,Eagleview,place,False
+PA,4220664,Eagleville,place,False
+PA,4220704,Earlston,place,False
+PA,4220752,East Altoona,place,False
+PA,4220776,East Bangor,place,False
+PA,4220792,East Berlin,place,False
+PA,4220800,East Berwick,place,False
+PA,4220840,East Brady,place,False
+PA,4220904,East Butler,place,False
+PA,4220992,East Conemaugh,place,False
+PA,4221064,East Earl,place,False
+PA,4221176,East Freedom,place,False
+PA,4221200,East Greenville,place,False
+PA,4221384,East Lansdowne,place,False
+PA,4221444,East McKeesport,place,False
+PA,4221688,East Petersburg,place,False
+PA,4221712,East Pittsburgh,place,False
+PA,4221728,East Prospect,place,False
+PA,4221752,East Rochester,place,False
+PA,4221792,East Salem,place,False
+PA,4221808,East Sharpsburg,place,False
+PA,4221816,East Side,place,True
+PA,4221872,East Stroudsburg,place,False
+PA,4221960,East Uniontown,place,False
+PA,4221976,East Vandergrift,place,False
+PA,4222016,East Washington,place,False
+PA,4222024,East Waterford,place,False
+PA,4222104,East York,place,False
+PA,4221400,Eastlawn Gardens,place,False
+PA,4221648,Easton,place,False
+PA,4221968,Eastvale,place,False
+PA,4222128,Eau Claire,place,False
+PA,4222144,Ebensburg,place,False
+PA,4222264,Economy,place,True
+PA,4222280,Eddington,place,False
+PA,4222296,Eddystone,place,False
+PA,4222344,Edenborn,place,False
+PA,4222352,Edenburg,place,False
+PA,4222520,Edgewood,place,False
+PA,4222576,Edgeworth,place,False
+PA,4222600,Edie,place,False
+PA,4222608,Edinboro,place,False
+PA,4222672,Edwardsville,place,False
+PA,4222680,Effort,place,True
+PA,4222696,Egypt,place,True
+PA,4222712,Ehrenfeld,place,False
+PA,4222736,Eighty Four,place,False
+PA,4222776,Elberta,place,False
+PA,4222800,Elco,place,False
+PA,4222832,Elderton,place,False
+PA,4222856,Eldorado,place,False
+PA,4222888,Eldred,place,False
+PA,4222960,Elgin,place,False
+PA,4222976,Elim,place,False
+PA,4222992,Elizabeth,place,True
+PA,4223016,Elizabethtown,place,False
+PA,4223024,Elizabethville,place,False
+PA,4223128,Elkins Park,place,False
+PA,4223152,Elkland,place,False
+PA,4223280,Ellport,place,False
+PA,4223296,Ellsworth,place,False
+PA,4223304,Ellwood City,place,False
+PA,4223392,Elrama,place,False
+PA,4223440,Elverson,place,False
+PA,4223472,Elysburg,place,False
+PA,4223540,Emerald Lakes,place,False
+PA,4223560,Emigsville,place,False
+PA,4223568,Emlenton,place,False
+PA,4223584,Emmaus,place,False
+PA,4223600,Emporium,place,False
+PA,4223616,Emsworth,place,False
+PA,4223688,Englewood,place,False
+PA,4223704,Enhaut,place,False
+PA,4223720,Enlow,place,False
+PA,4223744,Enola,place,False
+PA,4223768,Enon Valley,place,False
+PA,4223832,Ephrata,place,False
+PA,4224000,Erie,place,False
+PA,4224040,Ernest,place,False
+PA,4224088,Espy,place,False
+PA,4224160,Etna,place,False
+PA,4224248,Evans City,place,False
+PA,4224240,Evansburg,place,False
+PA,4224304,Everett,place,False
+PA,4224336,Everson,place,False
+PA,4224392,Exeter,place,False
+PA,4224432,Export,place,True
+PA,4224440,Exton,place,False
+PA,4224448,Eyers Grove,place,False
+PA,4224488,Factoryville,place,False
+PA,4224536,Fairchance,place,False
+PA,4224544,Fairdale,place,False
+PA,4224560,Fairfield,place,False
+PA,4224664,Fairhope,place,False
+PA,4224712,Fairless Hills,place,False
+PA,4224832,Fairview,place,True
+PA,4224948,Fairview-Ferndale,place,False
+PA,4225136,Falls Creek,place,False
+PA,4225152,Fallston,place,False
+PA,4225168,Falmouth,place,False
+PA,4225248,Farmersville,place,False
+PA,4225280,Farmington,place,False
+PA,4225360,Farrell,place,False
+PA,4225376,Farwell,place,False
+PA,4225416,Fawn Grove,place,False
+PA,4225420,Fawn Lake Forest,place,False
+PA,4225424,Faxon,place,False
+PA,4225456,Fayette City,place,False
+PA,4225464,Fayetteville,place,False
+PA,4225496,Feasterville,place,False
+PA,4225568,Fellsburg,place,False
+PA,4225584,Felton,place,False
+PA,4225680,Ferndale,place,False
+PA,4225744,Fernville,place,False
+PA,4225944,Finleyville,place,False
+PA,4226036,Fisherville,place,False
+PA,4226232,Fivepointville,place,False
+PA,4226280,Fleetwood,place,False
+PA,4226296,Flemington,place,False
+PA,4226376,Flourtown,place,False
+PA,4226397,Flying Hills,place,False
+PA,4226408,Folcroft,place,False
+PA,4226432,Folsom,place,False
+PA,4226488,Foot of Ten,place,False
+PA,4226504,Force,place,True
+PA,4226512,Ford City,place,False
+PA,4226520,Ford Cliff,place,False
+PA,4226560,Forest City,place,False
+PA,4226592,Forest Hills,place,True
+PA,4226704,Forestville,place,False
+PA,4226760,Forksville,place,False
+PA,4226776,Fort Fetter,place,False
+PA,4226812,Fort Indiantown Gap,place,False
+PA,4226824,Fort Loudon,place,False
+PA,4226872,Fort Washington,place,False
+PA,4226880,Forty Fort,place,False
+PA,4226960,Foster Brook,place,False
+PA,4226976,Fostoria,place,False
+PA,4226984,Foundryville,place,False
+PA,4227008,Fountain Hill,place,False
+PA,4227024,Fountain Springs,place,False
+PA,4227120,Fox Chapel,place,False
+PA,4227130,Fox Chase,place,False
+PA,4227112,Foxburg,place,False
+PA,4227232,Frackville,place,False
+PA,4227312,Frankfort Springs,place,False
+PA,4227360,Franklin,place,True
+PA,4227517,Franklin Forge,place,False
+PA,4227552,Franklin Park,place,False
+PA,4227576,Franklintown,place,False
+PA,4227592,Frankstown,place,False
+PA,4227616,Frazer,place,False
+PA,4227641,Fredericksburg,place,False
+PA,4227672,Fredericktown,place,False
+PA,4227688,Fredonia,place,False
+PA,4227696,Freeburg,place,False
+PA,4227712,Freedom,place,True
+PA,4227744,Freeland,place,False
+PA,4227760,Freemansburg,place,False
+PA,4227784,Freeport,place,False
+PA,4227928,Friedens,place,False
+PA,4227936,Friedensburg,place,False
+PA,4227968,Friendsville,place,False
+PA,4227976,Friesville,place,False
+PA,4228000,Frisco,place,False
+PA,4228014,Frizzleburg,place,False
+PA,4228128,Frystown,place,False
+PA,4228144,Fullerton,place,False
+PA,4228280,Galeton,place,False
+PA,4228328,Gallitzin,place,False
+PA,4228360,Ganister,place,False
+PA,4228376,Gap,place,True
+PA,4228456,Garden View,place,True
+PA,4228488,Gardners,place,False
+PA,4228520,Garrett,place,False
+PA,4228600,Gastonville,place,False
+PA,4228696,Geeseytown,place,False
+PA,4228720,Geistown,place,False
+PA,4228768,Geneva,place,True
+PA,4228824,Georgetown,place,False
+PA,4228960,Gettysburg,place,False
+PA,4229000,Gibraltar,place,False
+PA,4229040,Gibsonia,place,False
+PA,4229088,Gilberton,place,False
+PA,4229096,Gilbertsville,place,False
+PA,4229232,Girard,place,False
+PA,4229264,Girardville,place,False
+PA,4229392,Glasgow,place,True
+PA,4229432,Glassport,place,False
+PA,4229512,Glen Campbell,place,False
+PA,4229632,Glen Hope,place,False
+PA,4229680,Glen Lyon,place,False
+PA,4229732,Glen Osborne,place,False
+PA,4229760,Glen Rock,place,False
+PA,4229496,Glenburn,place,False
+PA,4229568,Glendon,place,False
+PA,4229592,Glenfield,place,False
+PA,4229704,Glenmoore,place,False
+PA,4229720,Glenolden,place,False
+PA,4229800,Glenshaw,place,False
+PA,4229808,Glenside,place,False
+PA,4230013,Gold Key Lake,place,False
+PA,4230016,Goldsboro,place,False
+PA,4230096,Goodville,place,False
+PA,4230128,Gordon,place,True
+PA,4230136,Gordonville,place,False
+PA,4230192,Gouglersville,place,False
+PA,4230200,Gouldsboro,place,False
+PA,4230224,Graceton,place,False
+PA,4230280,Grampian,place,False
+PA,4230435,Grantley,place,False
+PA,4230472,Granville,place,False
+PA,4230512,Grapeville,place,False
+PA,4230528,Grassflat,place,False
+PA,4230600,Gratz,place,False
+PA,4230628,Gray,place,True
+PA,4230704,Grazierville,place,False
+PA,4230728,Great Bend,place,False
+PA,4231082,Green Hills,place,False
+PA,4231088,Green Lane,place,False
+PA,4231256,Green Tree,place,True
+PA,4230896,Greencastle,place,False
+PA,4231038,Greenfields,place,False
+PA,4231120,Greenock,place,False
+PA,4231208,Greens Landing,place,False
+PA,4231192,Greensboro,place,False
+PA,4231200,Greensburg,place,False
+PA,4231328,Greenville,place,False
+PA,4231368,Greenwood,place,False
+PA,4231536,Grier City,place,False
+PA,4231568,Grill,place,False
+PA,4231592,Grindstone,place,False
+PA,4231656,Grove City,place,False
+PA,4231716,Guilford,place,False
+PA,4231840,Guys Mills,place,False
+PA,4232024,Halfway House,place,True
+PA,4232032,Halifax,place,False
+PA,4232056,Hallam,place,False
+PA,4232080,Hallstead,place,False
+PA,4232120,Hamburg,place,False
+PA,4232280,Hamorton,place,False
+PA,4232320,Hampton,place,False
+PA,4232384,Hannasville,place,False
+PA,4232448,Hanover,place,False
+PA,4232600,Harleigh,place,False
+PA,4232616,Harleysville,place,False
+PA,4232656,Harmonsburg,place,False
+PA,4232688,Harmony,place,True
+PA,4232800,Harrisburg,place,False
+PA,4232864,Harrison City,place,False
+PA,4232896,Harrisville,place,False
+PA,4232936,Hartleton,place,False
+PA,4232976,Hartstown,place,False
+PA,4233000,Harveys Lake,place,False
+PA,4233024,Harwick,place,False
+PA,4233072,Hasson Heights,place,False
+PA,4233080,Hastings,place,False
+PA,4233088,Hatboro,place,False
+PA,4233112,Hatfield,place,False
+PA,4233154,Haverford College,place,False
+PA,4233184,Hawk Run,place,False
+PA,4233200,Hawley,place,False
+PA,4233216,Hawthorn,place,False
+PA,4233312,Haysville,place,False
+PA,4233328,Hayti,place,False
+PA,4233364,Hazen,place,False
+PA,4233408,Hazleton,place,False
+PA,4233504,Hebron,place,False
+PA,4233528,Heckscherville,place,False
+PA,4233576,Hegins,place,False
+PA,4233592,Heidelberg,place,False
+PA,4233632,Heidlersburg,place,False
+PA,4233672,Heilwood,place,False
+PA,4233744,Hellertown,place,False
+PA,4233772,Hemlock Farms,place,False
+PA,4233840,Hendersonville,place,False
+PA,4233888,Henrietta,place,False
+PA,4234008,Hereford,place,False
+PA,4234048,Herminie,place,False
+PA,4234064,Hermitage,place,False
+PA,4234080,Herndon,place,False
+PA,4234144,Hershey,place,False
+PA,4234256,Hickory,place,False
+PA,4234308,Hickory Hills,place,False
+PA,4234592,Highland Park,place,False
+PA,4234664,Highspire,place,False
+PA,4234776,Hilldale,place,False
+PA,4234784,Hiller,place,False
+PA,4235120,Hokendauqua,place,False
+PA,4235172,Holiday Pocono,place,False
+PA,4235224,Hollidaysburg,place,False
+PA,4235336,Holters Crossing,place,False
+PA,4235364,Homeacre-Lyndora,place,False
+PA,4235408,Homer City,place,False
+PA,4235424,Homestead,place,False
+PA,4235448,Hometown,place,True
+PA,4235488,Homewood,place,False
+PA,4235500,Homewood at Martinsburg,place,False
+PA,4235520,Honesdale,place,False
+PA,4235528,Honey Brook,place,False
+PA,4235576,Hookstown,place,False
+PA,4235608,Hooversville,place,False
+PA,4235624,Hop Bottom,place,False
+PA,4235632,Hopeland,place,False
+PA,4235648,Hopewell,place,False
+PA,4235728,Hopwood,place,False
+PA,4235800,Horsham,place,False
+PA,4235872,Hostetter,place,False
+PA,4235888,Houserville,place,False
+PA,4235896,Houston,place,True
+PA,4235928,Houtzdale,place,False
+PA,4235960,Howard,place,True
+PA,4236064,Hublersburg,place,False
+PA,4236096,Hudson,place,True
+PA,4236152,Hughestown,place,False
+PA,4236160,Hughesville,place,False
+PA,4236192,Hulmeville,place,False
+PA,4236240,Hummels Wharf,place,False
+PA,4236232,Hummelstown,place,False
+PA,4236288,Hunker,place,False
+PA,4236352,Hunterstown,place,False
+PA,4236368,Huntingdon,place,False
+PA,4236568,Hyde,place,False
+PA,4236576,Hyde Park,place,False
+PA,4236616,Hydetown,place,False
+PA,4236640,Hyndman,place,False
+PA,4236712,Idaville,place,False
+PA,4236768,Imperial,place,True
+PA,4236888,Indian Lake,place,False
+PA,4236904,Indian Mountain Lake,place,False
+PA,4236816,Indiana,place,True
+PA,4236944,Industry,place,True
+PA,4237000,Ingram,place,False
+PA,4237008,Inkerman,place,False
+PA,4237016,Intercourse,place,False
+PA,4237024,Iola,place,False
+PA,4237136,Ironville,place,False
+PA,4237192,Irvona,place,False
+PA,4237208,Irwin,place,False
+PA,4237304,Ivyland,place,False
+PA,4237496,Jackson Center,place,False
+PA,4237544,Jacksonville,place,False
+PA,4237584,Jacksonwald,place,False
+PA,4237640,Jacobus,place,False
+PA,4237656,James City,place,False
+PA,4237696,Jamestown,place,False
+PA,4237728,Jamison City,place,False
+PA,4237784,Jeannette,place,False
+PA,4237792,Jeddo,place,False
+PA,4237880,Jefferson,place,True
+PA,4237955,Jefferson Hills,place,False
+PA,4238000,Jenkintown,place,False
+PA,4238048,Jennerstown,place,False
+PA,4238096,Jermyn,place,False
+PA,4238104,Jerome,place,False
+PA,4238128,Jersey Shore,place,False
+PA,4238152,Jerseytown,place,False
+PA,4238160,Jessup,place,False
+PA,4238200,Jim Thorpe,place,False
+PA,4238240,Joffre,place,False
+PA,4238248,Johnsonburg,place,False
+PA,4238288,Johnstown,place,False
+PA,4238392,Jonestown,place,False
+PA,4238514,Jugtown,place,False
+PA,4238528,Julian,place,False
+PA,4238632,Juniata Gap,place,False
+PA,4238640,Juniata Terrace,place,False
+PA,4238688,Kane,place,False
+PA,4238744,Kapp Heights,place,False
+PA,4238768,Karns City,place,False
+PA,4239056,Kelayres,place,False
+PA,4239224,Kempton,place,False
+PA,4239256,Kenhorst,place,False
+PA,4239272,Kenilworth,place,False
+PA,4239280,Kenmar,place,False
+PA,4239336,Kennerdell,place,False
+PA,4239352,Kennett Square,place,False
+PA,4239504,Kerrtown,place,False
+PA,4239512,Kersey,place,False
+PA,4239648,Kimberton,place,False
+PA,4239736,King of Prussia,place,False
+PA,4239784,Kingston,place,False
+PA,4239944,Kirkwood,place,False
+PA,4239960,Kiskimere,place,False
+PA,4240016,Kistler,place,False
+PA,4240040,Kittanning,place,False
+PA,4240072,Klahr,place,False
+PA,4240136,Klingerstown,place,False
+PA,4240272,Knox,place,False
+PA,4240360,Knoxville,place,False
+PA,4240400,Koppel,place,False
+PA,4240432,Kratzerville,place,False
+PA,4240464,Kreamer,place,False
+PA,4240584,Kulpmont,place,False
+PA,4240608,Kulpsville,place,False
+PA,4240656,Kutztown,place,False
+PA,4240666,Kutztown University,place,False
+PA,4240680,Kylertown,place,False
+PA,4240744,Laceyville,place,False
+PA,4240848,Laflin,place,False
+PA,4240948,Lake Arthur Estates,place,False
+PA,4240960,Lake City,place,True
+PA,4240981,Lake Heritage,place,False
+PA,4240982,Lake Latonka,place,False
+PA,4240988,Lake Meade,place,False
+PA,4241080,Lake Winola,place,False
+PA,4241099,Lake Wynonah,place,False
+PA,4240992,Lakemont,place,False
+PA,4241104,Lamar,place,False
+PA,4241192,Lampeter,place,False
+PA,4241216,Lancaster,place,False
+PA,4241264,Landingville,place,False
+PA,4241272,Landisburg,place,False
+PA,4241304,Landisville,place,False
+PA,4241336,Lanesboro,place,False
+PA,4241376,Langeloth,place,False
+PA,4241392,Langhorne,place,False
+PA,4241416,Langhorne Manor,place,False
+PA,4241432,Lansdale,place,False
+PA,4241440,Lansdowne,place,False
+PA,4241464,Lansford,place,False
+PA,4241512,Laporte,place,False
+PA,4241580,Larke,place,False
+PA,4241608,Larksville,place,False
+PA,4241680,Latrobe,place,False
+PA,4241700,Lattimer,place,False
+PA,4241834,Laurel Mountain,place,False
+PA,4241848,Laurel Run,place,False
+PA,4241768,Laureldale,place,False
+PA,4241856,Laurelton,place,False
+PA,4241880,Laurys Station,place,False
+PA,4241904,Lavelle,place,False
+PA,4241944,Lawnton,place,False
+PA,4241968,Lawrence,place,True
+PA,4241992,Lawrence Park,place,False
+PA,4242016,Lawrenceville,place,False
+PA,4242032,Lawson Heights,place,False
+PA,4242824,LeRaysville,place,False
+PA,4242136,Leamersville,place,False
+PA,4242168,Lebanon,place,True
+PA,4242192,Lebanon South,place,False
+PA,4242280,Leechburg,place,False
+PA,4242328,Leeper,place,False
+PA,4242352,Leesport,place,False
+PA,4242392,Leetsdale,place,False
+PA,4242472,Lehighton,place,False
+PA,4242596,Leith-Hatfield,place,False
+PA,4242632,Lemont,place,False
+PA,4242640,Lemont Furnace,place,False
+PA,4242648,Lemoyne,place,False
+PA,4242672,Lenape Heights,place,False
+PA,4242688,Lenhartsville,place,False
+PA,4242704,Lenkerville,place,False
+PA,4242776,Leola,place,False
+PA,4242912,Level Green,place,False
+PA,4242928,Levittown,place,False
+PA,4242984,Lewis Run,place,False
+PA,4242968,Lewisberry,place,False
+PA,4242976,Lewisburg,place,False
+PA,4243000,Lewistown,place,False
+PA,4243064,Liberty,place,True
+PA,4243224,Lightstreet,place,False
+PA,4243232,Ligonier,place,False
+PA,4243248,Lilly,place,False
+PA,4243272,Lima,place,False
+PA,4243320,Lime Ridge,place,False
+PA,4243408,Lincoln,place,True
+PA,4243496,Lincoln Park,place,False
+PA,4243544,Lincoln University,place,True
+PA,4243552,Lincolnville,place,False
+PA,4243628,Linds Crossing,place,False
+PA,4243656,Linesville,place,False
+PA,4243672,Linglestown,place,False
+PA,4243704,Linntown,place,False
+PA,4243720,Linwood,place,False
+PA,4243744,Lionville,place,False
+PA,4243816,Lititz,place,False
+PA,4243828,Little Britain,place,False
+PA,4243928,Little Meadows,place,False
+PA,4243944,Littlestown,place,False
+PA,4243968,Liverpool,place,True
+PA,4244128,Lock Haven,place,False
+PA,4244224,Locustdale,place,False
+PA,4244400,Loganton,place,False
+PA,4244416,Loganville,place,False
+PA,4244512,Long Branch,place,True
+PA,4244528,Longfellow,place,False
+PA,4244632,Loop,place,True
+PA,4244664,Lorain,place,False
+PA,4244672,Lorane,place,False
+PA,4244704,Loretto,place,False
+PA,4244824,Lower Allen,place,False
+PA,4244864,Lower Burrell,place,False
+PA,4245192,Loyalhanna,place,False
+PA,4245312,Lucerne Mines,place,False
+PA,4245452,Lumber City,place,False
+PA,4245568,Luzerne,place,False
+PA,4245592,Lykens,place,False
+PA,4245732,Lynnwood-Pricedale,place,False
+PA,4245752,Lyons,place,False
+PA,4246392,Macungie,place,False
+PA,4246488,Madison,place,True
+PA,4246504,Madisonburg,place,False
+PA,4246568,Mahaffey,place,False
+PA,4246592,Mahanoy City,place,False
+PA,4246720,Mainville,place,False
+PA,4246728,Maitland,place,False
+PA,4246792,Malvern,place,False
+PA,4246800,Mammoth,place,False
+PA,4246864,Manchester,place,True
+PA,4246888,Manheim,place,False
+PA,4246944,Manns Choice,place,False
+PA,4247000,Manor,place,False
+PA,4247064,Manorville,place,False
+PA,4247080,Mansfield,place,False
+PA,4247152,Maple Glen,place,False
+PA,4247248,Mapleton,place,False
+PA,4247264,Mapletown,place,False
+PA,4247344,Marcus Hook,place,False
+PA,4247400,Marianna,place,False
+PA,4247404,Marianne,place,False
+PA,4247416,Marienville,place,False
+PA,4247424,Marietta,place,False
+PA,4247464,Marion,place,False
+PA,4247472,Marion Center,place,False
+PA,4247480,Marion Heights,place,False
+PA,4247544,Marklesburg,place,False
+PA,4247560,Markleysburg,place,False
+PA,4247600,Marlin,place,False
+PA,4247672,Mars,place,True
+PA,4247728,Marshallton,place,False
+PA,4247896,Martins Creek,place,False
+PA,4247872,Martinsburg,place,False
+PA,4247880,Martinsburg Junction,place,False
+PA,4247968,Marysville,place,False
+PA,4248000,Masontown,place,False
+PA,4248032,Masthope,place,False
+PA,4248048,Matamoras,place,False
+PA,4248064,Mather,place,False
+PA,4248072,Mattawana,place,False
+PA,4248120,Maxatawny,place,False
+PA,4248176,Mayfield,place,False
+PA,4248224,Maytown,place,False
+PA,4245824,McAdoo,place,False
+PA,4245848,McAlisterville,place,False
+PA,4245992,McClure,place,False
+PA,4246000,McConnellsburg,place,False
+PA,4246016,McConnellstown,place,False
+PA,4246072,McDonald,place,False
+PA,4246112,McElhattan,place,False
+PA,4246120,McEwensville,place,False
+PA,4246160,McGovern,place,False
+PA,4246216,McKean,place,False
+PA,4246232,McKeansburg,place,False
+PA,4246240,McKee,place,False
+PA,4246264,McKees Rocks,place,False
+PA,4246256,McKeesport,place,False
+PA,4246280,McKinley,place,False
+PA,4246312,McKnightstown,place,False
+PA,4246344,McMurray,place,False
+PA,4246376,McSherrystown,place,False
+PA,4246400,McVeytown,place,False
+PA,4248320,Meadowlands,place,False
+PA,4248336,Meadowood,place,False
+PA,4248360,Meadville,place,False
+PA,4248376,Mechanicsburg,place,False
+PA,4248448,Mechanicsville,place,False
+PA,4248480,Media,place,True
+PA,4248696,Mercer,place,False
+PA,4248704,Mercersburg,place,False
+PA,4248728,Meridian,place,False
+PA,4248768,Merion Station,place,False
+PA,4248824,Mertztown,place,False
+PA,4248856,Meshoppen,place,False
+PA,4248868,Messiah College,place,False
+PA,4248904,Mexico,place,True
+PA,4248912,Meyersdale,place,False
+PA,4248960,Middleburg,place,False
+PA,4249048,Middleport,place,False
+PA,4249128,Middletown,place,False
+PA,4249184,Midland,place,False
+PA,4249224,Midway,place,False
+PA,4249272,Mifflin,place,False
+PA,4249288,Mifflinburg,place,False
+PA,4249304,Mifflintown,place,False
+PA,4249312,Mifflinville,place,False
+PA,4249368,Milesburg,place,False
+PA,4249400,Milford,place,False
+PA,4249440,Milford Square,place,False
+PA,4249552,Mill Creek,place,False
+PA,4249760,Mill Hall,place,False
+PA,4249848,Mill Run,place,False
+PA,4249936,Mill Village,place,False
+PA,4249504,Millbourne,place,False
+PA,4249680,Millersburg,place,False
+PA,4249704,Millerstown,place,False
+PA,4249728,Millersville,place,False
+PA,4249736,Millerton,place,False
+PA,4249768,Millheim,place,False
+PA,4249880,Millsboro,place,False
+PA,4249920,Millvale,place,False
+PA,4249944,Millville,place,False
+PA,4249960,Millwood,place,False
+PA,4250000,Milroy,place,False
+PA,4250016,Milton,place,False
+PA,4250088,Minersville,place,False
+PA,4250104,Mingoville,place,False
+PA,4250160,Misericordia University,place,False
+PA,4250208,Mocanaqua,place,False
+PA,4250232,Modena,place,False
+PA,4250272,Mohnton,place,False
+PA,4250280,Mohrsville,place,False
+PA,4250320,Monaca,place,False
+PA,4250344,Monessen,place,False
+PA,4250408,Monongahela,place,False
+PA,4250432,Monroe,place,False
+PA,4250528,Monroeville,place,False
+PA,4250544,Mont Alto,place,False
+PA,4250560,Mont Clare,place,False
+PA,4250552,Montandon,place,False
+PA,4250632,Montgomery,place,False
+PA,4250672,Montgomeryville,place,False
+PA,4250720,Montoursville,place,False
+PA,4250736,Montrose,place,False
+PA,4250748,Montrose Manor,place,False
+PA,4250760,Monument,place,False
+PA,4250860,Moores Mill,place,False
+PA,4250879,Moose Run,place,False
+PA,4250880,Moosic,place,False
+PA,4250924,Morea,place,False
+PA,4251008,Morgan Hill,place,False
+PA,4251016,Morgantown,place,False
+PA,4251120,Morrisdale,place,False
+PA,4251144,Morrisville,place,True
+PA,4251176,Morton,place,False
+PA,4251208,Moscow,place,True
+PA,4251240,Moshannon,place,False
+PA,4251320,Mount Aetna,place,False
+PA,4251488,Mount Carbon,place,False
+PA,4251496,Mount Carmel,place,False
+PA,4251536,Mount Cobb,place,False
+PA,4251552,Mount Eagle,place,False
+PA,4251568,Mount Gretna,place,False
+PA,4251576,Mount Gretna Heights,place,False
+PA,4251592,Mount Holly Springs,place,False
+PA,4251632,Mount Jewett,place,False
+PA,4251656,Mount Joy,place,False
+PA,4251720,Mount Morris,place,False
+PA,4251744,Mount Oliver,place,False
+PA,4251760,Mount Penn,place,False
+PA,4251880,Mount Pleasant,place,True
+PA,4251904,Mount Pleasant Mills,place,False
+PA,4251912,Mount Pocono,place,False
+PA,4251984,Mount Union,place,False
+PA,4252056,Mount Wolf,place,False
+PA,4251384,Mountain Top,place,False
+PA,4251344,Mountainhome,place,False
+PA,4252016,Mountville,place,False
+PA,4252216,Muhlenberg Park,place,False
+PA,4252224,Muir,place,False
+PA,4252264,Muncy,place,False
+PA,4252312,Mundys Corner,place,False
+PA,4252320,Munhall,place,False
+PA,4252432,Murrysville,place,False
+PA,4252440,Muse,place,False
+PA,4252488,Myerstown,place,False
+PA,4252584,Nanticoke,place,False
+PA,4252616,Nanty-Glo,place,False
+PA,4252632,Naomi,place,False
+PA,4252664,Narberth,place,False
+PA,4252808,Nazareth,place,False
+PA,4252816,Nealmont,place,False
+PA,4252872,Needmore,place,False
+PA,4252968,Nemacolin,place,False
+PA,4252984,Nescopeck,place,False
+PA,4253088,Nesquehoning,place,False
+PA,4253152,New Albany,place,False
+PA,4253160,New Alexandria,place,False
+PA,4253168,New Baltimore,place,False
+PA,4253184,New Beaver,place,False
+PA,4253192,New Bedford,place,False
+PA,4253200,New Berlin,place,False
+PA,4253208,New Berlinville,place,False
+PA,4253248,New Bethlehem,place,False
+PA,4253272,New Boston,place,False
+PA,4253288,New Brighton,place,False
+PA,4253296,New Britain,place,False
+PA,4253320,New Buffalo,place,False
+PA,4253368,New Castle,place,False
+PA,4253392,New Castle Northwest,place,False
+PA,4253416,New Centerville,place,False
+PA,4253432,New Columbia,place,False
+PA,4253448,New Columbus,place,False
+PA,4253464,New Cumberland,place,False
+PA,4253496,New Eagle,place,False
+PA,4253544,New Florence,place,False
+PA,4253568,New Freedom,place,False
+PA,4253576,New Freeport,place,False
+PA,4253592,New Galilee,place,False
+PA,4253696,New Holland,place,False
+PA,4253712,New Hope,place,False
+PA,4253728,New Jerusalem,place,False
+PA,4253736,New Kensington,place,False
+PA,4253752,New Kingstown,place,False
+PA,4253768,New Lebanon,place,False
+PA,4253872,New Market,place,True
+PA,4253880,New Milford,place,False
+PA,4253916,New Morgan,place,False
+PA,4253920,New Oxford,place,False
+PA,4253928,New Paris,place,False
+PA,4253944,New Philadelphia,place,False
+PA,4254016,New Ringgold,place,False
+PA,4254040,New Salem,place,False
+PA,4254064,New Schaefferstown,place,False
+PA,4254104,New Stanton,place,False
+PA,4254288,New Tripoli,place,False
+PA,4254344,New Washington,place,False
+PA,4254352,New Wilmington,place,False
+PA,4253328,Newburg,place,False
+PA,4253504,Newell,place,False
+PA,4253856,Newmanstown,place,False
+PA,4253968,Newport,place,False
+PA,4254024,Newry,place,False
+PA,4254160,Newton Hamilton,place,False
+PA,4254184,Newtown,place,False
+PA,4254268,Newtown Grant,place,False
+PA,4254320,Newville,place,False
+PA,4254400,Nicholson,place,False
+PA,4254520,Nittany,place,False
+PA,4254552,Nixon,place,False
+PA,4254568,Noblestown,place,False
+PA,4254656,Norristown,place,False
+PA,4254728,North Apollo,place,False
+PA,4254776,North Belle Vernon,place,False
+PA,4254784,North Bend,place,False
+PA,4254816,North Braddock,place,False
+PA,4254872,North Catasauqua,place,False
+PA,4254888,North Charleroi,place,False
+PA,4254952,North East,place,True
+PA,4255136,North Irwin,place,False
+PA,4255304,North Philipsburg,place,False
+PA,4255480,North Vandergrift,place,False
+PA,4255512,North Wales,place,False
+PA,4255520,North Warren,place,False
+PA,4255608,North York,place,False
+PA,4254696,Northampton,place,False
+PA,4255000,Northern Cambria,place,False
+PA,4255456,Northumberland,place,False
+PA,4255572,Northwest Harborcreek,place,False
+PA,4255584,Northwood,place,False
+PA,4255616,Norvelt,place,False
+PA,4255664,Norwood,place,False
+PA,4255704,Nottingham,place,False
+PA,4255728,Noxen,place,False
+PA,4255752,Nuangola,place,False
+PA,4255792,Numidia,place,False
+PA,4255808,Nuremberg,place,False
+PA,4255969,Oak Hills,place,True
+PA,4255840,Oakdale,place,False
+PA,4255996,Oakland,place,False
+PA,4256088,Oakmont,place,False
+PA,4256232,Oakwood,place,False
+PA,4256264,Oberlin,place,False
+PA,4256408,Ohiopyle,place,False
+PA,4256432,Ohioville,place,False
+PA,4256456,Oil City,place,False
+PA,4256488,Oklahoma,place,True
+PA,4256576,Old Forge,place,False
+PA,4256624,Old Orchard,place,False
+PA,4256664,Oley,place,False
+PA,4256704,Oliver,place,True
+PA,4256761,Olivia,place,False
+PA,4256792,Olyphant,place,False
+PA,4256816,Oneida,place,False
+PA,4256912,Orangeville,place,False
+PA,4256928,Orbisonia,place,False
+PA,4256960,Orchard Hills,place,False
+PA,4257016,Ore Hill,place,False
+PA,4257024,Oreland,place,False
+PA,4257040,Oreminea,place,False
+PA,4257112,Orrstown,place,False
+PA,4257120,Orrtanna,place,False
+PA,4257160,Orviston,place,False
+PA,4257184,Orwigsburg,place,False
+PA,4257192,Orwin,place,False
+PA,4257232,Osceola Mills,place,False
+PA,4257280,Oswayo,place,False
+PA,4257376,Oval,place,False
+PA,4257480,Oxford,place,True
+PA,4257544,Paint,place,True
+PA,4257648,Palmdale,place,False
+PA,4257680,Palmer Heights,place,False
+PA,4257696,Palmerton,place,False
+PA,4257720,Palmyra,place,False
+PA,4257752,Palo Alto,place,False
+PA,4257816,Paoli,place,False
+PA,4257840,Paradise,place,True
+PA,4257904,Pardeesville,place,False
+PA,4257928,Paris,place,True
+PA,4257968,Park Crest,place,False
+PA,4258036,Park Forest Village,place,False
+PA,4257976,Parker,place,True
+PA,4258032,Parkesburg,place,False
+PA,4258176,Parkside,place,False
+PA,4258240,Parkville,place,False
+PA,4258304,Parryville,place,False
+PA,4258384,Patterson Heights,place,False
+PA,4258432,Patton,place,False
+PA,4258504,Paxtang,place,False
+PA,4258528,Paxtonia,place,False
+PA,4258536,Paxtonville,place,False
+PA,4258696,Pen Argyl,place,False
+PA,4258776,Pen Mar,place,False
+PA,4258712,Penbrook,place,False
+PA,4258872,Penn,place,False
+PA,4258948,Penn Estates,place,False
+PA,4258950,Penn Farms,place,False
+PA,4259054,Penn Lake Park,place,False
+PA,4259207,Penn State Berks,place,False
+PA,4259212,Penn State Erie (Behrend),place,False
+PA,4259312,Penn Wynne,place,False
+PA,4258936,Penndel,place,False
+PA,4259160,Penns Creek,place,False
+PA,4259120,Pennsburg,place,False
+PA,4259152,Pennsbury Village,place,False
+PA,4259176,Pennside,place,False
+PA,4259296,Pennville,place,False
+PA,4259304,Pennwyn,place,False
+PA,4259344,Penryn,place,False
+PA,4259384,Perkasie,place,False
+PA,4259520,Perryopolis,place,False
+PA,4259580,Peru,place,False
+PA,4259616,Petersburg,place,False
+PA,4259672,Petrolia,place,False
+PA,4260000,Philadelphia,place,False
+PA,4260008,Philipsburg,place,False
+PA,4260120,Phoenixville,place,False
+PA,4260136,Picture Rocks,place,False
+PA,4260224,Pikes Creek,place,False
+PA,4260264,Pillow,place,False
+PA,4260432,Pine Glen,place,False
+PA,4260456,Pine Grove,place,False
+PA,4260496,Pine Grove Mills,place,False
+PA,4260547,Pine Ridge,place,False
+PA,4260384,Pinecroft,place,False
+PA,4260712,Pitcairn,place,False
+PA,4261000,Pittsburgh,place,False
+PA,4261048,Pittston,place,False
+PA,4261080,Plainfield,place,False
+PA,4261112,Plains,place,False
+PA,4261168,Platea,place,False
+PA,4261232,Pleasant Gap,place,False
+PA,4261312,Pleasant Hill,place,True
+PA,4261328,Pleasant Hills,place,False
+PA,4261432,Pleasant View,place,True
+PA,4261496,Pleasantville,place,False
+PA,4261520,Pleasureville,place,False
+PA,4261536,Plum,place,False
+PA,4261624,Plumsteadville,place,False
+PA,4261632,Plumville,place,False
+PA,4261648,Plymouth,place,False
+PA,4261688,Plymouth Meeting,place,False
+PA,4261704,Plymptonville,place,False
+PA,4261756,Pocono Mountain Lake Estates,place,False
+PA,4261768,Pocono Pines,place,False
+PA,4261773,Pocono Ranch Lands,place,False
+PA,4261774,Pocono Springs,place,False
+PA,4261788,Pocono Woodland Lakes,place,False
+PA,4261864,Point Marion,place,False
+PA,4261888,Point View,place,True
+PA,4261936,Polk,place,False
+PA,4261968,Pomeroy,place,False
+PA,4262088,Port Allegany,place,False
+PA,4262128,Port Carbon,place,False
+PA,4262136,Port Clinton,place,False
+PA,4262280,Port Matilda,place,False
+PA,4262304,Port Royal,place,False
+PA,4262312,Port Trevorton,place,False
+PA,4262320,Port Vue,place,False
+PA,4262048,Portage,place,False
+PA,4262224,Portersville,place,False
+PA,4262264,Portland,place,True
+PA,4262340,Potlicker Flats,place,False
+PA,4262384,Potters Mills,place,False
+PA,4262396,Pottsgrove,place,False
+PA,4262416,Pottstown,place,False
+PA,4262432,Pottsville,place,False
+PA,4262712,Pringle,place,False
+PA,4262736,Progress,place,True
+PA,4262744,Prompton,place,False
+PA,4262752,Prospect,place,True
+PA,4262784,Prospect Park,place,False
+PA,4262872,Pughtown,place,False
+PA,4262920,Punxsutawney,place,False
+PA,4262984,Puzzletown,place,False
+PA,4263009,Pymatuning Central,place,False
+PA,4263011,Pymatuning North,place,False
+PA,4263013,Pymatuning South,place,False
+PA,4263048,Quakertown,place,False
+PA,4263064,Quarryville,place,False
+PA,4263116,Queens Gate,place,False
+PA,4263160,Quentin,place,False
+PA,4263288,Railroad,place,True
+PA,4263312,Rainsburg,place,False
+PA,4263349,Ramblewood,place,False
+PA,4263360,Ramey,place,False
+PA,4263408,Rankin,place,False
+PA,4263416,Ranshaw,place,False
+PA,4263488,Raubsville,place,False
+PA,4263496,Rauchtown,place,False
+PA,4263536,Ravine,place,False
+PA,4263624,Reading,place,True
+PA,4263664,Reamstown,place,False
+PA,4263688,Rebersburg,place,False
+PA,4263800,Red Hill,place,False
+PA,4263840,Red Lion,place,False
+PA,4263976,Reedsville,place,False
+PA,4264000,Reese,place,False
+PA,4264032,Refton,place,False
+PA,4264056,Rehrersburg,place,False
+PA,4264072,Reiffton,place,False
+PA,4264080,Reightown,place,False
+PA,4264104,Reinerton,place,False
+PA,4264112,Reinholds,place,False
+PA,4264184,Rennerdale,place,False
+PA,4264188,Renningers,place,False
+PA,4264200,Renovo,place,False
+PA,4264224,Republic,place,True
+PA,4264256,Reservoir,place,False
+PA,4264288,Revloc,place,False
+PA,4264296,Rew,place,False
+PA,4264368,Reynolds Heights,place,False
+PA,4264376,Reynoldsville,place,False
+PA,4264392,Rheems,place,False
+PA,4264432,Rices Landing,place,False
+PA,4264440,Riceville,place,False
+PA,4264464,Richboro,place,False
+PA,4264488,Richfield,place,False
+PA,4264560,Richland,place,False
+PA,4264584,Richlandtown,place,False
+PA,4264784,Ridgway,place,False
+PA,4264832,Ridley Park,place,False
+PA,4264856,Riegelsville,place,False
+PA,4264904,Rimersburg,place,False
+PA,4265000,Ringtown,place,False
+PA,4265088,Riverside,place,False
+PA,4265192,Riverview Park,place,False
+PA,4265256,Roaring Spring,place,False
+PA,4265328,Robeson Extension,place,False
+PA,4265336,Robesonia,place,False
+PA,4265360,Robinson,place,True
+PA,4265392,Rochester,place,False
+PA,4265496,Rockhill,place,False
+PA,4265568,Rockledge,place,False
+PA,4265736,Rockwood,place,False
+PA,4265848,Rogersville,place,False
+PA,4265872,Rohrsburg,place,False
+PA,4265944,Rome,place,True
+PA,4265976,Ronco,place,False
+PA,4265984,Ronks,place,False
+PA,4266004,Roots,place,True
+PA,4266016,Roscoe,place,False
+PA,4266192,Rose Valley,place,False
+PA,4266144,Rosemont,place,False
+PA,4266168,Roseto,place,False
+PA,4266232,Roseville,place,False
+PA,4266256,Roslyn,place,False
+PA,4266304,Rossiter,place,False
+PA,4266320,Rosslyn Farms,place,False
+PA,4266384,Rote,place,False
+PA,4266392,Rothsville,place,False
+PA,4266408,Roulette,place,False
+PA,4266440,Rouseville,place,False
+PA,4266448,Rouzerville,place,False
+PA,4266472,Rowes Run,place,False
+PA,4266560,Royalton,place,False
+PA,4266568,Royer,place,False
+PA,4266576,Royersford,place,False
+PA,4266688,Runville,place,False
+PA,4266696,Rupert,place,False
+PA,4266720,Rural Valley,place,False
+PA,4266808,Russell,place,True
+PA,4266832,Russellton,place,False
+PA,4266864,Rutherford,place,False
+PA,4266928,Rutledge,place,False
+PA,4271620,S.N.P.J.,place,False
+PA,4267104,Sadsburyville,place,False
+PA,4267120,Saegertown,place,False
+PA,4267584,Salisbury,place,False
+PA,4267608,Salix,place,False
+PA,4267616,Salladasburg,place,False
+PA,4267624,Salona,place,False
+PA,4267632,Saltillo,place,False
+PA,4267648,Saltsburg,place,False
+PA,4267656,Salunga,place,False
+PA,4267712,Sanatoga,place,False
+PA,4267744,Sand Hill,place,False
+PA,4267784,Sandy,place,True
+PA,4267848,Sandy Lake,place,False
+PA,4267872,Sandy Ridge,place,False
+PA,4267920,Sankertown,place,False
+PA,4268036,Saw Creek,place,False
+PA,4268056,Saxonburg,place,False
+PA,4268072,Saxton,place,False
+PA,4268088,Saylorsburg,place,False
+PA,4268096,Sayre,place,False
+PA,4268104,Scalp Level,place,False
+PA,4268144,Schaefferstown,place,False
+PA,4268152,Schellsburg,place,False
+PA,4268188,Schlusser,place,False
+PA,4268192,Schnecksville,place,False
+PA,4268200,Schoeneck,place,False
+PA,4268248,Schubert,place,False
+PA,4268312,Schuylkill Haven,place,False
+PA,4268328,Schwenksville,place,False
+PA,4268376,Scotland,place,True
+PA,4268432,Scottdale,place,False
+PA,4269000,Scranton,place,False
+PA,4269216,Selinsgrove,place,False
+PA,4269248,Sellersville,place,False
+PA,4269256,Seltzer,place,False
+PA,4269272,Seneca,place,False
+PA,4269309,Seven Fields,place,True
+PA,4269336,Seven Springs,place,False
+PA,4269360,Seven Valleys,place,False
+PA,4269368,Seward,place,False
+PA,4269376,Sewickley,place,False
+PA,4269400,Sewickley Heights,place,False
+PA,4269416,Sewickley Hills,place,False
+PA,4269456,Shade Gap,place,False
+PA,4269600,Shamokin,place,False
+PA,4269616,Shamokin Dam,place,False
+PA,4269680,Shanksville,place,False
+PA,4269715,Shanor-Northvue,place,False
+PA,4269720,Sharon,place,False
+PA,4269752,Sharon Hill,place,False
+PA,4269776,Sharpsburg,place,False
+PA,4269800,Sharpsville,place,False
+PA,4269816,Shartlesville,place,False
+PA,4269832,Shavertown,place,False
+PA,4269936,Sheakleyville,place,False
+PA,4269952,Sheatown,place,False
+PA,4269984,Sheffield,place,False
+PA,4270020,Shelltown,place,False
+PA,4270032,Shellytown,place,False
+PA,4270040,Shelocta,place,False
+PA,4270056,Shenandoah,place,False
+PA,4270064,Shenandoah Heights,place,False
+PA,4270128,Sheppton,place,False
+PA,4270224,Shickshinny,place,False
+PA,4270248,Shillington,place,False
+PA,4270256,Shiloh,place,False
+PA,4270304,Shinglehouse,place,False
+PA,4270352,Shippensburg,place,False
+PA,4270362,Shippensburg University,place,False
+PA,4270368,Shippenville,place,False
+PA,4270376,Shippingport,place,False
+PA,4270384,Shiremanstown,place,False
+PA,4270408,Shirleysburg,place,False
+PA,4270464,Shoemakersville,place,False
+PA,4270568,Shrewsbury,place,False
+PA,4270608,Sickles Corner,place,False
+PA,4270640,Sidman,place,False
+PA,4270652,Sierra View,place,False
+PA,4270664,Siglerville,place,False
+PA,4270704,Silkworth,place,False
+PA,4270744,Silverdale,place,False
+PA,4270840,Simpson,place,True
+PA,4270880,Sinking Spring,place,False
+PA,4270984,Skelp,place,False
+PA,4270996,Ski Gap,place,False
+PA,4271008,Skippack,place,False
+PA,4271032,Skyline View,place,False
+PA,4271056,Slabtown,place,False
+PA,4271080,Slatedale,place,False
+PA,4271144,Slatington,place,False
+PA,4271160,Slickville,place,False
+PA,4271176,Sligo,place,False
+PA,4271184,Slippery Rock,place,False
+PA,4271210,Slippery Rock University,place,False
+PA,4271232,Slovan,place,False
+PA,4271248,Smethport,place,False
+PA,4271256,Smicksburg,place,False
+PA,4271298,Smith Corner,place,False
+PA,4271320,Smithfield,place,False
+PA,4271424,Smithton,place,False
+PA,4271456,Smock,place,False
+PA,4271504,Smoketown,place,False
+PA,4271600,Snow Shoe,place,False
+PA,4271672,Snydertown,place,False
+PA,4271776,Somerset,place,False
+PA,4271848,Soudersburg,place,False
+PA,4271856,Souderton,place,False
+PA,4271976,South Bethlehem,place,False
+PA,4272072,South Coatesville,place,False
+PA,4272080,South Connellsville,place,False
+PA,4272168,South Fork,place,False
+PA,4272192,South Greensburg,place,False
+PA,4272216,South Heights,place,False
+PA,4272376,South New Castle,place,False
+PA,4272416,South Philipsburg,place,False
+PA,4272432,South Pottstown,place,False
+PA,4272448,South Renovo,place,False
+PA,4272520,South Temple,place,False
+PA,4272552,South Uniontown,place,False
+PA,4272592,South Waverly,place,False
+PA,4272648,South Williamsport,place,False
+PA,4272344,Southmont,place,False
+PA,4272576,Southview,place,False
+PA,4272616,Southwest Greensburg,place,False
+PA,4272704,Spartansburg,place,False
+PA,4272736,Speers,place,False
+PA,4272768,Spinnerstown,place,False
+PA,4272920,Spring City,place,False
+PA,4272988,Spring Drive Mobile Home Park,place,True
+PA,4273192,Spring Grove,place,False
+PA,4273224,Spring Hill,place,True
+PA,4273264,Spring House,place,True
+PA,4273288,Spring Mills,place,False
+PA,4273312,Spring Mount,place,False
+PA,4273318,Spring Ridge,place,False
+PA,4272872,Springboro,place,False
+PA,4272960,Springdale,place,False
+PA,4273296,Springmont,place,False
+PA,4273456,Sproul,place,False
+PA,4273528,Spry,place,False
+PA,4267220,St. Clair,place,False
+PA,4267256,St. Clairsville,place,False
+PA,4267264,St. Davids,place,False
+PA,4267304,St. Lawrence,place,False
+PA,4267344,St. Marys,place,False
+PA,4267352,St. Michael,place,False
+PA,4267384,St. Petersburg,place,False
+PA,4267416,St. Vincent College,place,False
+PA,4273720,Star Junction,place,False
+PA,4273704,Starbrick,place,False
+PA,4273784,Starrucca,place,False
+PA,4273808,State College,place,True
+PA,4273848,State Line,place,True
+PA,4273888,Steelton,place,False
+PA,4274040,Stevens,place,False
+PA,4274104,Stewartstown,place,False
+PA,4274160,Stiles,place,False
+PA,4274184,Stillwater,place,False
+PA,4274224,Stockdale,place,False
+PA,4274232,Stockertown,place,False
+PA,4274288,Stoneboro,place,False
+PA,4274360,Stonerstown,place,False
+PA,4274448,Stony Creek Mills,place,False
+PA,4274416,Stonybrook,place,False
+PA,4274544,Stormstown,place,False
+PA,4274568,Stouchsburg,place,False
+PA,4274660,Stowe,place,False
+PA,4274672,Stoystown,place,False
+PA,4274712,Strasburg,place,False
+PA,4274728,Strattanville,place,False
+PA,4274744,Strausstown,place,False
+PA,4274848,Strodes Mills,place,False
+PA,4274864,Strong,place,True
+PA,4274888,Stroudsburg,place,False
+PA,4274944,Sturgeon,place,False
+PA,4275024,Sugar Grove,place,False
+PA,4275072,Sugar Notch,place,False
+PA,4275000,Sugarcreek,place,False
+PA,4275136,Summerhill,place,False
+PA,4275168,Summerville,place,False
+PA,4275248,Summit Hill,place,False
+PA,4275272,Summit Station,place,False
+PA,4275432,Sun Valley,place,True
+PA,4275296,Sunbrook,place,False
+PA,4275304,Sunbury,place,False
+PA,4275381,Sunrise Lake,place,False
+PA,4275568,Susquehanna Depot,place,False
+PA,4275574,Susquehanna Trails,place,False
+PA,4275584,Sutersville,place,False
+PA,4275648,Swarthmore,place,False
+PA,4275664,Swartzville,place,False
+PA,4275712,Swedeland,place,False
+PA,4275728,Sweden Valley,place,False
+PA,4275816,Swissvale,place,False
+PA,4275832,Swoyersville,place,False
+PA,4275888,Sykesville,place,False
+PA,4275936,Sylvan Hills,place,False
+PA,4275944,Sylvania,place,False
+PA,4275968,Table Rock,place,False
+PA,4276032,Tamaqua,place,False
+PA,4276104,Tarentum,place,False
+PA,4276144,Tatamy,place,False
+PA,4276184,Taylor,place,True
+PA,4276232,Taylorstown,place,False
+PA,4276304,Telford,place,False
+PA,4276320,Temple,place,True
+PA,4276336,Templeton,place,False
+PA,4276400,Terre Hill,place,False
+PA,4276432,Tharptown (Uniontown),place,False
+PA,4276440,The Hideout,place,False
+PA,4276496,Thompson,place,True
+PA,4276536,Thompsontown,place,False
+PA,4276552,Thompsonville,place,False
+PA,4276560,Thornburg,place,False
+PA,4276584,Thorndale,place,False
+PA,4276632,Three Springs,place,False
+PA,4276648,Throop,place,False
+PA,4276696,Tidioute,place,False
+PA,4276724,Timber Hills,place,False
+PA,4276744,Timblin,place,False
+PA,4276808,Tioga,place,False
+PA,4276848,Tionesta,place,False
+PA,4276880,Tipton,place,False
+PA,4276904,Titusville,place,False
+PA,4277016,Toftrees,place,False
+PA,4277104,Topton,place,False
+PA,4277144,Toughkenamon,place,False
+PA,4277163,Towamensing Trails,place,False
+PA,4277168,Towanda,place,False
+PA,4277184,Tower City,place,False
+PA,4277232,Townville,place,False
+PA,4277272,Trafford,place,False
+PA,4277288,Trainer,place,True
+PA,4277304,Trappe,place,False
+PA,4277335,Treasure Lake,place,False
+PA,4277392,Tremont,place,False
+PA,4277424,Tresckow,place,False
+PA,4277448,Trevorton,place,False
+PA,4277456,Trevose,place,False
+PA,4277488,Trexlertown,place,False
+PA,4277520,Trooper,place,False
+PA,4277568,Troutville,place,False
+PA,4277576,Troxelville,place,False
+PA,4277584,Troy,place,False
+PA,4277656,Trucksville,place,False
+PA,4277704,Trumbauersville,place,False
+PA,4277744,Tullytown,place,False
+PA,4277784,Tunkhannock,place,False
+PA,4277808,Tunnelhill,place,False
+PA,4277832,Turbotville,place,False
+PA,4277912,Turtle Creek,place,False
+PA,4277968,Tuscarora,place,False
+PA,4278008,Twilight,place,False
+PA,4278115,Tyler Run,place,False
+PA,4278120,Tylersburg,place,False
+PA,4278144,Tylersville,place,False
+PA,4278168,Tyrone,place,False
+PA,4278186,Tyrone Forge,place,False
+PA,4278240,Ulysses,place,False
+PA,4278448,Union City,place,False
+PA,4278456,Union Dale,place,False
+PA,4278472,Union Deposit,place,False
+PA,4278528,Uniontown,place,False
+PA,4278608,Unionville,place,False
+PA,4278698,University of Pittsburgh Bradford,place,False
+PA,4278700,University of Pittsburgh Johnstown,place,False
+PA,4278712,Upland,place,False
+PA,4279016,Upper Exeter,place,False
+PA,4279424,Ursina,place,False
+PA,4279472,Utica,place,False
+PA,4279496,Vail,place,False
+PA,4279504,Valencia,place,False
+PA,4279640,Valley Green,place,True
+PA,4279680,Valley View,place,True
+PA,4279644,Valley-Hi,place,False
+PA,4279872,Van Voorhis,place,False
+PA,4279768,Vanderbilt,place,False
+PA,4279776,Vandergrift,place,False
+PA,4279792,Vandling,place,False
+PA,4279912,Venango,place,False
+PA,4280032,Verona,place,False
+PA,4280040,Versailles,place,False
+PA,4280136,Vicksburg,place,False
+PA,4280218,Village Green-Green Ridge,place,False
+PA,4280229,Village Shires,place,False
+PA,4280248,Villanova,place,False
+PA,4280264,Vinco,place,False
+PA,4280288,Vintondale,place,False
+PA,4280336,Virginville,place,False
+PA,4280368,Volant,place,False
+PA,4280384,Vowinckel,place,False
+PA,4280432,Wagner,place,False
+PA,4280480,Wakefield,place,False
+PA,4280600,Wall,place,True
+PA,4280640,Wallaceton,place,False
+PA,4280652,Wallenpaupack Lake Estates,place,False
+PA,4280656,Waller,place,False
+PA,4280800,Walnutport,place,False
+PA,4280808,Walnuttown,place,False
+PA,4280880,Wampum,place,False
+PA,4280896,Wanamie,place,False
+PA,4280962,Warminster Heights,place,False
+PA,4281000,Warren,place,True
+PA,4281080,Warrior Run,place,False
+PA,4281328,Washington,place,True
+PA,4281360,Washington Boro,place,False
+PA,4281424,Washingtonville,place,False
+PA,4281456,Waterford,place,False
+PA,4281616,Watsontown,place,False
+PA,4281648,Wattsburg,place,False
+PA,4281664,Waverly,place,False
+PA,4281712,Waymart,place,False
+PA,4281752,Wayne,place,True
+PA,4281808,Wayne Heights,place,False
+PA,4281824,Waynesboro,place,False
+PA,4281832,Waynesburg,place,False
+PA,4281856,Weatherly,place,False
+PA,4281936,Webster,place,False
+PA,4281960,Weedville,place,False
+PA,4282008,Weigelstown,place,False
+PA,4282080,Weissport,place,False
+PA,4282088,Weissport East,place,False
+PA,4282128,Wellersburg,place,False
+PA,4282160,Wellsboro,place,False
+PA,4282200,Wellsville,place,False
+PA,4282296,Wernersville,place,False
+PA,4282320,Wescosville,place,False
+PA,4282344,Wesleyville,place,False
+PA,4282376,West Alexander,place,False
+PA,4282616,West Brownsville,place,False
+PA,4282704,West Chester,place,False
+PA,4282736,West Conshohocken,place,False
+PA,4282792,West Decatur,place,False
+PA,4282832,West Easton,place,False
+PA,4282848,West Elizabeth,place,False
+PA,4282920,West Fairview,place,False
+PA,4282952,West Falls,place,False
+PA,4283104,West Grove,place,False
+PA,4283120,West Hamburg,place,False
+PA,4283136,West Hazleton,place,False
+PA,4283172,West Hills,place,False
+PA,4283200,West Homestead,place,False
+PA,4283248,West Kittanning,place,False
+PA,4283280,West Lawn,place,False
+PA,4283328,West Leechburg,place,False
+PA,4283376,West Liberty,place,False
+PA,4283472,West Mayfield,place,False
+PA,4283496,West Middlesex,place,False
+PA,4283504,West Middletown,place,False
+PA,4283512,West Mifflin,place,False
+PA,4283520,West Milton,place,False
+PA,4283656,West Nanticoke,place,False
+PA,4283680,West Newton,place,False
+PA,4283848,West Pittsburg,place,False
+PA,4283856,West Pittston,place,False
+PA,4283928,West Reading,place,False
+PA,4284064,West Sunbury,place,False
+PA,4284144,West View,place,True
+PA,4284176,West Waynesburg,place,False
+PA,4284272,West Wyoming,place,False
+PA,4284280,West Wyomissing,place,False
+PA,4284288,West York,place,False
+PA,4282968,Westfield,place,False
+PA,4283272,Westland,place,False
+PA,4283584,Westmont,place,False
+PA,4283720,Weston,place,False
+PA,4283736,Westover,place,False
+PA,4284240,Westwood,place,False
+PA,4284376,Wheatland,place,False
+PA,4284440,Whitaker,place,False
+PA,4284552,White Haven,place,False
+PA,4284696,White Mills,place,False
+PA,4284704,White Oak,place,True
+PA,4284512,Whitehall,place,False
+PA,4284856,Whitfield,place,False
+PA,4284931,Wickerham Manor-Fisher,place,False
+PA,4284968,Wiconsico,place,False
+PA,4285076,Wilburton Number One,place,False
+PA,4285078,Wilburton Number Two,place,False
+PA,4285088,Wilcox,place,False
+PA,4285152,Wilkes-Barre,place,False
+PA,4285188,Wilkinsburg,place,False
+PA,4285272,Williamsburg,place,False
+PA,4285312,Williamsport,place,False
+PA,4285320,Williamstown,place,False
+PA,4285408,Willow Grove,place,False
+PA,4285464,Willow Street,place,False
+PA,4285496,Wilmerding,place,False
+PA,4285528,Wilmore,place,False
+PA,4285592,Wilson,place,True
+PA,4285664,Wind Gap,place,False
+PA,4285712,Wind Ridge,place,False
+PA,4285632,Windber,place,False
+PA,4285728,Windsor,place,False
+PA,4285792,Winfield,place,False
+PA,4285872,Winterstown,place,False
+PA,4285968,Witmer,place,False
+PA,4286000,Wolfdale,place,False
+PA,4286056,Womelsdorf,place,False
+PA,4286112,Woodbourne,place,False
+PA,4286128,Woodbury,place,False
+PA,4286160,Woodcock,place,False
+PA,4286224,Woodland Heights,place,False
+PA,4286288,Woodlyn,place,False
+PA,4286352,Woodside,place,False
+PA,4286432,Woodward,place,False
+PA,4286472,Woolrich,place,False
+PA,4286480,Wopsononock,place,False
+PA,4286528,Wormleysburg,place,False
+PA,4286560,Worthington,place,False
+PA,4286568,Worthville,place,False
+PA,4286576,Woxall,place,False
+PA,4286640,Wrightsville,place,False
+PA,4286656,Wyalusing,place,False
+PA,4286672,Wyano,place,False
+PA,4286712,Wylandville,place,False
+PA,4286744,Wyncote,place,False
+PA,4286776,Wyndmoor,place,False
+PA,4286856,Wyoming,place,False
+PA,4286880,Wyomissing,place,False
+PA,4286920,Yardley,place,False
+PA,4286936,Yarnell,place,False
+PA,4286952,Yatesville,place,False
+PA,4286968,Yeadon,place,False
+PA,4286976,Yeagertown,place,False
+PA,4287006,Yellow Springs,place,False
+PA,4287040,Yoe,place,False
+PA,4287048,York,place,False
+PA,4287080,York Haven,place,False
+PA,4287136,York Springs,place,False
+PA,4287064,Yorkana,place,False
+PA,4287088,Yorklyn,place,False
+PA,4287208,Youngstown,place,False
+PA,4287224,Youngsville,place,False
+PA,4287232,Youngwood,place,False
+PA,4287240,Yukon,place,False
+PA,4287272,Zelienople,place,False
+PA,4287320,Zion,place,False
+MD,,Hunt Valley,place_supplement,False
+MD,,Glen Arm,place_supplement,False
+MD,,Brooklandville,place_supplement,False
+MD,,Sparks Glencoe,place_supplement,False
