@@ -206,7 +206,7 @@ def export(run_dir, outdir="/workspace/labeling/pilot-v2.1", rubric_path=RUBRIC,
     kp = LB._write_private(run_id, f"labeling_{RELEASE}_key.json", key)
     sp = LB._write_private(run_id, f"labeling_{RELEASE}_selection.json", {**log, "strata": items[["internal_id", "task", "variant", "stratum"]].to_dict("records")})
     with open(os.path.join(outdir, "LABELING_METADATA.json"), "w") as f:
-        json.dump({"run": RELEASE, "rubric_version": RUBRIC_VERSION, "rubric_sha256": rsha, "inputs_sha256": {"rubric": rsha, "supplement": csha},
+        json.dump({"run": RELEASE, "rubric_version": RUBRIC_VERSION, "rubric_sha256": rsha, "inputs_sha256": {"rubric": rsha, "items_source": csha},
                    "order_seeds": {f"labeler_{k}": v for k, v in seeds.items()}, "n_items": len(items),
                    "per_task": items.task.value_counts().to_dict(), "key_location": "Developer-only private store (not in this folder)"}, f, indent=1)
     LB.check_no_leak(outdir); LB.check_no_disclosure(outdir, rtext); check_exported(outdir)
