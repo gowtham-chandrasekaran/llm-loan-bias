@@ -104,8 +104,8 @@ pairs per type) and not powered to rule out a race effect. It covers decisions i
 rather than Haiku, and says nothing about setups 2 and 3 or letter wording. This is why every race effect is now netted
 against the placebo rate (amendment 15.9).
 
-Any name or ZIP swap, race-signalling or not, flipped about 9.3-14.7% of decisions, against 2.7% for a byte-identical
-re-ask. So decisions near the approval line are sensitive to irrelevant identity details. That is itself worth reporting,
+Each of the five race and placebo swap types in the table flipped 9.3-14.7% of decisions, against 2.7% for a
+byte-identical re-ask. So decisions near the approval line are sensitive to irrelevant identity details. That is itself worth reporting,
 and it is why the placebo baseline matters.
 
 *Correction note:* the original `analysis.json` reported placebo name 15/149 and placebo
