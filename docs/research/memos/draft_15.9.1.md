@@ -1,7 +1,3 @@
-> **PENDING APPROVAL — NOT LOGGED.** Amendment 15.9.1 is a draft. It is not in the amendment log (`../amendment_log.md`) and has no effect until Gowtham approves it directly after Reviewer hash sign-off and Project Owner review. The probe and the setup-2 re-test it describes have not been run. Copied verbatim from `research/memos/draft_15.9.1.md` (sha256 of the original, before this header was added: `5041167fe1ed230086a89b940d7c54baa639aaccae77c4f1487885919de8e85b`) on Oct 20, 2026.
-
----
-
 # Amendment 15.9.1 (dated Oct 18, 2026): forced round-1 tool call in setup 2
 
 **Status:** awaiting Reviewer hash sign-off, Project Owner review, and Gowtham's direct confirmation. Amends draft_15.9.md (logged sha256 8c30a41f3243f133ccbca9dba4e4e22e9b249530e96cff58d14298b7543e241b).

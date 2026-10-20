@@ -36,9 +36,8 @@ the allowed fields.
 
 1. **AI decides.** The model reads the application and approves or denies, with reasons.
 2. **AI decides with a scoring tool.** The model can call a deterministic `score_application` tool (a scorecard) and then
-   decides; we log whether it called the tool and whether it overrode the tool's answer. The tool call is optional under
-   logged 15.9. Pending amendment 15.9.1 would make the round-1 call required, after which voluntary tool use is no
-   longer measured.
+   decides; we log whether it called the tool and whether it overrode the tool's answer. The tool call is required under
+   logged 15.9.1 (Oct 20); voluntary tool use is no longer measured.
 3. **Tool decides, AI writes the letter.** The decision is fixed by the scorecard; the model writes the adverse-action
    (denial or approval) letter and picks the reason codes. This is where hidden bias in wording would show up.
 
@@ -126,7 +125,7 @@ So the final tool-call rate was 549/600 = 91.5%, below the pre-stated 95% bar. O
 
 Done (Oct 20, 2026; plain-language summary: [research/s2_retest_summary.md](research/s2_retest_summary.md)):
 
-1. **Amendment 15.9.1** (sha256 5041167f; approved by Gowtham for the probe and the re-test) forces the round-1 tool
+1. **Amendment 15.9.1** (sha256 5041167f; logged, approved by Gowtham on Oct 20, 2026) forces the round-1 tool
    call in setup 2 for all vendors, so the model always sees the scorer before deciding. Original text: [research/memos/draft_15.9.1.md](research/memos/draft_15.9.1.md).
    Implementation notes: [amendment_15_9_1_forced_tool.md](amendment_15_9_1_forced_tool.md).
 2. **Probe: passed.** 2 profiles x 3 vendors x setup 2, sync and batch, 12 calls, $0.0180 (cap $0.15). Every call made
@@ -181,7 +180,7 @@ docs/research/
   amendment_log.md                which amendments are logged, with sha256 and approval
   HELD_FILES.md                   sha256 manifest of files held until labeling closes
   README.md                       index of the research docs
-  memos/draft_15.9.1.md           amendment 15.9.1, PENDING APPROVAL
+  memos/draft_15.9.1.md           amendment 15.9.1, logged (approved Oct 20, 2026)
   s2_retest_summary.md            15.9.1 probe and setup-2 re-test, plain language (operational only)
   memos/pilot_observations.md     pilot-v1 observations (independent recomputation)
   memos/pilot_analysis/           scripts and outputs behind pilot_observations.md
