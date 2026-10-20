@@ -160,6 +160,8 @@ def pc_guard(cfg, items, prices):
 def core_gate(core_rd, vendors):
     """Only operational facts from the core mini-pilot: all batches collected, budget stops, Haiku thinking rule.
     Returns {vendor: reason} for vendors whose planted calls must NOT be submitted ('not run')."""
+    from .analysis import refuse_probe_run      # Reviewer cond. (c): a probe run is never a core gate
+    refuse_probe_run(core_rd)
     st_p = os.path.join(core_rd, "batch_state.json")
     if not os.path.exists(st_p): raise SystemExit(f"REFUSING: core run {core_rd} has no batch_state.json")
     st = json.load(open(st_p))
@@ -218,6 +220,8 @@ def positive_control_mini(run_dir, not_run=None):
     """Writes pc_mini_results.json (+ pc_mini_packet.md): compliance per vendor x outcome (dose 1.0, pooled over proxies),
     dose-0 pass/fail per cell (no other numbers), operational pc rows (rates). Never computes proxy contrasts beyond R5's
     internal statistic, which is discarded after the pass/fail decision."""
+    from .analysis import refuse_probe_run
+    refuse_probe_run(run_dir)                    # Reviewer cond. (c): probe outputs never enter the planted-check analysis
     calls = [json.loads(l) for l in open(os.path.join(run_dir, "calls.jsonl"))]
     calls = [c for c in calls if c.get("pc_arm")]
     jp = os.path.join(run_dir, "judgments.jsonl")

@@ -9,11 +9,53 @@ from .regb import ALL_REASONS
 KEYS = ["vendor", "model", "effort", "setup"]
 HOLM_FAMILY = [f"{m}_{p}" for m in ("M1a", "M1b", "M2", "M3") for p in ("name", "zip")]  # fixed 8 tests
 
+PROBE_MARKER = "PROBE_EXCLUDED_FROM_ANALYSIS"     # 15.9.1 item 7: file placed in every probe output folder
+
+def refuse_probe(run_dir, records=None):
+    """15.9.1 item 7: probe outputs are excluded from all analyses. Refuse a run folder that is (inside) a marked probe
+    folder, whose run_meta says probe, or that holds any probe-tagged record."""
+    d = os.path.abspath(run_dir)
+    while True:
+        if os.path.exists(os.path.join(d, PROBE_MARKER)):
+            raise ValueError(f"refusing probe output ({os.path.join(d, PROBE_MARKER)}): 15.9.1 probe rows are excluded from all analyses")
+        if os.path.dirname(d) == d: break
+        d = os.path.dirname(d)
+    mp = os.path.join(run_dir, "run_meta.json")
+    if os.path.exists(mp) and json.load(open(mp)).get("probe"):
+        raise ValueError("refusing probe output (run_meta probe): 15.9.1 probe rows are excluded from all analyses")
+    if any(r.get("probe") or r.get("excluded_from_analysis") for r in (records or [])):
+        raise ValueError("refusing probe-tagged records: 15.9.1 probe rows are excluded from all analyses")
+
+def refuse_superseded(run_dir):
+    """15.9.1 item 5: once the setup-2 re-test replaced the core setup-2 data (llmbias.s2_replace), the core folder is not
+    an analysis input any more (its setup-2 records are superseded) and the archive inside it is never analysed. Refuse
+    both and name the merged dataset. Operational readers (positive_control.core_gate) do not call this."""
+    from .s2_replace import POINTER, MARKER
+    d = os.path.abspath(run_dir)
+    pp = os.path.join(d, POINTER)
+    if os.path.exists(pp):
+        raise ValueError(f"refusing {d}: its setup-2 data are superseded by the 15.9.1 re-test; analyse the merged dataset "
+                         f"{json.load(open(pp)).get('merged_dataset')} instead")
+    while True:
+        if os.path.exists(os.path.join(d, MARKER)):
+            raise ValueError(f"refusing superseded setup-2 archive ({d}): read-only, never analysed for effects (15.9.1 item 5)")
+        if os.path.dirname(d) == d: break
+        d = os.path.dirname(d)
+
+def refuse_probe_run(run_dir):
+    """refuse_probe on a run folder plus every record in its calls.jsonl (used by judge, labels and positive_control loaders,
+    Reviewer cond. (c) on 91baba3)."""
+    p = os.path.join(run_dir, "calls.jsonl")
+    refuse_probe(run_dir, [json.loads(l) for l in open(p) if l.strip()] if os.path.exists(p) else None)
+
 def load_calls(run_dir, confirmatory=False, legacy_pilot_v1=False):
     """legacy_pilot_v1=True reproduces the pilot-v1 figures (runs/20261012T143812-ff54324d-4745d6-batch): validity is
     derived the way 823eafc did, i.e. any dict in `parsed` counts and its decision / reason_codes are used as-is. Pilot-v1
     records predate the 15.9 validation fields, so the 15.9 path below would not reproduce them. Never use it for new runs."""
-    df = pd.DataFrame([json.loads(l) for l in open(os.path.join(run_dir, "calls.jsonl"))])
+    refuse_superseded(run_dir)
+    recs = [json.loads(l) for l in open(os.path.join(run_dir, "calls.jsonl"))]
+    refuse_probe(run_dir, recs)
+    df = pd.DataFrame(recs)
     if confirmatory:
         df = df[~df.excluded_from_confirmatory.astype(bool)]   # pilot rows never enter confirmatory analyses
     if legacy_pilot_v1:   # 823eafc derivation (pre-15.9): no exclusion_reason, no validation gate
@@ -278,6 +320,7 @@ def analyze(run_dir, n_perm=10000, legacy_pilot_v1=False, out=None):
     """legacy_pilot_v1=True: pilot-v1 reproduction (see load_calls); the 15.9-only blocks (missingness, robustness_by_setup,
     missingness_bounds) are left out, and the output goes to analysis_legacy_pilot_v1.json unless `out` is given, so the
     committed analysis.json is never overwritten."""
+    refuse_probe(run_dir); refuse_superseded(run_dir)
     meta = json.load(open(os.path.join(run_dir, "run_meta.json")))
     with open(os.path.join(run_dir, "calls.jsonl")) as _f:     # 15.9 (3a): planted-check records never enter analyze()
         if meta.get("positive_control") or any(any(k.startswith("pc_") for k in json.loads(l)) for l in _f if l.strip()):

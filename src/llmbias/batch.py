@@ -2,55 +2,80 @@
   python -m llmbias.batch --config configs/pilot_batch.yaml [--allow-paid]     # start
   python -m llmbias.batch --resume runs/<run_id> [--allow-paid]                # resume after interruption
   python -m llmbias.batch --config configs/pilot_batch.yaml --plan-only        # projected cost + trimming, no calls
-Each request is single-turn except setup 2: round 1 may return a tool call -> tool executed locally -> round 2.
+Each request is single-turn except setup 2: round 1 is forced to call score_application (15.9.1) -> tool executed locally
+-> round 2 (not forced). A setup-2 tool-rule violation on any attempt (or a blank letter after the single retry) stops the run
+(compliance_stop): in-flight batches are cancelled and drained, their worst case reserved in the ledgers until collected.
 State lives in runs/<id>/batch_state.json and is rewritten atomically after every transition.
 Live batch submission is UNTESTED (no paid batch was authorized); the mock backend exercises the full state machine."""
 import argparse, datetime as dt, hashlib, json, os, time, uuid
 import numpy as np, pandas as pd, yaml
-from .budget import BudgetGuard, BudgetExceeded, load_prices, call_cost, estimate, call_worst, token_basis, phase_projection, PHASE_CAPS
+from .budget import BudgetGuard, BudgetExceeded, load_prices, call_cost, estimate, call_worst, call_worst_cap_basis, token_basis, phase_projection, PHASE_CAPS
 from .build_data import P
-from .clients import CallResult, MockClient
-from .runner import build_record, finish_record, config_guard, load_items, git_commit, _clean
+from .clients import CallResult, MockClient, ToolArgumentError, exec_tool, round2_tool_call, thought_signature_digests
+from .runner import build_record, finish_record, config_guard, load_items, git_commit, _clean, retest_cap_meta
 from .prompts import PROMPT_VERSION
 from .scoring import TOOL_SPEC, score_application
 from .output_schema import (openai_function_tool, openai_text_format, anthropic_output_config, google_schema_config, google_apply_schema,
-                            GOOGLE_TOOLS_SCHEMA_MODE, validate_output, retry_reason, MAX_ATTEMPTS)
+                            GOOGLE_TOOLS_SCHEMA_MODE, validate_output, retry_reason, MAX_ATTEMPTS, openai_tool_choice, anthropic_tool_choice,
+                            google_forced_tool_config, s2_compliance, tool_rule, error_counts)
 
 def tool_exec(args):
     r = score_application(args); return {"score": r.score, "decision": r.decision, "reason_codes": r.reason_codes}
 
 # ----------------------------------------------------------------------------- backends
 class Backend:
-    """submit(items)->batch_id ; status(id)->'running'|'done'|'failed' ; results(id)->{cid: native} ;
+    """submit(items)->batch_id ; status(id)->'running'|'done'|'cancelled'|'failed' ; results(id)->{cid: native} (partial for
+    a cancelled batch) ; cancel(id) (Reviewer cond. 5: called on in-flight batches at a compliance stop) ;
     parse(native)->dict(text, reasoning, reasoning_kind, in, out, rt, tool_requests=[(call_id,name,args)], assistant=..., model_version)
     next_history(item, parsed, tool_outputs)->history for round 2."""
     def body(self, item): raise NotImplementedError
 
 class MockBackend(Backend):
     STORE = {}   # process-global, mimics a server that keeps results across client restarts (resume tests)
+    DELAY = {}   # model -> polls a new batch stays 'running' (tests: batches still in flight at a compliance stop)
+    POLLS, CANCELLED = {}, set()
+    EXPIRE = set()   # models whose batches end 'expired' with the first half of the results (vendors bill the completed part)
     def __init__(self): self.store = MockBackend.STORE
+    @classmethod
+    def reset(cls): cls.STORE.clear(); cls.DELAY.clear(); cls.POLLS.clear(); cls.CANCELLED.clear(); cls.EXPIRE.clear(); cls.MODEL.clear()
+    MODEL = {}
+    def cancel(self, bid): MockBackend.CANCELLED.add(bid)
     def submit(self, vendor, model, items):
-        bid = "mock_" + uuid.uuid4().hex[:10]; out = {}
+        bid = "mock_" + uuid.uuid4().hex[:10]; out = {}; MockBackend.POLLS[bid] = MockBackend.DELAY.get(model, 0); MockBackend.MODEL[bid] = model
         for it in items:
             m = MockClient(model, it["effort"], bias=it.get("bias"), fail=it.get("fail"), emulate=it.get("emulate"), pc_compliance=it.get("pc_compliance", 0.9))
             m.attempt = it.get("attempt", 1); m.setup = it.get("setup")
             emu = it.get("emulate")   # build the real vendor request body offline and check the schema mode is present
             if emu: self.bodies = getattr(self, "bodies", []) + [(it["cid"], it["round"], it.get("attempt", 1), BACKENDS[emu].body(None, {**it, "history": None}))]
             if it["round"] == 1 and it["tools"]:
-                r = m._complete(it["system"], it["user"], TOOL_SPEC, tool_exec)
-                out[it["cid"]] = {"r": r.__dict__, "tool_request": r.tool_calls[0]["args"] if r.tool_calls else None}
+                try:
+                    r = m._complete(it["system"], it["user"], TOOL_SPEC, tool_exec)
+                    out[it["cid"]] = {"r": r.__dict__, "tool_request": r.tool_calls[0]["args"] if r.tool_calls else None}
+                except ToolArgumentError as e:          # mock fault bad_tool_args: the vendor returns unparseable arguments
+                    u = e.usage; out[it["cid"]] = {"r": {"text": "", "reasoning": None, "reasoning_kind": None, "input_tokens": 2 * u["input_tokens"],
+                                                         "output_tokens": u["output_tokens"], "reasoning_tokens": 0, "model_version": u["model_version"]},
+                                                   "tool_request": e.calls[-1]["args"]}
             elif it["round"] == 2:
                 out[it["cid"]] = {"r": it["history"]["pending_final"], "tool_request": None}
+                if m._cur().get("kind") == "round2_tool" and m._fires(it["user"]): out[it["cid"]]["round2_tool_request"] = {"credit_score": 700.0}
             else:
                 out[it["cid"]] = {"r": m._complete(it["system"], it["user"], None, None).__dict__, "tool_request": None}
         self.store[bid] = out; return bid
-    def status(self, bid): return "done"
-    def results(self, bid): return self.store.pop(bid)
+    def status(self, bid):
+        if bid in MockBackend.CANCELLED: return "cancelled"
+        if MockBackend.POLLS.get(bid, 0) > 0: MockBackend.POLLS[bid] -= 1; return "running"
+        return "expired" if MockBackend.MODEL.get(bid) in MockBackend.EXPIRE else "done"
+    def results(self, bid):                               # re-readable, like the vendors' result files (resume after a crash in collect)
+        out = self.store[bid]
+        if bid in MockBackend.CANCELLED or MockBackend.MODEL.get(bid) in MockBackend.EXPIRE:
+            return dict(list(out.items())[: len(out) // 2])   # cancelled / expired: the first half finished (and is billed)
+        return out
     def parse(self, nat):
         r = nat["r"]; tr = nat["tool_request"]
         return dict(refusal=None if tr else r.get("refusal"), truncated=bool(r.get("truncated")) and not tr, text="" if tr else r["text"], reasoning=r["reasoning"], reasoning_kind=r["reasoning_kind"], inp=r["input_tokens"] if not tr else r["input_tokens"] // 2,
                     out=r["output_tokens"] if not tr else 20, rt=r["reasoning_tokens"], model_version=r["model_version"],
-                    tool_requests=[("mockcall", "score_application", tr)] if tr else [], assistant={"pending_final": r})
+                    tool_requests=[("mockcall", "score_application", tr)] if tr else ([("mockcall2", "score_application", nat["round2_tool_request"])] if nat.get("round2_tool_request") else []),
+                    assistant={"pending_final": r})
     def next_history(self, it, parsed, outputs): return parsed["assistant"]
 
 class OpenAIBackend(Backend):
@@ -61,6 +86,7 @@ class OpenAIBackend(Backend):
              "input": [{"role": "user", "content": it["user"]}] + (it["history"] or [])}
         if it["effort"]: b["reasoning"] = {"effort": it["effort"]} if it["effort"] == "none" else {"effort": it["effort"], "summary": "auto"}
         if it["tools"]: b["tools"] = [openai_function_tool(TOOL_SPEC)]; b["parallel_tool_calls"] = False
+        if it["tools"] and it["round"] == 1: b["tool_choice"] = openai_tool_choice(TOOL_SPEC["name"])   # 15.9.1: round 1 forced, round 2 not
         if it.get("setup"): b["text"] = openai_text_format(it["setup"])
         return b
     def submit(self, vendor, model, items):
@@ -69,7 +95,8 @@ class OpenAIBackend(Backend):
         return self.c.batches.create(input_file_id=f.id, endpoint="/v1/responses", completion_window="24h").id
     def status(self, bid):
         s = self.c.batches.retrieve(bid).status
-        return "done" if s == "completed" else ("failed" if s in ("failed", "expired", "cancelled") else "running")
+        return "done" if s == "completed" else ({"cancelled": "cancelled", "expired": "expired", "failed": "failed"}.get(s, "running"))
+    def cancel(self, bid): self.c.batches.cancel(bid)      # 'cancelling' -> 'cancelled'; finished requests are in output_file_id
     def results(self, bid):
         b = self.c.batches.retrieve(bid); out = {}
         for fid in [b.output_file_id, b.error_file_id]:
@@ -82,7 +109,7 @@ class OpenAIBackend(Backend):
         if resp.get("status_code") != 200: return dict(error=json.dumps(nat.get("error") or body)[:500])
         text = "".join(c.get("text", "") for o in body.get("output", []) if o.get("type") == "message" for c in o.get("content", []) if c.get("type") == "output_text")
         summ = [s.get("text", "") for o in body.get("output", []) if o.get("type") == "reasoning" for s in (o.get("summary") or [])]
-        fc = [(o["call_id"], o["name"], json.loads(o["arguments"])) for o in body.get("output", []) if o.get("type") == "function_call"]
+        fc = [(o["call_id"], o["name"], o["arguments"]) for o in body.get("output", []) if o.get("type") == "function_call"]   # parsed by exec_tool
         u = body.get("usage", {})
         trunc = body.get("status") == "incomplete" and (body.get("incomplete_details") or {}).get("reason") == "max_output_tokens"
         refusal = [c.get("refusal") for o in body.get("output", []) if o.get("type") == "message" for c in o.get("content", []) if c.get("type") == "refusal"]
@@ -101,12 +128,14 @@ class AnthropicBackend(Backend):
         elif it["effort"]:
             raise ValueError(f"Anthropic effort {it['effort']!r} not allowed (15.9 (j)); only 'none' (thinking disabled)")
         if it["tools"]: b["tools"] = [{"name": TOOL_SPEC["name"], "description": TOOL_SPEC["description"], "input_schema": TOOL_SPEC["parameters"]}]
+        if it["tools"] and it["round"] == 1: b["tool_choice"] = anthropic_tool_choice(TOOL_SPEC["name"])   # 15.9.1 (thinking stays disabled)
         if it.get("setup"): b["output_config"] = anthropic_output_config(it["setup"])
         return b
     def submit(self, vendor, model, items):
         return self.c.messages.batches.create(requests=[{"custom_id": it["cid"], "params": self.body(it)} for it in items]).id
     def status(self, bid):
         b = self.c.messages.batches.retrieve(bid); return "done" if b.processing_status == "ended" else "running"
+    def cancel(self, bid): self.c.messages.batches.cancel(bid)   # 'canceling' -> 'ended'; unprocessed requests come back as 'canceled'
     def results(self, bid):
         return {r.custom_id: r.result.model_dump() for r in self.c.messages.batches.results(bid)}
     def parse(self, nat):
@@ -132,6 +161,7 @@ class GoogleBackend(Backend):
             bud = {"none": 0, "low": 1024, "medium": 4096, "high": 8192}[it["effort"]]
             cfg["thinking_config"] = {"thinking_budget": bud, "include_thoughts": bud > 0}
         if it["tools"]: cfg["tools"] = [{"function_declarations": [{"name": TOOL_SPEC["name"], "description": TOOL_SPEC["description"], "parameters": TOOL_SPEC["parameters"]}]}]
+        if it["tools"] and it["round"] == 1: cfg["tool_config"] = google_forced_tool_config(TOOL_SPEC["name"])   # 15.9.1: mode ANY on round 1
         if it.get("setup") and google_apply_schema(it["round"], it["tools"], it.get("google_mode", GOOGLE_TOOLS_SCHEMA_MODE)):
             cfg.update(google_schema_config(it["setup"]))
             if it["tools"] and it["round"] == 2 and it.get("google_mode", GOOGLE_TOOLS_SCHEMA_MODE) == "final_turn":
@@ -143,10 +173,12 @@ class GoogleBackend(Backend):
         return job.name
     def status(self, bid):
         s = self.c.batches.get(name=bid).state.name
-        return "done" if s == "JOB_STATE_SUCCEEDED" else ("failed" if s in ("JOB_STATE_FAILED", "JOB_STATE_CANCELLED", "JOB_STATE_EXPIRED") else "running")
+        return "done" if s == "JOB_STATE_SUCCEEDED" else ({"JOB_STATE_CANCELLED": "cancelled", "JOB_STATE_EXPIRED": "expired", "JOB_STATE_FAILED": "failed"}.get(s, "running"))
+    def cancel(self, bid): self.c.batches.cancel(name=bid)
     def results(self, bid, order=None):
         job = self.c.batches.get(name=bid); order = order or self._order[bid]
-        return {cid: (r.response.model_dump(mode="json") if r.response else {"error": str(r.error)}) for cid, r in zip(order, job.dest.inlined_responses)}
+        resp = (job.dest.inlined_responses if job.dest else None) or []      # a cancelled job may have no (or partial) output
+        return {cid: (r.response.model_dump(mode="json") if r.response else {"error": str(r.error)}) for cid, r in zip(order, resp)}
     def parse(self, nat):
         if "error" in nat and not nat.get("candidates"): return dict(error=str(nat["error"])[:500])
         parts = ((nat.get("candidates") or [{}])[0].get("content") or {}).get("parts") or []
@@ -157,6 +189,7 @@ class GoogleBackend(Backend):
         return dict(refusal=f"finish_reason={safety}" if safety else (f"prompt_blocked={blk}" if blk else None), truncated=str(fr).endswith("MAX_TOKENS"), text="".join(p.get("text") or "" for p in parts if not p.get("thought")), reasoning="\n".join(p["text"] for p in parts if p.get("thought") and p.get("text")) or None,
                     reasoning_kind="thought_summary" if any(p.get("thought") for p in parts) else None, inp=u.get("prompt_token_count") or 0,
                     out=(u.get("candidates_token_count") or 0) + rt, rt=rt, model_version=nat.get("model_version"),
+                    usage_raw=dict(u), signature_parts=parts,
                     tool_requests=[(p["function_call"].get("id") or p["function_call"]["name"], p["function_call"]["name"], p["function_call"].get("args") or {}) for p in parts if p.get("function_call")],
                     assistant={"role": "model", "parts": parts})
     def next_history(self, it, parsed, outputs):
@@ -203,6 +236,9 @@ def _balances_left():
     return {v: round(b - cum.get(v, 0.0), 4) for v, b in VENDOR_BALANCE_USD.items()}
 
 # ----------------------------------------------------------------------------- engine
+ENDED_STATUS = {"done": "settled", "cancelled": "cancelled", "expired": "expired"}
+RESULTS_FETCH_TRIES = 3
+
 class BatchRun:
     def __init__(self, rd, cfg, allow_paid, state_name="batch_state.json", vendors=None):
         self.rd, self.cfg = rd, cfg; self.sp = os.path.join(rd, state_name)
@@ -212,6 +248,32 @@ class BatchRun:
         self.guard = BudgetGuard(cfg["budget_usd"], cfg.get("per_vendor_budget_usd", {}), self.prices, os.path.join(rd, "spend_ledger.jsonl"), phase=cfg.get("phase"))
         self.backends = {}
         self.state = json.load(open(self.sp)) if os.path.exists(self.sp) else None
+        self.jp = self.sp + ".collect_journal.jsonl"
+        self._replay()
+
+    # ---- incremental collect progress (ledger idempotency fix) --------------------------------------------------------
+    # collect() appends one journal line per processed result (the request's new state); the full state file is saved
+    # once per batch. After a crash partway through a batch, __init__ replays the journal onto the saved state, records
+    # which results of that batch are already applied (batches[bid]["collected"]), saves atomically and only then deletes
+    # the journal, so a resume neither redoes those results nor reverts later state. Ledger rows are keyed on
+    # (custom_id, attempt, round, batch_id), so a result whose spend was recorded just before the crash is not billed twice.
+    def _replay(self):
+        if self.state is None or not os.path.exists(self.jp): return
+        n = 0
+        for line in open(self.jp):
+            try: e = json.loads(line)
+            except ValueError: break                          # torn last line from the crash: that result is simply redone
+            self.state["requests"][e["cid"]] = e["req"]
+            b = self.state["batches"][e["bid"]]; b.setdefault("collected", [])
+            if e["cid"] not in b["collected"]: b["collected"].append(e["cid"])
+            if e.get("compliance_stop") and not self.state.get("compliance_stop"): self.state["compliance_stop"] = e["compliance_stop"]
+            n += 1
+        self.state.setdefault("journal_replays", []).append({"at": dt.datetime.now().astimezone().isoformat(), "entries": n})
+        self.save(); os.remove(self.jp)
+
+    def _journal(self, bid, cid, r):
+        with open(self.jp, "a") as f:
+            f.write(json.dumps({"bid": bid, "cid": cid, "req": r, "compliance_stop": self.state.get("compliance_stop")}, default=str) + "\n")
 
     def save(self):
         tmp = self.sp + ".tmp"; json.dump(self.state, open(tmp, "w"), default=str); os.replace(tmp, self.sp)
@@ -222,6 +284,9 @@ class BatchRun:
 
     def init(self, items, meta):
         cfg = self.cfg; trim = plan_trim(cfg, self.prices, items); reqs = {}; order = 0
+        if cfg.get("require_all_profiles") and trim["setup2_profiles_dropped"]:   # 15.9.1 re-test: the replacement needs the full grid
+            raise SystemExit(f"REFUSING: require_all_profiles but the plan would drop setup-2 profiles {trim['setup2_profiles_dropped']} "
+                             f"(projected {trim['projected_by_vendor']} vs caps {trim['per_vendor_cap']})")
         for setup in cfg["setups"]:
             for m in cfg["models"]:
                 for rep in range(cfg["repeats"]):
@@ -240,11 +305,11 @@ class BatchRun:
         self.state = {"meta": meta, "trim": trim, "requests": reqs, "batches": {}}; self.save()
 
     def _worst(self, r):
-        """K2: reserve on the cap basis (p95 x1.25, Google x2; setup 2 = both rounds). Round 2 reserves what is left of
+        """K2: reserve on the cap basis (p95 x1.25, Google x2; setup 2 = both rounds, max(pilot basis, S2_CORE_P95)). Round 2 reserves what is left of
         the per-call basis after round 1's actual cost, floored at 25% of it. No basis (mock/judge) -> old char estimate."""
         hist = len(json.dumps(r["history"])) if r["history"] else 0
         est_in = (len(r["system"]) + len(r["user"]) + hist) // 3 + (600 if r["tools"] else 0)
-        w = call_worst(self.prices, r["vendor"], r["model"], r.get("setup"), est_in, r["max_out"], 1, batch=True)
+        w = call_worst_cap_basis(self.prices, r["vendor"], r["model"], r.get("setup"), est_in, r["max_out"], batch=True)   # fix 6: cap basis
         if r.get("round", 1) == 2 and (token_basis()["tokens"].get(r["vendor"]) or {}).get(r.get("setup")):
             w = max(w - r.get("r1_cost", 0.0), 0.25 * w)
         return w
@@ -258,6 +323,7 @@ class BatchRun:
         They are resubmitted on later passes as in-flight reservations settle at actual cost. Returns the pause map;
         loop() makes it a final budget_stop only once nothing is in flight."""
         R = self.state["requests"]; chunk = self.cfg.get("batch_chunk", 500); paused = {}
+        if self.state.get("compliance_stop"): return paused          # 15.9.1: nothing new is submitted after a compliance stop
         groups = {}
         for r in sorted(R.values(), key=lambda r: r["order"]):
             if r["status"] == "pending": groups.setdefault((r["vendor"], r["model"], r["round"], r.get("attempt", 1)), []).append(r)
@@ -285,33 +351,105 @@ class BatchRun:
 
     def collect(self):
         for bid, b in self.state["batches"].items():
+            if b["status"] == "unfetched": self._refetch(bid, b); continue
             if b["status"] != "submitted": continue
             be = self.be(b["vendor"]); st = be.status(bid)
             if st == "running": continue
-            res = be.results(bid, b["ids"]) if b["vendor"] == "google" else (be.results(bid) if st == "done" else {})
+            # s2-retest fix 4: results are fetched for every ended batch (done / cancelled / expired / failed): vendors bill
+            # the completed part of an expired or cancelled batch. A failed fetch is retried on later polls; after
+            # RESULTS_FETCH_TRIES on a non-done batch it settles without results and KEEPS any reserve (never undercounts).
+            try:
+                res = be.results(bid, b["ids"]) if b["vendor"] == "google" else be.results(bid)
+                b.pop("results_error", None)
+            except Exception as e:
+                b["results_error"] = f"{type(e).__name__}: {str(e)[:300]}"; b["results_fetch_tries"] = b.get("results_fetch_tries", 0) + 1
+                if st == "done" or b["results_fetch_tries"] < RESULTS_FETCH_TRIES: self.save(); continue
+                res = None
+            done = set(b.get("collected") or [])
             for cid in b["ids"]:
-                r = self.state["requests"][cid]; nat = res.get(cid)
-                if nat is None:
-                    r["status"] = "failed"; r["error"] = f"batch {st}: no result"; continue
-                self._raw(cid, r.get("attempt", 1), r["round"], bid, nat)
-                p = be.parse(nat)
-                if p.get("error"):
-                    r["status"] = "failed"; r["error"] = p["error"]; continue
-                rt = p.get("rt"); r["usage"][0] += p["inp"]; r["usage"][1] += p["out"]
-                r["usage"][2] = None if rt is None or r["usage"][2] is None else r["usage"][2] + rt
-                self.guard.record(b["vendor"], b["model"], p["inp"], p["out"], cid, batch=True)
-                if p["tool_requests"] and r["round"] == 1:
-                    outs = [(tc_id, tool_exec(args)) for tc_id, name, args in p["tool_requests"]]
-                    r["tool_calls"] += [{"name": n, "args": a, "result": o} for (_, n, a), (_, o) in zip(p["tool_requests"], outs)]
-                    r["history"] = be.next_history(r, p, outs); r["round"] = 2; r["status"] = "pending"
-                    r["r1_cost"] = call_cost(self.prices, r["vendor"], r["model"], p["inp"], p["out"], batch=True)
-                    r["reasoning_r1"] = p["reasoning"]
-                else:
-                    reasoning = "\n".join(x for x in [r.get("reasoning_r1"), p["reasoning"]] if x) or None
-                    r["final"] = dict(text=p["text"], reasoning=reasoning, reasoning_kind=p["reasoning_kind"], model_version=p["model_version"],
-                                      truncated=bool(p.get("truncated")), refusal=p.get("refusal")); r["status"] = "done"
-                    self._maybe_retry(r)
-            b["status"] = "settled" if st == "done" else "failed"; self.save()
+                if cid in done: continue                          # applied before a crash (journal replay)
+                self._collect_one(be, bid, b, st, cid, (res or {}).get(cid))
+                self._journal(bid, cid, self.state["requests"][cid])
+            if res is not None:                                   # actuals booked above -> release (only where held)
+                rel = self.guard.release_all(b["vendor"], b["model"], bid)
+                if rel: b["released"] = rel
+                b["status"] = ENDED_STATUS.get(st, "failed")
+            else:
+                # s2-retest condition 2: the batch ended (expired / failed / cancelled) and its results could not be fetched
+                # RESULTS_FETCH_TRIES times, so whatever the vendor billed for its completed part is not in the ledgers. If no
+                # stop reserve already covers it, book a keyed worst-case placeholder (b["worst"], the amount checked against
+                # the caps at submit) in both ledgers, so the ledgers can only overcount. The batch becomes 'unfetched': later
+                # passes and resumes keep trying the fetch, and only a fetch that bills the actuals releases the hold(s).
+                for cid in b["ids"]:
+                    rq = self.state["requests"][cid]
+                    if rq["status"] == "failed" and (rq.get("error") or "").endswith("no result"):
+                        rq["unfetched"] = bid; rq["error"] = f"{rq.get('error')} (results unfetched after {RESULTS_FETCH_TRIES} tries; worst-case hold booked)"
+                if b.get("reserved") is not None or any(self.guard.has_reserve(bid).values()): b["reserve_kept"] = "results unavailable"
+                else: b["placeholder"] = self.guard.placeholder(b["vendor"], b["model"], b["worst"], bid)
+                b["ended_status"] = st; b["status"] = "unfetched"
+            b.pop("collected", None); self.save()
+            if os.path.exists(self.jp): os.remove(self.jp)
+
+    def _refetch(self, bid, b):
+        """Retry the results fetch of an 'unfetched' batch. On success, bill the requests that had no result, then release
+        its placeholder and/or stop reserve (keyed, per ledger, only where held). On failure: keep the hold(s), try later."""
+        be = self.be(b["vendor"]); st = b["ended_status"]
+        try:
+            res = be.results(bid, b["ids"]) if b["vendor"] == "google" else be.results(bid)
+        except Exception as e:
+            b["results_error"] = f"{type(e).__name__}: {str(e)[:300]}"; b["results_fetch_tries"] = b.get("results_fetch_tries", 0) + 1
+            self.save(); return
+        b.pop("results_error", None); done = set(b.get("collected") or [])
+        for cid in b["ids"]:
+            r = self.state["requests"][cid]
+            if cid in done or r.get("unfetched") != bid: continue
+            r.pop("unfetched"); r.pop("error", None); r["status"] = "submitted"
+            self._collect_one(be, bid, b, st, cid, (res or {}).get(cid))
+            self._journal(bid, cid, r)
+        rel = self.guard.release_all(b["vendor"], b["model"], bid)
+        if rel: b["released"] = rel
+        b["refetched"] = dt.datetime.now().astimezone().isoformat(); b.pop("reserve_kept", None)
+        b["status"] = ENDED_STATUS.get(st, "failed"); b.pop("collected", None); self.save()
+        if os.path.exists(self.jp): os.remove(self.jp)
+
+    def _collect_one(self, be, bid, b, st, cid, nat):
+        r = self.state["requests"][cid]
+        # requests a compliance-stop cancel kept from running are not API errors: tagged compliance_stop (cond. b counts)
+        # (fix 5: only for a cancel that was accepted and actually stopped this request: batch 'cancelled', or Anthropic 'canceled')
+        cx = "compliance_stop: cancelled batch: " if b.get("cancel_requested") and (st == "cancelled" or (isinstance(nat, dict) and nat.get("type") == "canceled")) else ""
+        if nat is None:
+            r["status"] = "failed"; r["error"] = f"{cx}batch {st}: no result"; return
+        self._raw(cid, r.get("attempt", 1), r["round"], bid, nat)
+        p = be.parse(nat)
+        if p.get("error"):
+            r["status"] = "failed"; r["error"] = cx + p["error"]; return
+        rt = p.get("rt"); r["usage"][0] += p["inp"]; r["usage"][1] += p["out"]
+        r["usage"][2] = None if rt is None or r["usage"][2] is None else r["usage"][2] + rt
+        r.setdefault("reasoning_tokens_by_round", []).append(rt)            # per round; usage[2] is the sum (None if any None)
+        if "usage_raw" in p:                                                # Gemini: full usage_metadata + signature digests (never raw)
+            r.setdefault("usage_metadata", []).append(p["usage_raw"])
+            r.setdefault("thought_signatures", []).extend(thought_signature_digests(p.get("signature_parts"), r["round"]))
+        self.guard.record(b["vendor"], b["model"], p["inp"], p["out"], cid, batch=True,
+                          key={"attempt": r.get("attempt", 1), "round": r["round"], "batch_id": bid})   # idempotent
+        bad = False
+        if p["tool_requests"] and r["round"] == 1:
+            outs = []
+            for tc_id, name, raw in p["tool_requests"]:
+                try:
+                    args, res = exec_tool(tool_exec, name, raw); outs.append((tc_id, res)); r["tool_calls"].append({"name": name, "args": args, "result": res})
+                except ToolArgumentError as e:          # Reviewer cond. (b): bad forced-call arguments -> tool_args_invalid stop
+                    r["tool_calls"] += e.calls; bad = True
+            if not bad:
+                r["history"] = be.next_history(r, p, outs); r["round"] = 2; r["status"] = "pending"
+                r["r1_cost"] = call_cost(self.prices, r["vendor"], r["model"], p["inp"], p["out"], batch=True)
+                r["reasoning_r1"] = p["reasoning"]
+                return
+        if r["round"] == 2 and p["tool_requests"]:      # Reviewer cond. (a): round-2 tool requests count toward multiple_tool_calls
+            r["tool_calls"] += [round2_tool_call(n, a) for _, n, a in p["tool_requests"]]
+        reasoning = "\n".join(x for x in [r.get("reasoning_r1"), p["reasoning"]] if x) or None
+        r["final"] = dict(text=p["text"], reasoning=reasoning, reasoning_kind=p["reasoning_kind"], model_version=p["model_version"],
+                          truncated=bool(p.get("truncated")), refusal=p.get("refusal")); r["status"] = "done"
+        self._maybe_retry(r)
 
     def _raw(self, cid, attempt, rnd, bid, nat):
         d = os.path.join(self.rd, "raw"); os.makedirs(d, exist_ok=True)
@@ -322,12 +460,77 @@ class BatchRun:
         """15.9 single retry: requeue once (attempt 2) as a follow-up batch; budget is checked in submit_pending before it is sent."""
         if not r.get("setup"): return                         # judge / non-decision batches: no decision schema, no retry
         rec = r["rec"]
-        v = validate_output(r["final"]["text"], r["setup"], rules=rec.get("validation_rules"), tool_decision=rec.get("tool_decision") if r["setup"] == 3 else None); reason = retry_reason(r["final"]["truncated"], v, r["final"].get("refusal"))
-        if reason is None or r.get("attempt", 1) >= MAX_ATTEMPTS: return
+        v = validate_output(r["final"]["text"], r["setup"], rules=rec.get("validation_rules"), tool_decision=rec.get("tool_decision") if r["setup"] == 3 else None)
+        if r["setup"] == 2:   # Reviewer cond. 1: tool rule on EVERY attempt; a violation stops the run with no retry
+            tr = tool_rule(r["tool_calls"])
+            if r.get("attempt", 1) == 1: r["first_attempt_forced_call_ok"] = tr is None
+            if tr: self._compliance_stop(r, tr); return
+        reason = retry_reason(r["final"]["truncated"], v, r["final"].get("refusal"))
+        if reason is None or r.get("attempt", 1) >= MAX_ATTEMPTS:
+            nc = s2_compliance({"setup": r["setup"], "tool_calls": r["tool_calls"], "parsed": v, "response": r["final"]["text"]})   # final, after the retry
+            if nc: self._compliance_stop(r, nc)
+            return
         assert "first_attempt" not in r, "call already retried"
         r["first_attempt"] = {"retry_reason": reason, "original_error": {"max_tokens": "max_tokens", "refusal": f"refusal: {r['final'].get('refusal')}"}.get(reason) or "; ".join(v["validation_errors"]),
-                              "response": r["final"]["text"], "usage": list(r["usage"]), "tool_calls": r["tool_calls"]}
-        r.update(attempt=2, round=1, history=None, tool_calls=[], status="pending", final=None, reasoning_r1=None)
+                              "response": r["final"]["text"], "usage": list(r["usage"]), "tool_calls": r["tool_calls"],
+                              "reasoning_tokens_by_round": r.get("reasoning_tokens_by_round")}
+        r.update(attempt=2, round=1, history=None, tool_calls=[], status="pending", final=None, reasoning_r1=None, reasoning_tokens_by_round=[])
+        r.pop("usage_metadata", None); r.pop("thought_signatures", None)
+
+    def _compliance_stop(self, r, reason):
+        if not self.state.get("compliance_stop"):
+            self.state["compliance_stop"] = {"reason": reason, "cid": r["cid"], "vendor": r["vendor"], "model": r["model"], "attempt": r.get("attempt", 1)}
+
+    def _reserve_amount(self, b):
+        """In-flight worst case of a batch at the stop: its submit-time worst, or its requests re-priced on the cap basis
+        (fix 6), whichever is larger (batches submitted by older code carry a pilot-basis worst)."""
+        R = self.state["requests"]
+        return max(b["worst"], sum(self._worst(R[c]) for c in b["ids"] if R[c]["status"] == "submitted"))
+
+    def stop_and_drain(self, poll_s, max_wait_s):
+        """Reviewer cond. (5) on 91baba3, s2-retest fixes 3 and 5. At a compliance stop:
+        1. plan: the in-flight batches, their reserve amounts and the drain deadline (stop time + drain_max_wait_s) are
+           persisted (compliance_stop.inflight_at_stop / stop_ts / drain_deadline_ts) before any ledger row is written;
+        2. reserve: per planned batch still in flight, the keyed reserve row goes to the run AND cumulative ledgers, and only
+           then is b["reserved"] persisted. A batch that settled before its reserve was booked gets none (and collect only
+           releases where a ledger holds the reserve), so every crash point nets to the actual spend;
+        3. cancel: in-flight batches are cancelled; a cancel that raises keeps cancel_error, is retried on resume, and does
+           not tag the batch's requests 'compliance_stop: cancelled batch';
+        4. drain: collect until nothing is in flight or the persisted deadline passes. collect books actuals then releases.
+        Resumable: the plan, deadline, reserves and cancels are all idempotent."""
+        cs = self.state["compliance_stop"]; B = self.state["batches"]
+        if "inflight_at_stop" not in cs:
+            plan = {bid: round(self._reserve_amount(b), 8) for bid, b in B.items() if b["status"] == "submitted"}
+            by = {}
+            for bid, amt in plan.items(): by[B[bid]["vendor"]] = round(by.get(B[bid]["vendor"], 0.0) + amt, 8)
+            now = time.time(); wait = float(self.cfg.get("drain_max_wait_s", max_wait_s))
+            cs.update(inflight_at_stop={"worst_usd": round(sum(plan.values()), 8), "by_vendor": by, "batches": plan, "n_batches": len(plan),
+                                        "basis": "max(pilot basis, S2_CORE_P95) for setup 2 (call_worst_cap_basis)"},
+                      stop_ts=now, drain_max_wait_s=wait, drain_deadline_ts=now + wait)
+            self.save()
+        for bid, amt in cs["inflight_at_stop"]["batches"].items():
+            b = B[bid]
+            if b.get("reserved") is not None: continue
+            if b["status"] != "submitted": b["reserve_skipped"] = "settled before its reserve was booked"; continue
+            self.guard.reserve(b["vendor"], b["model"], amt, bid)          # both ledgers, keyed (idempotent)
+            b["reserved"] = amt; self.save()                                # flag only after both rows exist
+        for bid, b in B.items():
+            if b["status"] == "submitted" and not b.get("cancel_requested"):
+                try:
+                    self.be(b["vendor"]).cancel(bid); b["cancel_requested"] = dt.datetime.now().astimezone().isoformat(); b.pop("cancel_error", None)
+                except Exception as e:
+                    b["cancel_error"] = f"{type(e).__name__}: {str(e)[:300]}"; b["cancel_attempts"] = b.get("cancel_attempts", 0) + 1
+        self.save()
+        while any(b["status"] == "submitted" for b in B.values()):
+            self.collect()
+            if not any(b["status"] == "submitted" for b in B.values()) or time.time() >= cs["drain_deadline_ts"]: break
+            time.sleep(poll_s)
+        left = [bid for bid, b in B.items() if b["status"] == "submitted"]
+        kept = [bid for bid, b in B.items() if b.get("reserve_kept")]
+        cs["drain"] = {"complete": not left, "still_in_flight": left, "timed_out": bool(left) and time.time() >= cs["drain_deadline_ts"],
+                       "reserve_outstanding_usd": round(sum(B[x].get("reserved") or 0.0 for x in left + kept), 8),
+                       "reserve_kept_no_results": kept, "finished": dt.datetime.now().astimezone().isoformat()}
+        self.save()
 
     def write_calls(self):
         with open(os.path.join(self.rd, "calls.jsonl"), "w") as f:
@@ -339,6 +542,11 @@ class BatchRun:
                     res.truncated = fr.get("truncated", False); res.refusal = fr.get("refusal")
                     finish_record(rec, res, call_cost(self.prices, r["vendor"], r["model"], u[0], u[1], batch=True))
                     rec["attempt"] = r.get("attempt", 1)
+                    for k in ("reasoning_tokens_by_round", "usage_metadata", "thought_signatures"):
+                        if r.get(k) is not None: rec[k] = r[k]
+                    if r.get("setup") == 2:
+                        rec["s2_compliance"] = s2_compliance(rec)
+                        if "first_attempt_forced_call_ok" in r: rec["first_attempt_forced_call_ok"] = r["first_attempt_forced_call_ok"]
                     fa = r.get("first_attempt")
                     if fa:
                         u1 = fa["usage"]; rec.update(retry_reason=fa["retry_reason"], original_error=fa["original_error"], attempt1_response=fa["response"],
@@ -346,7 +554,8 @@ class BatchRun:
                 else:
                     stops = self.state.get("vendor_budget_stops") or {}
                     why = stops.get(r["vendor"]) or stops.get("*")
-                    rec["error"] = r.get("error") or (f"budget_stop: {why}" if (r["status"] == "pending" and why) else ("budget_stop" if self.state.get("budget_stop") and r["status"] == "pending" else f"status={r['status']}"))
+                    cst = self.state.get("compliance_stop")
+                    rec["error"] = r.get("error") or (f"compliance_stop: {cst['reason']} ({cst['cid']})" if cst and r["status"] in ("pending", "submitted") else None) or (f"budget_stop: {why}" if (r["status"] == "pending" and why) else ("budget_stop" if self.state.get("budget_stop") and r["status"] == "pending" else f"status={r['status']}"))
                     rec["attempt"] = r.get("attempt", 1)
                     if r.get("first_attempt"): rec.update(retry_reason=r["first_attempt"]["retry_reason"], original_error=r["first_attempt"]["original_error"],
                                                           attempt1_response=r["first_attempt"]["response"])
@@ -360,6 +569,8 @@ class BatchRun:
         while True:
             paused = self.submit_pending(); self.collect()
             R = self.state["requests"].values()
+            if self.state.get("compliance_stop"):                       # 15.9.1 item 3: stop the run
+                self.stop_and_drain(poll_s, max_wait_s); break
             inflight = any(r["status"] == "submitted" for r in R)
             pending = [r for r in R if r["status"] == "pending"]
             # K2: pending stays eligible while anything is in flight (settling frees reservation -> resubmit next pass);
@@ -375,9 +586,15 @@ class BatchRun:
         if not write:
             self.save(); return self.rd
         self.write_calls()
-        m = self.state["meta"]; m.update(finished=dt.datetime.now().astimezone().isoformat(), budget_stop=self.state.get("budget_stop"),
+        cs = self.state.get("compliance_stop") or {}
+        m = self.state["meta"]; m.update(finished=dt.datetime.now().astimezone().isoformat(), budget_stop=self.state.get("budget_stop"), compliance_stop=self.state.get("compliance_stop"),
+                                         inflight_worst_at_stop_usd=(cs.get("inflight_at_stop") or {}).get("worst_usd"),
+                                         error_counts=error_counts([json.loads(l) for l in open(os.path.join(self.rd, "calls.jsonl"))]),
                                          spent_usd=round(self.guard.spent, 6), spent_by_vendor=self.guard.by_vendor, trim=self.state["trim"],
-                                         status_counts=pd.Series([r["status"] for r in R]).value_counts().to_dict())
+                                         status_counts=pd.Series([r["status"] for r in R]).value_counts().to_dict(),
+                                         unfetched_batches={k: {"vendor": b["vendor"], "ended_status": b.get("ended_status"), "placeholder_usd": b.get("placeholder"),
+                                                                "reserve_kept": b.get("reserve_kept"), "results_error": b.get("results_error")}
+                                                            for k, b in self.state["batches"].items() if b["status"] == "unfetched"})
         json.dump(m, open(os.path.join(self.rd, "run_meta.json"), "w"), indent=2, default=str); self.save()
         return self.rd
 
@@ -391,6 +608,8 @@ def start(cfg_path, allow_paid=False, out_root=None, limit=None, poll_s=None, ph
     rd = os.path.join(out_root or P("runs"), run_id); os.makedirs(rd)
     meta = {"run_id": run_id, "config_path": cfg_path, "config": cfg, "git_commit": git_commit(), "prompt_version": PROMPT_VERSION, "phase": cfg.get("phase"), "mode": "batch",
             "started": dt.datetime.now().astimezone().isoformat(), "pilot": bool(cfg.get("pilot")), "excluded_from_confirmatory": bool(cfg.get("pilot")), "n_items": len(items)}
+    if cfg.get("probe"): meta.update(probe=cfg["probe"], excluded_from_analysis=True)
+    if cfg.get("phase") == "minipilot_s2_retest": meta["cap_basis"] = retest_cap_meta(cfg)   # Reviewer cond. (2)
     json.dump(meta, open(os.path.join(rd, "run_meta.json"), "w"), indent=2, default=str)
     br = BatchRun(rd, cfg, allow_paid); br.init(items, meta)
     return br.loop(poll_s if poll_s is not None else cfg.get("poll_seconds", 60))

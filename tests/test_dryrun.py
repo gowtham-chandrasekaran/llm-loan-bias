@@ -16,7 +16,8 @@ def test_full_mock_dry_run(tmp_path):
     assert all(c["excluded_from_confirmatory"] for c in calls)
     assert all(c["parsed"]["parse_ok"] for c in calls)
     s2 = [c for c in calls if c["setup"] == 2]; assert all(c["tool_called"] in (True, False) for c in s2)
-    assert any(c["tool_called"] for c in s2) and any(not c["tool_called"] for c in s2)
+    assert all(c["tool_called"] and len(c["tool_calls"]) == 1 for c in s2)   # 15.9.1: round-1 tool call forced (was optional)
+    assert all(c["s2_compliance"] is None and c["round1_tool_choice"] == "forced:score_application" for c in s2)
     s3 = [c for c in calls if c["setup"] == 3]; assert all(c["parsed"]["decision"] == c["tool_decision"] for c in s3)
     assert all(c["parsed"]["letter"] for c in s3)                       # explanation text logged
     assert all(c["reasoning"] for c in calls)                           # mock exposes a trace at effort=low

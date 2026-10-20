@@ -1,5 +1,6 @@
 """Output robustness (amendment draft 15.9): native vendor JSON-schema modes, strict pydantic validation, single-retry policy.
-Schema applies to the FINAL answer only; setup 2's scoring-tool round trip is unchanged (tool calls are governed by TOOL_SPEC)."""
+Schema applies to the FINAL answer only; setup 2's scoring-tool round trip is governed by TOOL_SPEC, and since 15.9.1 (logged
+sha256 5041167f) round 1 forces the named tool for every vendor (see FORCED_TOOL_NAME / s2_compliance below)."""
 import hashlib, json, os, re
 from typing import Callable, Literal
 from pydantic import BaseModel, ConfigDict, ValidationError, field_validator, model_validator
@@ -27,6 +28,21 @@ def openai_function_tool(spec):
     params = dict(spec["parameters"]); params["additionalProperties"] = False; params["required"] = list(params["properties"])
     return {"type": "function", "name": spec["name"], "description": spec["description"], "parameters": params, "strict": True}
 
+# --- 15.9.1 (logged sha256 5041167f; item 1): forced round-1 tool call in setup 2 ---------------------------------
+# Round 1 of every setup-2 call (sync and batch, every attempt) names the single tool; round 2 is unchanged and NOT forced
+# (Gemini round 2 keeps mode NONE + response_json_schema). OpenAI keeps the strict tool and parallel_tool_calls=false.
+FORCED_TOOL_NAME = "score_application"
+MAX_TOOL_CALLS_PER_CALL = 1          # asserted on every setup-2 attempt (tool_rule): exactly one tool call
+
+def openai_tool_choice(name=FORCED_TOOL_NAME):       # Responses API
+    return {"type": "function", "name": name}
+
+def anthropic_tool_choice(name=FORCED_TOOL_NAME):    # Messages API; valid only with thinking disabled (forced tool + manual thinking = 400)
+    return {"type": "tool", "name": name}
+
+def google_forced_tool_config(name=FORCED_TOOL_NAME):  # generate_content tool_config
+    return {"function_calling_config": {"mode": "ANY", "allowed_function_names": [name]}}
+
 def anthropic_output_config(setup): # Messages API: output_config.format (GA, no beta header)
     return {"format": {"type": "json_schema", "schema": json_schema(setup)}}
 
@@ -35,9 +51,10 @@ def google_schema_config(setup):    # generate_content config keys
 
 # Gemini: structured output + function calling is Preview (Gemini 3 only). Modes:
 #   "combined"   -> schema on every round incl. the tool round (preview feature)
-#   "final_turn" -> (default) round 1 with tools and no schema; after the tool result round 2 carries the schema and
-#                   tool_config mode NONE. If round 1 answers without calling the tool, its text is validated as-is
-#                   (unconstrained) and a failure falls through to the single retry.
+#   "final_turn" -> (default) round 1 with tools and no schema (15.9.1: tool_config mode ANY, the named tool); after the
+#                   tool result round 2 carries the schema and tool_config mode NONE. If round 1 still answers without
+#                   calling the tool, its text is validated as-is (unconstrained_no_tool), a failure gets the single retry,
+#                   and a final answer without the tool call is a 15.9.1 compliance stop.
 GOOGLE_TOOLS_SCHEMA_MODE = "final_turn"
 
 SCHEMA_MODES = ("native", "native_combined", "two_round_schema", "unconstrained_no_tool")
@@ -227,6 +244,62 @@ def exclusion_reason(rec: dict) -> str | None:
     if p.get("valid"): return None
     return "max_tokens_after_retry" if rec.get("truncated") else "invalid_after_retry"
 
+# --- 15.9.1 item 3 (+ Reviewer condition 1 on 91baba3): setup-2 compliance --------------------------------------------
+# Two separate rules:
+#  * TOOL RULE, checked on EVERY attempt (attempt 1 included): exactly one call, to score_application. no_tool_call /
+#    multiple_tool_calls / wrong_tool stop the run at once, with no retry (a forced call that misbehaves is a code or
+#    vendor bug, not an output-validation failure).
+#  * BLANK LETTER: after exactly one correct call, empty answer text or an empty letter is an output-validation failure;
+#    it gets the single 15.9 retry and stops the run only if the FINAL letter is still blank. Label "blank_letter" (the
+#    core-run "Pending scorecard evaluation" pattern keeps this name).
+BLANK_LETTER = "blank_letter"
+TOOL_ARGS_INVALID = "tool_args_invalid"   # Reviewer cond. (b): forced call whose arguments do not parse / validate
+TOOL_RULE_REASONS = ("no_tool_call", "multiple_tool_calls", "wrong_tool", TOOL_ARGS_INVALID)
+S2_NONCOMPLIANCE_REASONS = TOOL_RULE_REASONS + (BLANK_LETTER,)
+
+def tool_rule(tool_calls) -> str | None:
+    """Per-attempt forced-call check. None = exactly one call to score_application with arguments that parsed and validated.
+    Tool requests from round 2 (recorded with "round": 2, not executed) count toward multiple_tool_calls (Reviewer cond. a)."""
+    tcs = tool_calls or []
+    if not tcs: return "no_tool_call"
+    if len(tcs) > MAX_TOOL_CALLS_PER_CALL: return "multiple_tool_calls"
+    if any(t.get("name") != FORCED_TOOL_NAME for t in tcs): return "wrong_tool"
+    if any(t.get("error") for t in tcs): return TOOL_ARGS_INVALID
+    return None
+
+def error_counts(records) -> dict:
+    """Unanswered calls by kind and vendor (Reviewer cond. b): api_error = API / transport failure (missing data, not a
+    compliance failure), budget_stop, compliance_stop (not sent because the run had stopped); plus tool_args_invalid
+    answers (compliance stops). Vendor = schema_vendor (emulated vendor in mock runs) else vendor."""
+    out = {"api_error": {}, "budget_stop": {}, "compliance_stop": {}, TOOL_ARGS_INVALID: {}}
+    for r in records:
+        v = r.get("schema_vendor") or r.get("vendor"); e = r.get("error")
+        k = None
+        if isinstance(e, str) and e:
+            k = "budget_stop" if e.startswith("budget_stop") else ("compliance_stop" if e.startswith("compliance_stop") else "api_error")
+        elif r.get("s2_compliance") == TOOL_ARGS_INVALID:
+            k = TOOL_ARGS_INVALID
+        if k: out[k][v] = out[k].get(v, 0) + 1
+    return {k: {"total": sum(d.values()), "by_vendor": dict(sorted(d.items()))} for k, d in out.items()}
+
+def is_blank_letter(text, parsed) -> bool:
+    """Empty answer text (when recorded), or a parsed answer whose letter is empty after strip."""
+    if text is not None and not str(text).strip(): return True
+    p = parsed if isinstance(parsed, dict) else {}
+    return "letter" in p and not str(p.get("letter") or "").strip()
+
+def s2_compliance(rec: dict) -> str | None:
+    """Final-record verdict (None = compliant, or not a setup-2 answer): the tool rule first, then the blank letter.
+    Calls without an answer (api_error / budget_stop) are missingness, not compliance failures."""
+    if rec.get("setup") != 2: return None
+    if isinstance(rec.get("error"), str) and rec["error"]: return None
+    t = tool_rule(rec.get("tool_calls"))
+    if t: return t
+    return BLANK_LETTER if is_blank_letter(rec.get("response"), rec.get("parsed")) else None
+
+class S2ComplianceStop(Exception):
+    """15.9.1 item 3: a setup-2 call finished (after the retry) without exactly one forced round-1 tool call."""
+
 # --- retry policy ----------------------------------------------------------------------------------------------
 MAX_ATTEMPTS = 2   # exactly one retry; shared by validation failures AND the planned MAX_TOKENS rerun
 
@@ -276,6 +349,10 @@ def setup_summary(records) -> list:
                                 "refusal": 0, "max_tokens": 0, "budget_stop": 0, "api_error": 0, "invalid_after_retry": 0, "schema_mode": {},
                                 "fallback": {m: 0 for m in FALLBACK_MODES}, "round2_schema_n": 0, "round2_schema_accepted": 0, "errors": {}})
         d["n"] += 1; p = r.get("parsed") or {}; ex = exclusion_reason(r); sm = r.get("schema_mode") or "none"
+        nc = s2_compliance(r)
+        if nc: d.setdefault("s2_noncompliance", {}); d["s2_noncompliance"][nc] = d["s2_noncompliance"].get(nc, 0) + 1
+        if r.get("setup") == 2 and "first_attempt_forced_call_ok" in r:      # Reviewer cond. 1: first-attempt forced-call rate
+            d["first_attempt_n"] = d.get("first_attempt_n", 0) + 1; d["first_attempt_forced_ok"] = d.get("first_attempt_forced_ok", 0) + bool(r["first_attempt_forced_call_ok"])
         d["tool_called"] += bool(r.get("tool_called")); d["valid"] += bool(p.get("valid")) and not ex
         if r.get("attempt", 1) == 2:
             d["retried"] += 1; rr = r.get("retry_reason") or "unknown"; d["retry_reasons"][rr] = d["retry_reasons"].get(rr, 0) + 1
@@ -290,6 +367,7 @@ def setup_summary(records) -> list:
     out = []
     for d in sorted(rows.values(), key=lambda d: (str(d["vendor"]), d["setup"] or 0)):
         d["tool_call_rate"] = round(d["tool_called"] / d["n"], 4) if d["setup"] == 2 and d["n"] else None
+        if d.get("first_attempt_n"): d["first_attempt_forced_call_rate"] = round(d["first_attempt_forced_ok"] / d["first_attempt_n"], 4)
         d["valid_rate"] = round(d["valid"] / d["n"], 4) if d["n"] else None
         d["round2_schema_accept_rate"] = round(d["round2_schema_accepted"] / d["round2_schema_n"], 4) if d["round2_schema_n"] else None
         out.append(d)

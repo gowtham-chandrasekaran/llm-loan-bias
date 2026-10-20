@@ -49,7 +49,8 @@ def _install_fakes(log):
         def generate_content(self, model, contents, config):
             log.append(("google", _ser({"model": model, "contents": contents, "config": config}))); n = sum(1 for v, _ in log if v == "google")
             usage = O(prompt_token_count=10, candidates_token_count=5, thoughts_token_count=0)
-            if getattr(config, "tools", None) and n % 2 == 1 and not getattr(config, "tool_config", None):
+            tc = getattr(config, "tool_config", None)   # round 1 has no tool_config (pre-15.9.1) or mode ANY (15.9.1); round 2 has mode NONE
+            if getattr(config, "tools", None) and n % 2 == 1 and (tc is None or tc.function_calling_config.mode != "NONE"):
                 parts = [O(text=None, thought=False, function_call=O(name="score_application", args=args))]
             else: parts = [O(text=final, thought=False, function_call=None)]
             return O(candidates=[O(content=O(role="model", parts=parts), finish_reason=O(name="STOP"))], usage_metadata=usage, model_version="m")

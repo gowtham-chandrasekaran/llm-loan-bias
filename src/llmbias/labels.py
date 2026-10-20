@@ -48,6 +48,8 @@ def rubric_text(path=None, prefix=None):
 # ------------------------------------------------------------------ item pool / selection
 def item_pool(run_dir):
     """All candidate items with internal ids, task, variant group, redacted text and judge label (never exported)."""
+    from .analysis import refuse_probe_run, refuse_superseded      # 15.9.1 item 7 / Reviewer cond. (c): probe outputs are never labeled
+    refuse_probe_run(run_dir); refuse_superseded(run_dir)          # 15.9.1 item 5: superseded core setup 2 is never labeled
     calls = {}
     for l in open(os.path.join(run_dir, "calls.jsonl")):
         r = json.loads(l); calls[r["call_id"]] = (r["setup"], r["variant"], (r.get("parsed") or {}).get("decision"))

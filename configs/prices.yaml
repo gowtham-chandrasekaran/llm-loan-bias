@@ -16,3 +16,9 @@ mock:
   mock-openai: {input: 0.75, output: 4.50, batch_discount: 1.0}     # 15.9 smoke test: mock emulating each vendor schema mode
   mock-anthropic: {input: 0.75, output: 4.50, batch_discount: 1.0}
   mock-google: {input: 0.75, output: 4.50, batch_discount: 1.0}
+  # s2 re-test dry run (scripts/run_s2_retest.py): mocks priced like the model they emulate at its batch price, so the
+  # mock plan is not trimmed against the $3.88 re-test cap by fictitious list prices ($0 real spend either way)
+  mock-batch-openai: {input: 0.75, output: 4.50, batch_discount: 0.5}
+  mock-batch-anthropic: {input: 0.10, output: 0.50, batch_discount: 0.5}
+  mock-batch-google: {input: 0.75, output: 3.75, batch_discount: 0.5}
+  mock-batch-judge: {input: 0.05, output: 0.40, batch_discount: 0.5}

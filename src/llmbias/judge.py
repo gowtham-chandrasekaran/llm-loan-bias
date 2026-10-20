@@ -1,6 +1,6 @@
 """Judge stage: blinded hedging rubric on letters (M1b) and blinded mention judgment on detected spans (M4).
 Usage: python -m llmbias.judge --run runs/<id> [--allow-paid]"""
-import argparse, hashlib, json, os, random, uuid, yaml
+import argparse, datetime as dt, hashlib, json, os, random, uuid, yaml
 from .blind import redact, detect_proxy_spans
 from .budget import BudgetGuard, load_prices
 from .build_data import P
@@ -14,12 +14,48 @@ def _pj(text):
         try: return json.loads(m.group(0)) if m else {}
         except Exception: return {}
 
+class BlindKey:
+    """Judge blind key (item_id -> call_id, variant): written ONLY to the private store <PRIVATE>/<run_id>/blind_key.jsonl
+    (dir 700, file 600), never into the run folder (s2-retest condition 1). On close the file's sha256 is appended to the
+    per-run MANIFEST and the top-level MANIFEST (both 600). An earlier key for the same run is kept, renamed
+    blind_key.superseded-<ts>.jsonl, not overwritten."""
+    def __init__(self, run_dir, mode):
+        from . import labels as LB
+        meta = json.load(open(os.path.join(run_dir, "run_meta.json")))
+        self.run_id = meta.get("run_id") or os.path.basename(os.path.normpath(run_dir)); self.run_dir = os.path.abspath(run_dir); self.mode = mode
+        self.root = LB.PRIVATE; self.dir = LB._private_dir(self.run_id); self.path = os.path.join(self.dir, "blind_key.jsonl")
+        if os.path.realpath(self.dir).startswith(os.path.realpath(self.run_dir) + os.sep):
+            raise SystemExit(f"blind-key store {self.dir} is inside the run folder; refusing")
+        self.ts = dt.datetime.now().astimezone().isoformat(timespec="seconds")
+        if os.path.exists(self.path):
+            old = os.path.join(self.dir, f"blind_key.superseded-{self.ts.replace(':', '')}.jsonl"); os.replace(self.path, old); os.chmod(old, 0o600)
+        self.f = os.fdopen(os.open(self.path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w"); os.chmod(self.path, 0o600)
+
+    def write(self, s): self.f.write(s)
+
+    @staticmethod
+    def _append(path, line):
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+        with os.fdopen(fd, "a") as f: f.write(line + "\n")
+        os.chmod(path, 0o600)
+
+    def close(self):
+        self.f.close(); h = hashlib.sha256(open(self.path, "rb").read()).hexdigest()
+        self._append(os.path.join(self.dir, "MANIFEST"), f"{self.ts} blind_key.jsonl sha256 {h} written by judge ({self.mode}) for {self.run_dir}")
+        self._append(os.path.join(self.root, "MANIFEST"), f"{h}  {self.run_id}/blind_key.jsonl  added {self.ts} (judge {self.mode}, s2-retest cond. 1)")
+        self.sha256 = h; return h
+
+def _no_probe(run_dir):
+    from .analysis import refuse_probe_run, refuse_superseded      # 15.9.1 item 7 / Reviewer cond. (c): probe outputs are never judged
+    refuse_probe_run(run_dir); refuse_superseded(run_dir)          # 15.9.1 item 5: nor a superseded core / its archive
+
 def run_judge(run_dir, allow_paid=False, setups=(1, 2, 3)):
+    _no_probe(run_dir)
     meta = json.load(open(os.path.join(run_dir, "run_meta.json"))); cfg = meta["config"]; j = cfg["judge"]
     if j["vendor"] != "mock" and not allow_paid: raise SystemExit("judge is a paid vendor; pass --allow-paid")
     client = make_client(j["vendor"], j["model"], j.get("effort"), max_output_tokens=300)
     guard = BudgetGuard(cfg["budget_usd"], cfg.get("per_vendor_budget_usd", {}), load_prices(P("configs", "prices.yaml")), os.path.join(run_dir, "spend_ledger.jsonl"))
-    out = open(os.path.join(run_dir, "judgments.jsonl"), "w"); key = open(os.path.join(run_dir, "blind_key.jsonl"), "w")
+    out = open(os.path.join(run_dir, "judgments.jsonl"), "w"); key = BlindKey(run_dir, "sync")
     for line in open(os.path.join(run_dir, "calls.jsonl")):
         r = json.loads(line)
         if r.get("setup") not in setups or not r.get("parsed", {}).get("parse_ok"): continue
@@ -46,6 +82,7 @@ def run_judge(run_dir, allow_paid=False, setups=(1, 2, 3)):
 def _judge_items(run_dir, setups, select=None, hedging_only=False):
     """Yield (call_rec, item_id, [(kind, key, system, user, extra)]) for every parsed call. Detection on ORIGINAL text, judging on redacted.
     select(rec) -> bool restricts the records (planted check: M1b only); hedging_only skips the M4 span jobs."""
+    _no_probe(run_dir)
     for line in open(os.path.join(run_dir, "calls.jsonl")):
         r = json.loads(line)
         if r.get("setup") not in setups or not (r.get("parsed") or {}).get("parse_ok"): continue
@@ -65,6 +102,7 @@ def _judge_items(run_dir, setups, select=None, hedging_only=False):
 def run_judge_batch(run_dir, allow_paid=False, setups=(1, 2, 3), poll_s=None, select=None, hedging_only=False):
     """Pre-reg 15.3 #1: judge calls also go through the vendor batch API (same budget ledger, chunk-level hard stop). Resumable."""
     from .batch import BatchRun
+    _no_probe(run_dir)
     meta = json.load(open(os.path.join(run_dir, "run_meta.json"))); cfg = meta["config"]; j = cfg["judge"]
     br = BatchRun(run_dir, cfg, allow_paid, state_name="judge_batch_state.json", vendors=[j["vendor"]])
     items = list(_judge_items(run_dir, setups, select, hedging_only))
@@ -79,7 +117,7 @@ def run_judge_batch(run_dir, allow_paid=False, setups=(1, 2, 3), poll_s=None, se
                 order += 1
         br.init_requests(reqs, {"run_id": meta["run_id"], "kind": "judge", "config": cfg})
     br.loop(poll_s if poll_s is not None else cfg.get("poll_seconds", 60), write=False)
-    R = br.state["requests"]; out = open(os.path.join(run_dir, "judgments.jsonl"), "w"); key = open(os.path.join(run_dir, "blind_key.jsonl"), "w")
+    R = br.state["requests"]; out = open(os.path.join(run_dir, "judgments.jsonl"), "w"); key = BlindKey(run_dir, "batch")
     for r, item_id, jobs in items:
         key.write(json.dumps({"item_id": item_id, "call_id": r["call_id"], "variant": r["variant"]}) + "\n")
         rec = {"item_id": item_id, "call_id": r["call_id"], "spans": [], "judge_mode": "batch"}
@@ -104,6 +142,7 @@ REJUDGE_STATE = "rejudge_m4_v2_state.json"
 def m4_span_pool(run_dir):
     """All judged spans in a run, with 15.8.3 filtering stats. Dedup is across the run on normalized redacted text."""
     from .blind import filter_spans_random, has_substantive_placeholder, reredact
+    _no_probe(run_dir)
     spans = []
     for l in open(os.path.join(run_dir, "judgments.jsonl")):
         j = json.loads(l)

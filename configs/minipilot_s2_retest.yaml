@@ -1,0 +1,44 @@
+# 15.9.1 SETUP-2 RE-TEST (amendment memos/draft_15.9.1.md, logged sha256 5041167f...; items 4-6). NOT yet run live: needs
+# Gowtham's direct "run it" after the probe PASS (live probe 20261020T181308-684ca6-live passed). Driver: scripts/run_s2_retest.py
+# (mock dry run by default; live only with --live). Same 25 pilot profiles, variants, repeats, models, settings and seeds as
+# configs/minipilot_haiku_batch.yaml (core run 20261018T124607-e5e8b45a-1a973e-batch); setup 2 ONLY:
+# 25 profiles x 8 variants x 3 repeats = 600 calls per vendor, 1,800 calls, + judge (OpenAI gpt-5-nano) on the letters.
+# Item 5: the new setup-2 data replace the core setup-2 data UNCONDITIONALLY (llmbias.s2_replace: core setup-2 archived
+# read-only, merged dataset = core setups 1+3 + re-test setup 2). Item 6: the planted check runs after the re-test.
+run_seed: 777
+trim_seed: 20261012
+phase: minipilot_s2_retest     # budget.PHASE_CAPS['minipilot_s2_retest']
+pilot: true                    # outputs excluded_from_confirmatory
+amendment_sha256: 5041167fe1ed230086a89b940d7c54baa639aaccae77c4f1487885919de8e85b
+replaces_setup2_of: 20261018T124607-e5e8b45a-1a973e-batch
+require_all_profiles: true     # refuse to start rather than trim setup-2 profiles (the replacement needs the full grid)
+mode: batch
+# CAP BASIS (budget.retest_cap_basis, written to run_meta.cap_basis): per vendor max(pilot token basis configs/token_basis.yaml,
+# core setup-2 actual p95 tokens budget.S2_CORE_P95), p95 x1.25, Google price x2, +5% reruns, judge x3 billed to OpenAI,
+# cent ceiling: openai max(0.9775 + judge 0.0974, 1.1387 + 0.0974) = 1.2361 -> 1.24 (core actuals);
+# anthropic max(0.2879, 0.3857) -> 0.39 (core actuals); google max(2.2497, 2.0781) -> 2.25 (pilot basis); total 3.88.
+budget_usd: 3.88
+per_vendor_budget_usd: {openai: 1.24, anthropic: 0.39, google: 2.25, mock: 3.88}
+expected_prompt_version: v2.0-m1a
+letter_lexicon_sha256: fc2f89973b0464da08d87e6e76b73ffc435530c946fe854922ab992631df2e6b
+repeats: 3
+setups: [2]
+variants: [base, control_dup, name_b, name_w_placebo, name_b_placebo, zip_b, zip_placebo, anchor]
+models:
+  - {vendor: openai, model: gpt-5.4-mini, effort: none}
+  - {vendor: anthropic, model: claude-haiku-5-5, effort: none}
+  - {vendor: google, model: gemini-3.8-flash, effort: none}
+judge: {vendor: openai, model: gpt-5-nano, effort: minimal}
+max_output_tokens: 2048
+m1a_require_codes_on_deny_setup3: true
+google_tools_schema_mode: final_turn
+batch_chunk: 500
+poll_seconds: 60
+est_tokens:
+  input: 750
+  output_visible: 350
+  reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}
+  tool_overhead: {openai: 800, anthropic: 2200, google: 1000, mock: 300}
+  tool_call_output: 60
+  judge_input: 350
+  judge_output: 40

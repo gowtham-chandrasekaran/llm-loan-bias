@@ -130,7 +130,7 @@ def test_google_schema_mode_logged_every_call(tmp_path):
     rd = B.start(_bcfg(tmp_path, models=models, setups=[3, 2], repeats=1), out_root=str(tmp_path), limit=4, poll_s=0)
     calls = [json.loads(l) for l in open(os.path.join(rd, "calls.jsonl"))]
     modes = {c["schema_mode"] for c in calls}; assert all(c["schema_mode"] for c in calls)
-    assert {"native", "two_round_schema", "unconstrained_no_tool"} <= modes
+    assert modes == {"native", "two_round_schema"}          # 15.9.1: round 1 forced, so unconstrained_no_tool no longer occurs
     for c in calls:
         if c["setup"] == 2: assert c["schema_mode"] == ("two_round_schema" if c["tool_called"] else "unconstrained_no_tool")
     rep = OS.robustness_report(calls)["schema_mode"]
@@ -870,6 +870,7 @@ def test_google_two_round_batch_end_to_end(tmp_path):
     bodies = be["b"].bodies
     r1 = [b for _, rnd, _, b in bodies if rnd == 1]; r2 = [b for _, rnd, _, b in bodies if rnd == 2]
     assert r1 and all(b["config"].get("tools") and "response_json_schema" not in b["config"] for b in r1)
+    assert all(b["config"]["tool_config"] == {"function_calling_config": {"mode": "ANY", "allowed_function_names": ["score_application"]}} for b in r1)   # 15.9.1
     assert r2 and all(b["config"]["response_mime_type"] == "application/json" and b["config"]["response_json_schema"]
                       and b["config"]["tool_config"]["function_calling_config"]["mode"] == "NONE" for b in r2)
     assert len(r2) == sum(c["tool_called"] for c in calls)
@@ -923,6 +924,8 @@ def test_google_sync_client_two_round_real_code_offline(monkeypatch):
     assert len(seen) == 2
     c1, c2 = seen[0].__dict__, seen[1].__dict__
     assert c1.get("tools") and "response_json_schema" not in c1                       # round 1: tool, no schema
+    fc1 = c1["tool_config"].function_calling_config.__dict__                        # 15.9.1: round 1 forced (mode ANY, named tool)
+    assert fc1 == {"mode": "ANY", "allowed_function_names": ["score_application"]}
     assert c2["response_mime_type"] == "application/json" and c2["response_json_schema"] == OS.json_schema(2)
     assert c2["tool_config"].function_calling_config.mode == "NONE"
     assert r.tool_calls and OS.validate_output(r.text, 2)["valid"]

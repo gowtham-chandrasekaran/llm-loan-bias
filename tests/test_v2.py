@@ -42,7 +42,7 @@ def test_batch_mock_end_to_end(tmp_path):
     calls = [json.loads(l) for l in open(os.path.join(rd, "calls.jsonl"))]
     assert len(calls) == 4 * 8 * 3 * 3 and all(c["batch"] for c in calls) and all(c.get("parsed", {}).get("parse_ok") for c in calls)
     s2 = [c for c in calls if c["setup"] == 2]
-    assert any(c["tool_called"] for c in s2) and any(not c["tool_called"] for c in s2)
+    assert all(c["tool_called"] and c["s2_compliance"] is None for c in s2)   # 15.9.1: forced round-1 tool call (was optional)
     assert all(c["tool_calls"][0]["result"]["decision"] in ("approve", "deny") for c in s2 if c["tool_called"])
     assert all(c["reasoning_tokens"] is not None and "visible_output_tokens" in c for c in calls)
     st = json.load(open(os.path.join(rd, "batch_state.json"))); assert any(b["round"] == 2 for b in st["batches"].values())

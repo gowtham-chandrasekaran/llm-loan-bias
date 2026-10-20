@@ -1,0 +1,38 @@
+# 15.9.1 PROBE (amendment memos/draft_15.9.1.md, logged sha256 5041167f...; item 7). NOT yet run live: needs Gowtham's direct
+# "run it" (separate from the re-test's). Driver: scripts/run_s2_probe.py (dry run by default; live only with --live).
+# 2 pilot profiles (1 tool-approve, 1 tool-deny) x 3 vendors x setup 2, base variant, 1 repeat, on the sync AND batch paths
+# = 12 calls (24 API requests; at most 48 if every call were retried). No judge. Outputs: runs/probe_s2/ (marked
+# PROBE_EXCLUDED_FROM_ANALYSIS; analysis refuses them; never part of the re-test replacement data).
+run_seed: 777                  # same rendering as the core mini-pilot
+phase: minipilot_s2_probe      # budget.PHASE_CAPS['minipilot_s2_probe'] = $0.15 total (sync + batch together)
+pilot: true                    # outputs excluded_from_confirmatory
+probe: s2_forced_tool_15_9_1   # every record and run_meta tagged probe + excluded_from_analysis
+amendment_sha256: 5041167fe1ed230086a89b940d7c54baa639aaccae77c4f1487885919de8e85b
+mode: sync+batch
+budget_usd: 0.15               # batch path gets 0.15 minus the sync path's actual spend
+# Deterministic selection (probe_s2.select_profiles, re-derived by the guard): pilot profiles, base variant, sorted by
+# profile_id; the lowest profile_id whose score_application decision is approve / deny.
+probe_profiles: {approve: P001, deny: P000}
+profile_ids: [P000, P001]
+setups: [2]
+variants: [base]
+repeats: 1
+models:                        # same models and settings as the core mini-pilot
+  - {vendor: openai, model: gpt-5.4-mini, effort: none}
+  - {vendor: anthropic, model: claude-haiku-5-5, effort: none}
+  - {vendor: google, model: gemini-3.8-flash, effort: none}
+max_output_tokens: 2048
+m1a_require_codes_on_deny_setup3: true
+expected_prompt_version: v2.0-m1a
+letter_lexicon_sha256: fc2f89973b0464da08d87e6e76b73ffc435530c946fe854922ab992631df2e6b
+google_tools_schema_mode: final_turn
+batch_chunk: 500
+poll_seconds: 30
+est_tokens:                    # legacy estimate fields (used only by the mock dry run's batch plan)
+  input: 750
+  output_visible: 350
+  reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}
+  tool_overhead: {openai: 800, anthropic: 2200, google: 1000, mock: 300}
+  tool_call_output: 60
+  judge_input: 350
+  judge_output: 40
