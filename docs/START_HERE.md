@@ -35,9 +35,9 @@ the allowed fields.
 ## 3. The 3 setups
 
 1. **AI decides.** The model reads the application and approves or denies, with reasons.
-2. **AI decides with a scoring tool.** The model can call a deterministic `score_application` tool (a scorecard) and then
-   decides; we log whether it called the tool and whether it overrode the tool's answer. The tool call is required under
-   logged 15.9.1 (Oct 20); voluntary tool use is no longer measured.
+2. **AI decides with a scoring tool.** The model must first call a deterministic `score_application` tool (a scorecard),
+   sees its score, and then decides; we log whether its final decision overrode the tool's answer. Before 15.9.1 (logged
+   Oct 20) the call was optional; voluntary tool use is no longer measured.
 3. **Tool decides, AI writes the letter.** The decision is fixed by the scorecard; the model writes the adverse-action
    (denial or approval) letter and picks the reason codes. This is where hidden bias in wording would show up.
 
@@ -185,7 +185,7 @@ docs/research/
   amendment_log.md                which amendments are logged, with sha256 and approval
   HELD_FILES.md                   sha256 manifest of files held until labeling closes
   README.md                       index of the research docs
-  memos/draft_15.9.1.md           amendment 15.9.1, logged Oct 20 (sha256 5041167f)
+  memos/draft_15.9.1.md           amendment 15.9.1, logged Oct 20 (sha256 5041167f); the file's own status line predates logging; amendment_log.md is authoritative
   s2_retest_summary.md            15.9.1 probe and setup-2 re-test, plain language (operational only)
   memos/pilot_observations.md     pilot-v1 observations (independent recomputation)
   memos/pilot_analysis/           scripts and outputs behind pilot_observations.md
