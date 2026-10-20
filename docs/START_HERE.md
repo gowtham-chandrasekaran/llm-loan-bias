@@ -50,7 +50,7 @@ from each run's `run_meta.json`.
 |---|---|---|---|
 | Model (OpenAI) | `gpt-5.4-mini` | reasoning `effort = "none"` | live check Oct 12 (`live_checks_thinking.json`): 0 reasoning tokens |
 | Model (Google) | `gemini-3.8-flash` | `thinking_budget = 0` | live check Oct 12: 0 thought tokens |
-| Model (Anthropic) | `claude-haiku-5-5` | `thinking = {"type": "disabled"}` | Models API says disabling is supported; a live check is part of the 15.9.1 probe |
+| Model (Anthropic) | `claude-haiku-5-5` | `thinking = {"type": "disabled"}` | Models API says disabling is supported; confirmed live in the 15.9.1 probe and re-test (0 reasoning tokens in both rounds) |
 | Judge | `gpt-5-nano` (OpenAI) | reasoning `effort = "minimal"` (the lowest setting it accepts) | live check Oct 12 (`live_checks_judge.json`): 0 reasoning tokens |
 
 Other settings: `max_output_tokens` 2048 (pilot-v1: 800), 3 repeats per prompt, batch APIs, setups run in the order
@@ -125,7 +125,7 @@ So the final tool-call rate was 549/600 = 91.5%, below the pre-stated 95% bar. O
 
 Done (Oct 20, 2026; plain-language summary: [research/s2_retest_summary.md](research/s2_retest_summary.md)):
 
-1. **Amendment 15.9.1** (sha256 5041167f; logged, approved by Gowtham on Oct 20, 2026) forces the round-1 tool
+1. **Amendment 15.9.1** (sha256 5041167f; logged Oct 20 after Gowtham approved it; the probe and the re-test were each run on his separate go-ahead) forces the round-1 tool
    call in setup 2 for all vendors, so the model always sees the scorer before deciding. Original text: [research/memos/draft_15.9.1.md](research/memos/draft_15.9.1.md).
    Implementation notes: [amendment_15_9_1_forced_tool.md](amendment_15_9_1_forced_tool.md).
 2. **Probe: passed.** 2 profiles x 3 vendors x setup 2, sync and batch, 12 calls, $0.0180 (cap $0.15). Every call made
@@ -141,8 +141,13 @@ Next:
    the old setup-2 records are archived read-only and reported only as operational rows.
 5. **Planted-bias check**: bias is planted at known sizes to check that the pipeline detects bias of a known size before trusting a null result (rules in the logged 15.9
    erratum, held until labeling closes; implementation in `src/llmbias/positive_control.py`).
-6. **Decision gate** (15.9(5b)): a written go/no-go decision from the mini-pilot results.
-7. **Main run: gated.** No paid call after the mini-pilot without the written gate decision.
+6. **Reviewer's M4 precision audit**, before the gate.
+7. **Decision gate** (15.9(5b)): a written go/no-go decision from the mini-pilot results.
+8. **OpenAI budget decision (Gowtham).** The main-run OpenAI worst case is $23.50 (including the judge); the remaining
+   OpenAI balance is about $15.51 (configured $20.00 balance minus $4.49 spent per the ledger). This is based on the
+   configured balance, not on vendor billing.
+9. **Reconcile the ledger against vendor billing.**
+10. **Main run: gated.** No paid call after the mini-pilot without the written gate decision.
 
 ## 8. Reproduce the numbers offline (no API keys, no paid calls)
 
@@ -180,7 +185,7 @@ docs/research/
   amendment_log.md                which amendments are logged, with sha256 and approval
   HELD_FILES.md                   sha256 manifest of files held until labeling closes
   README.md                       index of the research docs
-  memos/draft_15.9.1.md           amendment 15.9.1, logged (approved Oct 20, 2026)
+  memos/draft_15.9.1.md           amendment 15.9.1, logged Oct 20 (sha256 5041167f)
   s2_retest_summary.md            15.9.1 probe and setup-2 re-test, plain language (operational only)
   memos/pilot_observations.md     pilot-v1 observations (independent recomputation)
   memos/pilot_analysis/           scripts and outputs behind pilot_observations.md

@@ -17,7 +17,7 @@ Haiku 5.5 often skipped it. Out of its 600 setup-2 calls:
 
 That is below the pre-stated 95% bar. OpenAI and Google called the tool in 600 of 600 calls each.
 
-Amendment 15.9.1 makes the first-round tool call **required** for all three vendors (OpenAI `tool_choice` naming the
+Amendment 15.9.1 (logged Oct 20 after Gowtham approved it; the probe and the re-test were each run on his separate go-ahead) makes the first-round tool call **required** for all three vendors (OpenAI `tool_choice` naming the
 function; Anthropic `tool_choice` naming the tool, with thinking disabled; Gemini function-calling mode `ANY` limited to
 the scoring tool). The second round, where the model writes its answer after seeing the score, is unchanged and not
 forced. Setup 2 now always shows the model the score before it decides. It no longer measures whether a model would
@@ -31,14 +31,12 @@ batch APIs, 12 calls in all, cap $0.15.
 - **Passed** on both paths: every call made the forced tool call on its first attempt, returned a valid final answer,
   and made at most one tool call. Haiku's thinking stayed off (0 reasoning tokens, no thinking text).
 - No retries, stops or errors. Spend $0.0180.
-- In one sync call (OpenAI, an approve-by-score profile) the model's final decision differed from the tool's
-  recommendation. Setup 2 allows this, so it counts as a normal result, not a fault.
 
 ## Re-test results (Oct 20, 19:02-19:29 ET)
 
 Setup 2 re-run on the same 25 pilot profiles, 8 variants and 3 repeats as the core mini-pilot, for all three vendors:
 600 calls per vendor, 1,800 in total, through the batch APIs, plus the judge on all 1,800 letters. Run
-`20261020T190210-ee9b9f61-a646ff-batch`, code at commit `fd483bc`.
+`20261020T190210-ee9b9f61-a646ff-batch`, code at commit `fd483bc` (published squashed as `ca143fe`).
 
 | | OpenAI `gpt-5.4-mini` | Anthropic `claude-haiku-5-5` | Google `gemini-3.8-flash` |
 |---|---|---|---|
@@ -55,7 +53,13 @@ Setup 2 re-run on the same 25 pilot profiles, 8 variants and 3 repeats as the co
   none refused.
 - **Haiku reasoning tokens:** 0 in round 1 and 0 in round 2 (`[0, 0]`) on all 600 calls, and no thinking text. So
   "thinking disabled" held with the forced tool call.
-- **Judge:** complete. All 1,800 letters were judged (3,090 judge requests, all answered, no budget stop).
+- **Judge:** complete. All 1,800 letters were judged (3,090 judge requests, all answered, no budget stop). There are
+  more requests than letters because the judge does two kinds of check. Every letter gets one check for hedging or
+  discouraging tone (1,800 requests). In addition, every sentence that names the applicant or mentions a place or a
+  demographic word is checked on its own, with the name and ZIP code blanked out, for whether it refers to the
+  applicant's background (1,290 requests). 988 letters had at least one such sentence (690 had one, 294 had two,
+  4 had three) and 812 had none. Greetings and sign-offs are skipped. The code also scans the model's rationale and
+  reasoning text for such sentences, but in this run all 1,290 came from the letters.
 - **Spend:** $1.8208 in total against $3.88 in caps. Before the run, the expected cost was $1.70 and the worst case on the
   cap basis was $3.87. The amendment had estimated "about $1.82". Cumulative spend for the project is now **$16.4823**
   of the $200 limit.
@@ -90,5 +94,10 @@ hash.
    tool for this is `python -m llmbias.s2_replace`; it has not been run on the real core yet.
 2. **Planted-bias check (item 6).** Bias is planted at known sizes to check that the pipeline detects bias of a known
    size before a null result is trusted.
-3. **Decision gate (15.9(5b)).** A written go/no-go decision from the mini-pilot results.
-4. **Main run: gated.** No paid call after the mini-pilot without the written gate decision.
+3. **Reviewer's M4 precision audit.** The Reviewer checks the precision of the M4 measure before the gate.
+4. **Decision gate (15.9(5b)).** A written go/no-go decision from the mini-pilot results.
+5. **OpenAI budget decision (Gowtham).** The main run's OpenAI worst case is $23.50 (including the judge), but the
+   remaining OpenAI balance is about $15.51: the configured $20.00 balance minus $4.49 spent so far (ledger $4.4866).
+   This is based on the balance configured in the code, not on the vendor's billing page.
+6. **Reconcile the ledger against vendor billing.** Check the project's spend ledger against each vendor's own billing.
+7. **Main run: gated.** No paid call after the mini-pilot without the written gate decision.
