@@ -1,0 +1,28 @@
+anthropic implied $/1M in,out [1. 5.]
+google implied $/1M in,out [0.375 1.875]
+openai implied $/1M in,out [0.375 2.25 ]
+google setup1 fix add per call 6.468749999999998e-05
+cost per profile (3 vendors, 8 variants x3 reps): {1: np.float64(0.1341), 2: np.float64(0.2154), 3: np.float64(0.1063)} all 0.4558
+anthropic full-pilot cost re-est 7.71 vs projected 5.134
+z 2.7343687865331767
+name_b sd 0.1952 units 195 deny profiles 65 profiles@48%deny 136
+name_b sd 0.2546 units 332 deny profiles 111 profiles@48%deny 231
+zip_b sd 0.1866 units 179 deny profiles 60 profiles@48%deny 125
+zip_b sd 0.2434 units 304 deny profiles 102 profiles@48%deny 212
+control sd 0.1688 units 146 deny profiles 49 profiles@48%deny 102
+control sd 0.2202 units 248 deny profiles 83 profiles@48%deny 173
+MDE units 200 0.0642
+MDE units 330 0.0499
+MDE units 450 0.0428
+MDE units 600 0.037
+remaining 189.419
+name optimistic 0.1455 units 138 profiles 46 setup1 cost 6.17
+name point 0.0667 units 300 profiles 100 setup1 cost 13.41
+name pessimistic 0.009 units 2223 profiles 741 setup1 cost 99.39
+zip optimistic 0.1645 units 122 profiles 41 setup1 cost 5.5
+zip point 0.0811 units 247 profiles 83 setup1 cost 11.13
+zip pessimistic 0.0194 units 1031 profiles 344 setup1 cost 46.14
+profiles 150 cost all setups 68.36 setup1 units/proxy 450 exp net flips name 30.0 [ 4.0 65.5 ] zip 36.5 [ 8.7 74.0 ]
+profiles 230 cost all setups 104.83 setup1 units/proxy 690 exp net flips name 46.0 [ 6.2 100.4 ] zip 56.0 [ 13.4 113.5 ]
+profiles 300 cost all setups 136.73 setup1 units/proxy 900 exp net flips name 60.0 [ 8.1 130.9 ] zip 73.0 [ 17.5 148.1 ]
+profiles 400 cost all setups 182.31 setup1 units/proxy 1200 exp net flips name 80.0 [ 10.8 174.6 ] zip 97.3 [ 23.3 197.4 ]

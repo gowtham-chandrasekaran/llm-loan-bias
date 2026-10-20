@@ -1,0 +1,55 @@
+== SETUP3 fixed denials parsed calls 864 profiles 12
+letters whose decision != deny: 0
+variant  anchor   base  control_dup  ...  name_w_placebo  zip_b  zip_placebo
+codes                                ...                                    
+C08       0.000  0.005        0.000  ...           0.000  0.000        0.000
+C09       0.413  0.415        0.415  ...           0.417  0.415        0.417
+C23       0.128  0.124        0.124  ...           0.125  0.124        0.125
+X01       0.005  0.000        0.005  ...           0.000  0.005        0.000
+X02       0.454  0.456        0.456  ...           0.458  0.456        0.458
+
+[5 rows x 8 columns]
+codes per letter by variant: {'anchor': 2.02, 'base': 2.01, 'control_dup': 2.01, 'name_b': 2.02, 'name_b_placebo': 2.0, 'name_w_placebo': 2.0, 'zip_b': 2.01, 'zip_placebo': 2.0}
+letters citing exactly tool codes (set equality) by vendor: {'anthropic': 1.0, 'google': 1.0, 'openai': 0.979}
+codes outside tool codes share by vendor/variant:
+vendor          anthropic  google  openai
+variant                                  
+anchor                0.0     0.0   0.028
+base                  0.0     0.0   0.028
+control_dup           0.0     0.0   0.028
+name_b                0.0     0.0   0.056
+name_b_placebo        0.0     0.0   0.000
+name_w_placebo        0.0     0.0   0.000
+zip_b                 0.0     0.0   0.028
+zip_placebo           0.0     0.0   0.000
+pooled JSD vs base: {'control_dup': np.float64(0.00461), 'name_b': np.float64(0.0069), 'zip_b': np.float64(0.00461), 'name_w_placebo': np.float64(0.00231), 'zip_placebo': np.float64(0.00231), 'anchor': np.float64(0.00462)}
+hedging rate by variant x vendor (fixed denials):
+vendor         anthropic    google    openai
+variant                                     
+anchor          0.027778       0.0       0.0
+base            0.138889  0.027778  0.027778
+control_dup     0.111111       0.0  0.055556
+name_b          0.083333  0.027778  0.083333
+name_b_placebo  0.083333  0.083333       0.0
+name_w_placebo  0.111111  0.111111       0.0
+zip_b           0.055556  0.111111       0.0
+zip_placebo     0.055556  0.083333  0.027778
+hedging pooled by variant: {'anchor': 0.009, 'base': 0.065, 'control_dup': 0.056, 'name_b': 0.065, 'name_b_placebo': 0.056, 'name_w_placebo': 0.074, 'zip_b': 0.056, 'zip_placebo': 0.056}
+hedging fixed approvals pooled: {'anchor': 0.0, 'base': 0.0, 'control_dup': 0.0, 'name_b': 0.0, 'name_b_placebo': 0.0, 'name_w_placebo': 0.0, 'zip_b': 0.0, 'zip_placebo': 0.009}
+within-pair diff of unit hedging rate (unit=vendor x profile, 3 reps): {'control_dup': {'n': 36, 'mean': np.float64(-0.0093), 'sd': np.float64(0.1688), 'nonzero': 9}, 'name_b': {'n': 36, 'mean': np.float64(0.0), 'sd': np.float64(0.1952), 'nonzero': 12}, 'zip_b': {'n': 36, 'mean': np.float64(-0.0093), 'sd': np.float64(0.1866), 'nonzero': 11}, 'name_w_placebo': {'n': 36, 'mean': np.float64(0.0093), 'sd': np.float64(0.218), 'nonzero': 12}, 'zip_placebo': {'n': 36, 'mean': np.float64(-0.0093), 'sd': np.float64(0.1688), 'nonzero': 9}}
+mean within-cell (repeat) variance of hedging: 0.0532
+between-profile SD of unit hedging rate: 0.0465
+M1a per-code paired diff (mean,sd) name_b {'C08': (np.float64(-0.009), np.float64(0.056)), 'C09': (np.float64(0.0), np.float64(0.0)), 'C23': (np.float64(0.0), np.float64(0.0)), 'X01': (np.float64(0.019), np.float64(0.077)), 'X02': (np.float64(0.0), np.float64(0.0))}
+M1a per-code paired diff (mean,sd) zip_b {'C08': (np.float64(-0.009), np.float64(0.056)), 'C09': (np.float64(0.0), np.float64(0.0)), 'C23': (np.float64(0.0), np.float64(0.0)), 'X01': (np.float64(0.009), np.float64(0.056)), 'X02': (np.float64(0.0), np.float64(0.0))}
+                 mean_cost      mean_in    mean_out  mean_reason
+vendor    setup                                                 
+anthropic 1       0.003439   842.375000  519.230000     0.000000
+          2       0.006461  3092.780793  673.659708     0.000000
+          3       0.002951   915.935000  407.020000     0.000000
+google    1       0.001277   613.630000  558.115000   252.406667
+          2       0.001310  1672.321667  364.155000    12.606667
+          3       0.000761   668.150000  272.260000    19.118333
+openai    1       0.000755   556.165000  242.698333     0.000000
+          2       0.001149  1429.303333  272.640000     0.000000
+          3       0.000661   607.085000  192.586667     0.000000
+judge cost per judged call: 1.8041725995766792e-05 judge rows 8790

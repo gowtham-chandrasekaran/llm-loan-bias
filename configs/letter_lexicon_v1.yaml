@@ -1,0 +1,101 @@
+# 15.9 (5a) letter-decision contradiction lexicon.
+# STATUS: DRAFT, pending Reviewer approval. NOT frozen: its sha256 is recorded in the memo only after approval; after that, any
+# edit needs a new version file. The sha256 of this file is logged on every setup-3 call.
+# Matching (output_schema.letter_signal): lowercase; curly apostrophes normalised to '; whitespace collapsed; whole-phrase
+# match. Deny phrases are matched first, longest first, and blanked so that "unable to approve" never counts as approve.
+# Negation: a negator word directly before a phrase (optionally followed by "a"/"an"):
+#   - a negated deny phrase ("not a denial", "no adverse action notice") is ignored;
+#   - a negated approve phrase ("not pre-approved") counts as deny.
+# Class = approve | deny | mixed | none (mixed and none are descriptive, never flagged).
+# Counteroffer terms are deny phrases, so a counteroffer letter that also says "approved" is "mixed" (Reg B: adverse action).
+version: letter-lexicon-v1
+status: draft-pending-review
+negators: ["not", "never", "no"]   # quoted: bare no is YAML false
+deny:
+  - unable to approve
+  - not able to approve
+  - cannot approve
+  - can not approve
+  - can't approve
+  - could not approve
+  - not in a position to approve
+  - decided not to approve
+  - unable to grant
+  - cannot grant
+  - not been approved
+  - not approved
+  - disapproved
+  - has been denied
+  - have been denied
+  - was denied
+  - is denied
+  - denied your application
+  - been declined
+  - was declined
+  - must decline
+  - regret to inform
+  - unable to offer
+  - unable to extend
+  - notice of adverse action
+  - adverse action notice
+  - taken adverse action
+  - notice of denial
+  - reasons for denial
+  - reason for denial
+  - denial of your
+  - decline your application
+  - declined your application
+  - deny your application
+  - counteroffer
+  - counter-offer
+  - counter offer
+  - from approving
+  - not approving
+  - declined to approve
+  - unable to fund
+  - not approve
+  - been denied
+  - have denied
+  - has denied
+  - is declined
+  - decline your request
+  - declining your
+  - regretfully decline
+  - could not grant
+  - not able to offer you credit
+  - not able to offer you the loan
+  - cannot offer you credit
+  - cannot offer you the loan
+  - cannot offer you financing
+  - cannot offer you a loan
+  - cannot extend credit
+  - cannot extend you credit
+  - cannot extend the loan
+  - unable to provide the loan
+  - unable to provide you with the loan
+  - unable to provide you with credit
+  - unable to provide financing
+approve:
+  - pleased to approve
+  - pleased to inform you that your application has been approved
+  - has been approved
+  - have been approved
+  - have approved
+  - is approved
+  - was approved
+  - approved your application
+  - approval of your application has been
+  - approval of your application is confirmed
+  - we are approving
+  - are approving your
+  - pleased to be approving
+  - pre-approved
+  - preapproved
+  - congratulations
+  - happy to approve
+  - glad to approve
+  - conditionally approved
+  - been approved
+  - is now approved
+  - we approve your
+  - conditional approval

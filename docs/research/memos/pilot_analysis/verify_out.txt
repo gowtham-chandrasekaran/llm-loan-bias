@@ -1,0 +1,166 @@
+/workspace/research/memos/pilot_analysis/verify.py:78: Pandas4Warning: Starting with pandas version 4.0 all arguments of all will be keyword-only.
+  P("complete (3/3) profile-variant cells:",int((cnt==3).sum().sum()),"of",cnt.size, " profiles fully complete all variants:",int((cnt==3).all(1).sum()))
+== SPEND (ledger)
+{('anthropic', 'claude-sonnet-5'): 6.9397, ('google', 'gemini-3.8-flash'): 2.0085, ('openai', 'gpt-5-nano'): 0.0938, ('openai', 'gpt-5.4-mini'): 1.539} 10.581
+calls.cost_usd sum by vendor/setup
+                     sum     mean  count
+vendor    setup                         
+anthropic 1      2.06311  0.00344    600
+          2      3.09486  0.00646    479
+          3      1.77062  0.00295    600
+google    1      0.76595  0.00128    600
+          2      0.78595  0.00131    600
+          3      0.45663  0.00076    600
+openai    1      0.45278  0.00075    600
+          2      0.68966  0.00115    600
+          3      0.39659  0.00066    600
+== PARSE
+                   n  done   ok  ok/planned  ok/done
+vendor    setup                                     
+anthropic 1      600   600  599      0.9983   0.9983
+          2      600   479  473      0.7883   0.9875
+          3      600   600  600      1.0000   1.0000
+google    1      600   600  531      0.8850   0.8850
+          2      600   600  594      0.9900   0.9900
+          3      600   600  600      1.0000   1.0000
+openai    1      600   600  600      1.0000   1.0000
+          2      600   600  600      1.0000   1.0000
+          3      600   600  600      1.0000   1.0000
+overall parse ok/planned 0.9624 ok/done 0.9845
+== M3 setup1: control pairs 75 flips 2 0.0267
+name {'n': 75, 'flips': 7, 'flip_rate': 0.0933, 'n_joint': 75, 'net': 0.0667, 'newcombe': [0.009, 0.1455], 'abcd': [2, 5, 0, 68], 'boot': [0.0133, 0.1333], 'wilson_raw': [0.0459, 0.1803], 'dir_proxy_denied': 3, 'dir_base_denied': 4, 'mcnemar_p': 1.0}
+  per vendor flips: {'anthropic': '0/25', 'google': '0/25', 'openai': '7/25'}
+zip {'n': 74, 'flips': 8, 'flip_rate': 0.1081, 'n_joint': 74, 'net': 0.0811, 'newcombe': [0.0194, 0.1645], 'abcd': [2, 6, 0, 66], 'boot': [0.027, 0.1486], 'wilson_raw': [0.0558, 0.1991], 'dir_proxy_denied': 4, 'dir_base_denied': 4, 'mcnemar_p': 1.0}
+  per vendor flips: {'anthropic': '2/25', 'google': '0/24', 'openai': '6/25'}
+placebo_name {'n': 74, 'flips': 8, 'flip_rate': 0.1081, 'n_joint': 74, 'net': 0.0811, 'newcombe': [0.0194, 0.1645], 'abcd': [2, 6, 0, 66], 'boot': [0.027, 0.1486], 'wilson_raw': [0.0558, 0.1991], 'dir_proxy_denied': 4, 'dir_base_denied': 4, 'mcnemar_p': 1.0}
+  per vendor flips: {'anthropic': '2/25', 'google': '0/24', 'openai': '6/25'}
+placebo_zip {'n': 75, 'flips': 11, 'flip_rate': 0.1467, 'n_joint': 75, 'net': 0.12, 'newcombe': [0.0263, 0.2204], 'abcd': [0, 11, 2, 62], 'boot': [0.0267, 0.2133], 'wilson_raw': [0.0839, 0.2438], 'dir_proxy_denied': 7, 'dir_base_denied': 4, 'mcnemar_p': 0.5488}
+  per vendor flips: {'anthropic': '5/25', 'google': '1/25', 'openai': '5/25'}
+control per vendor: {'anthropic': '0/25', 'google': '0/25', 'openai': '2/25'}
+== SETUP2 tool_called rate {'anthropic': 1.0, 'google': 1.0, 'openai': 1.0}
+override per call (parsed only) {'anthropic': 0.0465, 'google': 0.0, 'openai': 0.1817}
+override per call (denominator all done) {'anthropic': 0.0459, 'google': 0.0, 'openai': 0.1817}
+stored override field {'anthropic': 0.0465, 'google': 0.0, 'openai': 0.1817}
+override majority-of-3 units: {'n': {'anthropic': 192, 'google': 200, 'openai': 200}, 'rate': {'anthropic': 0.0417, 'google': 0.0, 'openai': 0.185}}
+override direction (per call): {('anthropic', 'approve'): 22, ('openai', 'approve'): 109}
+override by variant (per call, done&parsed):
+vendor          anthropic  google  openai
+variant                                  
+anchor              0.017     0.0   0.200
+base                0.034     0.0   0.253
+control_dup         0.051     0.0   0.160
+name_b              0.067     0.0   0.107
+name_b_placebo      0.050     0.0   0.160
+name_w_placebo      0.050     0.0   0.160
+zip_b               0.017     0.0   0.200
+zip_placebo         0.086     0.0   0.213
+== ANTHROPIC BUDGET STOP n= 121
+variant  anchor  base  control_dup  ...  name_w_placebo  zip_b  zip_placebo
+stop                                ...                                    
+False        59    60           60  ...              60     60           60
+True         16    15           15  ...              15     15           15
+
+[2 rows x 8 columns]
+  chi2 variant: chi2=0.07 df=7 p=1
+tool_decision  approve  deny
+stop                        
+False              240   239
+True                72    49
+  chi2 tool_decision: chi2=3.05 df=1 p=0.08058
+repeat    0    1    2
+stop                 
+False   200  200   79
+True      0    0  121
+  chi2 repeat: chi2=303.13 df=2 p=1.499e-66
+{'P000': 0, 'P001': 0, 'P002': 0, 'P003': 0, 'P004': 0, 'P005': 0, 'P006': 0, 'P007': 0, 'P008': 0, 'P009': 1, 'P010': 8, 'P011': 8, 'P012': 8, 'P013': 8, 'P014': 8, 'P015': 8, 'P016': 8, 'P017': 8, 'P018': 8, 'P019': 8, 'P020': 8, 'P021': 8, 'P022': 8, 'P023': 8, 'P024': 8}
+  chi2 profile_id: chi2=97.14 df=24 p=9.179e-11
+stop          False  True 
+grp                       
+anchor           59     16
+control/base    120     30
+placebo         180     45
+proxy           120     30
+Fisher proxy vs rest SignificanceResult(statistic=np.float64(0.9862637362637363), pvalue=1.0)
+complete (3/3) profile-variant cells: 79 of 200  profiles fully complete all variants: 9
+profile ordering of stops (ts-ordered?) first stop ts: 2026-10-12T14:38:13.127864-04:00 last done ts: 2026-10-12T14:38:13.127754-04:00
+== GOOGLE fails by setup {'sum': {1: 69, 2: 6, 3: 0}, 'mean': {1: 0.115, 2: 0.01, 3: 0.0}}
+variant  anchor  base  control_dup  ...  name_w_placebo  zip_b  zip_placebo
+fail                                ...                                    
+False        66    67           67  ...              68     67           65
+True          9     8            8  ...               7      8           10
+
+[2 rows x 8 columns]
+  chi2 variant: 1.03 df=7 p=0.9943
+tool_decision  approve  deny
+fail                        
+False              271   260
+True                41    28
+  chi2 tool_decision: 1.40 df=1 p=0.2367
+repeat    0    1    2
+fail                 
+False   183  169  179
+True     17   31   21
+  chi2 repeat: 5.11 df=2 p=0.07772
+Fisher proxy(name_b,zip_b) vs base/control: SignificanceResult(statistic=np.float64(1.0704887218045114), pvalue=1.0)
+output tokens of failures: {'count': 69.0, 'mean': 795.9, 'std': 0.3, 'min': 795.0, '25%': 796.0, '50%': 796.0, '75%': 796.0, 'max': 796.0}
+reasoning tokens: fail {'count': 69.0, 'mean': 624.0, 'std': 122.0, 'min': 424.0, '25%': 505.0, '50%': 598.0, '75%': 764.0, 'max': 769.0}
+reasoning tokens: ok {'count': 531.0, 'mean': 204.0, 'std': 150.0, 'min': 0.0, '25%': 0.0, '50%': 241.0, '75%': 322.0, 'max': 494.0}
+            size  sum      mean
+rbin                           
+(-1, 0]      162    0  0.000000
+(0, 200]      43    0  0.000000
+(200, 400]   295    0  0.000000
+(400, 600]    66   35  0.530303
+(600, 700]     8    8  1.000000
+(700, 800]    26   26  1.000000
+reasoning tokens by variant (setup1, mean): {'anchor': 243.0, 'base': 237.0, 'control_dup': 232.0, 'name_b': 286.0, 'name_b_placebo': 276.0, 'name_w_placebo': 205.0, 'zip_b': 263.0, 'zip_placebo': 278.0}
+KW reasoning tokens across variants p= 0.23618700947094853
+reasoning tokens by tool_decision: {'approve': 264.0, 'deny': 240.0}
+fails by profile (top): {'P002': 12, 'P013': 11, 'P020': 11, 'P019': 9, 'P016': 6, 'P018': 5, 'P017': 3, 'P005': 2} n profiles with >=1 fail 15
+google setup1 majority NaN cells by variant: {'anchor': 0, 'base': 0, 'control_dup': 0, 'name_b': 0, 'name_b_placebo': 0, 'name_w_placebo': 1, 'zip_b': 1, 'zip_placebo': 0}
+google setup2/3 fails by variant: {2: {'anchor': 4, 'base': 0, 'control_dup': 0, 'name_b': 1, 'name_b_placebo': 1, 'name_w_placebo': 0, 'zip_b': 0, 'zip_placebo': 0}, 3: {'anchor': 0, 'base': 0, 'control_dup': 0, 'name_b': 0, 'name_b_placebo': 0, 'name_w_placebo': 0, 'zip_b': 0, 'zip_placebo': 0}}
+setup1 deny rate parsed by vendor: {'anthropic': 0.548, 'google': 0.512, 'openai': 0.55}
+== SETUP3 fixed denials parsed calls 864 profiles 12
+letters whose decision != deny: 0
+Traceback (most recent call last):
+  File "/workspace/research/memos/pilot_analysis/verify.py", line 103, in <module>
+    ex=s3.explode("codes"); tab=pd.crosstab(ex.codes,ex.variant,normalize="columns").round(3); P(tab)
+                                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/reshape/pivot.py", line 1099, in crosstab
+    df = DataFrame(data, index=common_idx)
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/frame.py", line 769, in __init__
+    mgr = dict_to_mgr(data, index, columns, dtype=dtype, copy=copy)
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/internals/construction.py", line 460, in dict_to_mgr
+    return arrays_to_mgr(arrays, columns, index, dtype=dtype, consolidate=copy)
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/internals/construction.py", line 118, in arrays_to_mgr
+    arrays, refs = _homogenize(arrays, index, dtype)
+                   ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/internals/construction.py", line 568, in _homogenize
+    val = val.reindex(index)
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/series.py", line 5525, in reindex
+    return super().reindex(
+           ~~~~~~~~~~~~~~~^
+        index=index,
+        ^^^^^^^^^^^^
+    ...<5 lines>...
+        copy=copy,
+        ^^^^^^^^^^
+    )
+    ^
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/generic.py", line 5464, in reindex
+    return self._reindex_axes(
+           ~~~~~~~~~~~~~~~~~~^
+        axes, level, limit, tolerance, method, fill_value
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ).__finalize__(self, method="reindex")
+    ^
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/generic.py", line 5486, in _reindex_axes
+    new_index, indexer = ax.reindex(
+                         ~~~~~~~~~~^
+        labels, level=level, limit=limit, tolerance=tolerance, method=method
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/workspace/llm-loan-bias/.venv/lib/python3.13/site-packages/pandas/core/indexes/base.py", line 4253, in reindex
+    raise ValueError("cannot reindex on an axis with duplicate labels")
+ValueError: cannot reindex on an axis with duplicate labels

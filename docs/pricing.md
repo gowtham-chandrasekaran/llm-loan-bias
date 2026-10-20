@@ -57,3 +57,11 @@ Total is under the $15 cap. Only Anthropic's $5 per-vendor cap binds. The pre-se
 | Anthropic claude-sonnet-5 | thinking disabled | OK; no thinking block; 19 in / 4 out | correct args; approve 60.129; 1,542 in / 169 out |
 | Google gemini-3.8-flash | thinking_budget=0 | OK; 0 thought tokens; 10 in / 1 out | correct args; approve 60.129; 534 in / 64 out |
 Total cost of these six calls: under $0.01 at list prices.
+
+## 2026-10-17 re-check (haiku-swap branch)
+- Model ID `claude-haiku-5-5` (Claude Haiku 5.5): listed by the free `GET /v1/models` endpoint (created 2026-10-07) and in
+  https://docs.anthropic.com/en/docs/about-claude/models/overview . Capabilities from /v1/models: batch supported; thinking
+  types: disabled = supported, adaptive = supported, enabled (budget) = NOT supported; effort supported.
+- Price (https://docs.anthropic.com/en/docs/about-claude/pricing): $0.10 / MTok input, $0.50 / MTok output for prompts ≤ 100k
+  tokens ($0.50 / $2.50 above); Batch API 50% off → $0.05 / $0.25. Tool use: supported (all current models); tool-use system
+  prompt 286 tokens (auto/none), 406 (any/tool).

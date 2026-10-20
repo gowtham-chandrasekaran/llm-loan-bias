@@ -43,29 +43,31 @@ def run_judge(run_dir, allow_paid=False, setups=(1, 2, 3)):
     out.close(); key.close()
     return os.path.join(run_dir, "judgments.jsonl")
 
-def _judge_items(run_dir, setups):
-    """Yield (call_rec, item_id, [(kind, key, system, user, extra)]) for every parsed call. Detection on ORIGINAL text, judging on redacted."""
+def _judge_items(run_dir, setups, select=None, hedging_only=False):
+    """Yield (call_rec, item_id, [(kind, key, system, user, extra)]) for every parsed call. Detection on ORIGINAL text, judging on redacted.
+    select(rec) -> bool restricts the records (planted check: M1b only); hedging_only skips the M4 span jobs."""
     for line in open(os.path.join(run_dir, "calls.jsonl")):
         r = json.loads(line)
         if r.get("setup") not in setups or not (r.get("parsed") or {}).get("parse_ok"): continue
+        if select is not None and not select(r): continue
         letter = r["parsed"].get("letter") or ""
         texts = {"letter": letter, "rationale": r["parsed"].get("rationale") or "", "trace": r.get("reasoning") or ""}
         item_id = hashlib.sha256(r["call_id"].encode()).hexdigest()[:12]
         red = redact(letter, r.get("applicant_name"), r.get("property_zip"))
         jobs = [("hedging", "h", *judge_hedging(red), {"letter_redacted": red})]
         k = 0
-        for src, txt in texts.items():
+        for src, txt in ({} if hedging_only else texts).items():
             for sp in detect_proxy_spans(txt, r.get("applicant_name"), r.get("property_zip")):
                 rs = redact(sp["span"], r.get("applicant_name"), r.get("property_zip"))
                 jobs.append(("span", f"s{k}", *judge_mention(rs), {"source": src, "triggers": sp["triggers"], "span_redacted": rs})); k += 1
         yield r, item_id, jobs
 
-def run_judge_batch(run_dir, allow_paid=False, setups=(1, 2, 3), poll_s=None):
+def run_judge_batch(run_dir, allow_paid=False, setups=(1, 2, 3), poll_s=None, select=None, hedging_only=False):
     """Pre-reg 15.3 #1: judge calls also go through the vendor batch API (same budget ledger, chunk-level hard stop). Resumable."""
     from .batch import BatchRun
     meta = json.load(open(os.path.join(run_dir, "run_meta.json"))); cfg = meta["config"]; j = cfg["judge"]
     br = BatchRun(run_dir, cfg, allow_paid, state_name="judge_batch_state.json", vendors=[j["vendor"]])
-    items = list(_judge_items(run_dir, setups))
+    items = list(_judge_items(run_dir, setups, select, hedging_only))
     if br.state is None:
         reqs, order = {}, 0
         for r, item_id, jobs in items:

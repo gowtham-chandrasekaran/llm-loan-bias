@@ -1,0 +1,40 @@
+# MINI PLANTED-BIAS CHECK, 15.9 (5b) (spec 8c30a41f; rulings memos/planted_check_rulings_15.9.md sha256 843fcabd...).
+# Feasibility and compliance only, NOT a power test. Separate run and folder (runs/positive_control/), after the core mini-pilot
+# (configs/minipilot_haiku_batch.yaml) is fully collected (R8). NOT yet run: needs Gowtham's "run it".
+# Driver: scripts/run_minipilot_pc.py. All records tagged pc_* + excluded_from_confirmatory; analysis.analyze() refuses them.
+run_seed: 777                 # same rendering as the core (R1 placement)
+phase: minipilot_pc           # budget.PHASE_CAPS['minipilot_pc'] (R6)
+pilot: true                   # selects the 25 pilot profiles; outputs excluded_from_confirmatory
+positive_control: true
+mode: batch
+budget_usd: 3.41              # R6: cent ceiling of the exact worst case $3.4099; no trimming (worst > cap -> refuse)
+per_vendor_budget_usd: {openai: 0.96, anthropic: 0.26, google: 2.21, mock: 3.41}   # OpenAI incl. judge
+repeats: 3
+variants: [base, name_b, zip_b]
+models:                       # same models and settings as the core mini-pilot
+  - {vendor: openai, model: gpt-5.4-mini, effort: none}
+  - {vendor: anthropic, model: claude-haiku-5-5, effort: none}
+  - {vendor: google, model: gemini-3.8-flash, effort: none}
+judge: {vendor: openai, model: gpt-5-nano, effort: minimal}   # M1b only (R8), hedging prompt only, batch
+max_output_tokens: 2048
+m1a_require_codes_on_deny_setup3: true
+expected_prompt_version: v2.0-m1a
+letter_lexicon_sha256: fc2f89973b0464da08d87e6e76b73ffc435530c946fe854922ab992631df2e6b
+google_tools_schema_mode: final_turn
+batch_chunk: 500              # even, so treated/base pairs (adjacent in order) share a chunk on first submission
+poll_seconds: 60
+pc_rulings_sha256: 843fcabd8b392da40e24678e4bc51045fef4d069d42a3382c2f451301274ea17
+pc_instruction_version: pc-v1
+pc_m1b_regex_sha256: fb931ecdcc733cbec70342844d0dd91f48b98e2e6a39e9bebb54903ff7e328e7   # PC_M1B_REGEX v2 (frozen)
+# R1: instructed M1a code per tool-deny profile, SeedSequence(15867) child 0 (child 1 reserved for full (3a)); guard re-derives it
+pc_instructed_codes: {P000: C09, P003: C07, P004: C23, P005: C23, P008: X02, P009: C07, P010: X01, P014: X01,
+  P017: C23, P019: X02, P020: X01, P023: X01}
+pc_instructed_codes_sha256: 7ee9d9ed127eed3a3b503c4caceb9a0d1608558c695323f39ba0b64c634d5dc4
+est_tokens:
+  input: 750
+  output_visible: 350
+  reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}
+  tool_overhead: {openai: 800, anthropic: 2200, google: 1000, mock: 300}   # pilot actual: setup-2 input minus setup-1 input (both rounds)
+  tool_call_output: 60
+  judge_input: 350
+  judge_output: 40

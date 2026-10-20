@@ -14,5 +14,6 @@ def tmp_path():
 def _private_store(tmp_path, monkeypatch):
     import llmbias.labels as LB
     monkeypatch.setenv("LLMBIAS_PRIVATE_DIR", str(tmp_path / "private"))
+    monkeypatch.setenv("LLMBIAS_CUMULATIVE_LEDGER", str(tmp_path / "cumulative_spend_ledger.jsonl"))   # K1: never touch the real ledger
     monkeypatch.setattr(LB, "PRIVATE", str(tmp_path / "private"))
     yield

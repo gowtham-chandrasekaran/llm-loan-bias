@@ -9,14 +9,33 @@ from .regb import ALL_REASONS
 KEYS = ["vendor", "model", "effort", "setup"]
 HOLM_FAMILY = [f"{m}_{p}" for m in ("M1a", "M1b", "M2", "M3") for p in ("name", "zip")]  # fixed 8 tests
 
-def load_calls(run_dir, confirmatory=False):
+def load_calls(run_dir, confirmatory=False, legacy_pilot_v1=False):
+    """legacy_pilot_v1=True reproduces the pilot-v1 figures (runs/20261012T143812-ff54324d-4745d6-batch): validity is
+    derived the way 823eafc did, i.e. any dict in `parsed` counts and its decision / reason_codes are used as-is. Pilot-v1
+    records predate the 15.9 validation fields, so the 15.9 path below would not reproduce them. Never use it for new runs."""
     df = pd.DataFrame([json.loads(l) for l in open(os.path.join(run_dir, "calls.jsonl"))])
     if confirmatory:
         df = df[~df.excluded_from_confirmatory.astype(bool)]   # pilot rows never enter confirmatory analyses
-    df["decision"] = df.parsed.apply(lambda p: p.get("decision") if isinstance(p, dict) else None)
-    df["codes"] = df.parsed.apply(lambda p: p.get("reason_codes", []) if isinstance(p, dict) else [])
+    if legacy_pilot_v1:   # 823eafc derivation (pre-15.9): no exclusion_reason, no validation gate
+        df["exclusion_reason"] = None
+        df["decision"] = df.parsed.apply(lambda p: p.get("decision") if isinstance(p, dict) else None)
+        df["codes"] = df.parsed.apply(lambda p: p.get("reason_codes", []) if isinstance(p, dict) else [])
+        df["effort"] = df.effort.fillna("none")
+        return df
+    # 15.9: a call is usable only if it validated (after the single retry). budget_stop, API errors and still-invalid calls
+    # are missing (absent repeats in majority-of-3 / mode rules). Setup-3 contradictions stay valid and are NOT missing.
+    from .output_schema import exclusion_reason
+    df["exclusion_reason"] = [exclusion_reason(r) for r in df.to_dict("records")]
+    ok = df.exclusion_reason.isna()
+    df["decision"] = [p.get("decision") if isinstance(p, dict) and k else None for p, k in zip(df.parsed, ok)]
+    df["codes"] = [p.get("reason_codes", []) if isinstance(p, dict) and k else [] for p, k in zip(df.parsed, ok)]
     df["effort"] = df.effort.fillna("none")
     return df
+
+def missingness(df):
+    """15.9 missingness input (for the M2 / M1a bounds): missing calls by vendor x setup x variant x exclusion_reason (incl. budget_stop)."""
+    m = df[df.exclusion_reason.notna()]
+    return m.groupby(["vendor", "model", "setup", "variant", "exclusion_reason"]).size().rename("n_missing").reset_index()
 
 def majority(df):
     """Majority decision over repeats per (model, setup, profile, variant). Ties / no valid -> NaN."""
@@ -243,9 +262,27 @@ def fallback_trigger(m3_res):
     if not m3_res: return None
     return {"upper": m3_res["trigger_upper"], "method": m3_res["trigger_method"], "trigger_fallback": bool(m3_res["trigger_upper"] < 0.10)}
 
-def analyze(run_dir, n_perm=10000):
+def placebo_pairs(pairs):
+    """Placebo + control pairs, placebo relabelled 'proxy' so m3() can run on them. The real proxy rows are dropped FIRST:
+    they share proxy names ('name', 'zip') with the placebo pairs, so rename-then-filter would pool proxy and placebo pairs."""
+    t = pairs[pairs.pair_type.isin(["placebo", "control"])]
+    return t.assign(pair_type=t.pair_type.replace({"placebo": "proxy"}))
+
+def cross_pairs(pairs):
+    """Cross (name_b vs zip_b) + control pairs, cross relabelled 'proxy' / 'x' so m3() can run on them. Same pattern as
+    placebo_pairs(): the real proxy and placebo rows are dropped FIRST, then the cross rows are relabelled."""
+    t = pairs[pairs.pair_type.isin(["cross", "control"])]
+    return t.assign(pair_type=t.pair_type.replace({"cross": "proxy"}), proxy=t.proxy.replace({"name_vs_zip": "x"}))
+
+def analyze(run_dir, n_perm=10000, legacy_pilot_v1=False, out=None):
+    """legacy_pilot_v1=True: pilot-v1 reproduction (see load_calls); the 15.9-only blocks (missingness, robustness_by_setup,
+    missingness_bounds) are left out, and the output goes to analysis_legacy_pilot_v1.json unless `out` is given, so the
+    committed analysis.json is never overwritten."""
     meta = json.load(open(os.path.join(run_dir, "run_meta.json")))
-    df = load_calls(run_dir)
+    with open(os.path.join(run_dir, "calls.jsonl")) as _f:     # 15.9 (3a): planted-check records never enter analyze()
+        if meta.get("positive_control") or any(any(k.startswith("pc_") for k in json.loads(l)) for l in _f if l.strip()):
+            raise ValueError("analyze() refuses planted-bias (pc_*) records; use positive_control.positive_control_mini()")
+    df = load_calls(run_dir, legacy_pilot_v1=legacy_pilot_v1)
     jp = os.path.join(run_dir, "judgments.jsonl")
     judg = pd.DataFrame([json.loads(l) for l in open(jp)]) if os.path.exists(jp) else None
     maj = majority(df); pairs = pair_table(maj)
@@ -260,10 +297,9 @@ def analyze(run_dir, n_perm=10000):
         pv[f"M2_{proxy}"] = r2 and r2["p_mcnemar"]; pv[f"M3_{proxy}"] = r3 and r3["p_mcnemar"]
         R[f"glmer_confirmatory_{proxy}"] = glmer_fit(df, (va, vb), pair_covs=(proxy == "name"))
         R[f"mixed_logit_vb_sensitivity_{proxy}"] = mixed_logit(df, (va, vb), pair_covs=(proxy == "name"))
-    R["placebo"] = {f"{p}": m3(pairs.assign(pair_type=pairs.pair_type.replace({"placebo": "proxy"})).query("pair_type=='proxy' or pair_type=='control'"), p)
-                    for p in ("name", "name_black", "zip") if not pairs.empty}
+    R["placebo"] = {f"{p}": m3(placebo_pairs(pairs), p) for p in ("name", "name_black", "zip") if not pairs.empty}
     R["placebo_M1a"] = {"name": m1a(df, "base", "name_w_placebo", n_perm), "zip": m1a(df, "base", "zip_placebo", n_perm)}
-    R["cross_name_vs_zip_M3"] = m3(pairs.assign(pair_type=pairs.pair_type.replace({"cross": "proxy"}), proxy=pairs.proxy.replace({"name_vs_zip": "x"})), "x") if not pairs.empty else None
+    R["cross_name_vs_zip_M3"] = m3(cross_pairs(pairs), "x") if not pairs.empty else None
     R["holm"] = holm({k: (v if v is not None else np.nan) for k, v in pv.items()})
     hp = R["holm"].get("M3_name", {}).get("p_holm") if isinstance(R["holm"].get("M3_name"), dict) else None
     R["name_level"] = {f"setup{st}": name_level(df, setup=st, holm_p=hp, n_perm=n_perm) for st in sorted(df.setup.unique()) if st in (1, 2)}
@@ -274,13 +310,20 @@ def analyze(run_dir, n_perm=10000):
         R[f"name_level_excl_{ex.replace('name_pair_', '')}"] = {f"setup{st}": name_level(df, setup=st, holm_p=hp, n_perm=n_perm, exclude=ex) for st in sorted(df.setup.unique()) if st in (1, 2)}
     R["name_level_strict_15_5_sensitivity"] = {f"setup{st}": name_level(df, setup=st, strict_only=True, holm_p=hp, n_perm=n_perm) for st in sorted(df.setup.unique()) if st in (1, 2)}
     R["fallback"] = fallback_trigger(R.get("M3_name")) , fallback_trigger(R.get("M3_zip"))
+    if not legacy_pilot_v1:   # 15.9 blocks; pilot-v1 records predate them
+        R["missingness"] = missingness(df).to_dict("records")
+        from .bounds import report as bounds_report
+        from .output_schema import setup_summary
+        R["robustness_by_setup"] = setup_summary([json.loads(l) for l in open(os.path.join(run_dir, "calls.jsonl"))])   # 15.9: setups 1-3 coverage
+        R["missingness_bounds"] = bounds_report(df, [json.loads(l) for l in open(os.path.join(run_dir, "calls.jsonl"))], n_perm)
     R["parse_rate"] = float(df.parsed.apply(lambda p: isinstance(p, dict) and p.get("parse_ok")).mean())
     if (df.setup == 2).any(): R["tool_called_rate"] = float(df[df.setup == 2].tool_called.mean())
     # HMDA comparison: Reg B codes -> HMDA denial reasons vs observed HMDA denial reasons on the same profiles (descriptive)
     from .regb import REGB_TO_HMDA
     den = df[(df.decision == "deny") & (df.setup == 1)]
     R["hmda_reason_compare"] = {"llm_cited_as_hmda": pd.Series([REGB_TO_HMDA.get(c) for cs in den.codes for c in cs]).value_counts(normalize=True).round(3).to_dict()}
-    json.dump(R, open(os.path.join(run_dir, "analysis.json"), "w"), indent=2, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o))
+    out = out or os.path.join(run_dir, "analysis_legacy_pilot_v1.json" if legacy_pilot_v1 else "analysis.json")
+    json.dump(R, open(out, "w"), indent=2, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o))
     return R
 
 # ---- Name-level inference (amendments 15.5 / 15.6). No name random effect: too few names. ----
@@ -350,4 +393,6 @@ def name_level(df, va="base", vb="name_b", setup=1, strict_only=False, holm_p=No
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--run", required=True); ap.add_argument("--n-perm", type=int, default=10000)
-    a = ap.parse_args(); R = analyze(a.run, a.n_perm); print(json.dumps({k: R[k] for k in ["label", "holm", "fallback", "parse_rate"]}, indent=1, default=str))
+    ap.add_argument("--legacy-pilot-v1", action="store_true", help="pilot-v1 reproduction path (823eafc validity); writes analysis_legacy_pilot_v1.json")
+    ap.add_argument("--out", default=None, help="output path (default: <run>/analysis.json, or analysis_legacy_pilot_v1.json with --legacy-pilot-v1)")
+    a = ap.parse_args(); R = analyze(a.run, a.n_perm, legacy_pilot_v1=a.legacy_pilot_v1, out=a.out); print(json.dumps({k: R[k] for k in ["label", "holm", "fallback", "parse_rate"]}, indent=1, default=str))

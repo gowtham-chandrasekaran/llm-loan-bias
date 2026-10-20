@@ -1,0 +1,2192 @@
+{
+  "run_id": "20261012T143812-ff54324d-4745d6-batch",
+  "excluded_from_confirmatory": true,
+  "label": "PILOT - feasibility only, excluded from confirmatory analysis",
+  "M1a_name": {
+    "n_units": 36,
+    "jsd": 0.0068950892767626875,
+    "p_perm": 0.24147585241475852,
+    "per_code": {
+      "C08": {
+        "mean_diff": 0.003968253968253968,
+        "ci": [
+          0.0,
+          0.011904761904761904
+        ]
+      },
+      "C09": {
+        "mean_diff": 0.001984126984126985,
+        "ci": [
+          -0.00396825396825397,
+          0.00793650793650794
+        ]
+      },
+      "X01": {
+        "mean_diff": -0.007936507936507936,
+        "ci": [
+          -0.01984126984126984,
+          0.0
+        ]
+      },
+      "X02": {
+        "mean_diff": 0.001984126984126985,
+        "ci": [
+          -0.00396825396825397,
+          0.00793650793650794
+        ]
+      }
+    }
+  },
+  "M1b_name": {
+    "n_units": 36,
+    "rate_a": 0.06481481481481483,
+    "rate_b": 0.06481481481481483,
+    "diff": 0.0,
+    "ci": [
+      -0.05555555555555555,
+      0.06481481481481483
+    ],
+    "p_perm": 1.0
+  },
+  "M2_name": {
+    "n_units": 75,
+    "override_a": 0.10666666666666667,
+    "override_b": 0.05333333333333334,
+    "b": 5,
+    "c": 1,
+    "p_mcnemar": 0.21875,
+    "tool_called_rate_by_variant": {
+      "anchor": 1.0,
+      "base": 1.0,
+      "control_dup": 1.0,
+      "name_b": 1.0,
+      "name_b_placebo": 1.0,
+      "name_w_placebo": 1.0,
+      "zip_b": 1.0,
+      "zip_placebo": 1.0
+    }
+  },
+  "M3_name": {
+    "n_pairs": 75,
+    "flips": 7,
+    "flip_rate": 0.09333333333333334,
+    "control_flip_rate": 0.02666666666666667,
+    "n_paired_with_control": 75,
+    "net_flip_rate": 0.06666666666666667,
+    "newcombe": {
+      "diff": 0.06666666666666667,
+      "lo": 0.0089680799764068,
+      "hi": 0.1454716574690747,
+      "degenerate": false,
+      "abcd": [
+        2,
+        5,
+        0,
+        68
+      ]
+    },
+    "net_flip_ci_boot": [
+      0.013333333333333334,
+      0.12
+    ],
+    "trigger_upper": 0.1454716574690747,
+    "trigger_method": "newcombe",
+    "wilson_raw": [
+      0.04594793932894482,
+      0.18034883800687787
+    ],
+    "b_deny_a_only": 4,
+    "c_deny_b_only": 3,
+    "p_mcnemar": 1.0
+  },
+  "M1b_approve_exploratory_name": {
+    "n_units": 39,
+    "rate_a": 0.0,
+    "rate_b": 0.0,
+    "diff": 0.0,
+    "ci": [
+      0.0,
+      0.0
+    ],
+    "p_perm": 1.0
+  },
+  "glmer_confirmatory_name": {
+    "ok": true,
+    "formula": "deny ~ proxy + model + proxy:model + state + class_gap_abs + era_gap_abs + class_missing + (1 | profile_id)",
+    "n": 433,
+    "singular": false,
+    "convergence_messages": [],
+    "fixef": [
+      {
+        "term": "(Intercept)",
+        "estimate": 3.1234804,
+        "se": 2.061634638,
+        "z": 1.515050408,
+        "p": 0.129759639
+      },
+      {
+        "term": "proxy",
+        "estimate": -0.1163367827,
+        "se": 0.4625497472,
+        "z": -0.2515119366,
+        "p": 0.8014183347
+      },
+      {
+        "term": "modelgemini-3.8-flash",
+        "estimate": -0.3935934629,
+        "se": 0.4829915917,
+        "z": -0.8149074843,
+        "p": 0.4151252688
+      },
+      {
+        "term": "modelgpt-5.4-mini",
+        "estimate": 0.230217106,
+        "se": 0.4611400798,
+        "z": 0.4992346492,
+        "p": 0.6176140875
+      },
+      {
+        "term": "stateMD",
+        "estimate": -2.033278014,
+        "se": 1.759360737,
+        "z": -1.155691366,
+        "p": 0.247807421
+      },
+      {
+        "term": "statePA",
+        "estimate": -1.246626745,
+        "se": 2.163628117,
+        "z": -0.576174221,
+        "p": 0.5644974279
+      },
+      {
+        "term": "class_gap_abs",
+        "estimate": -0.4940193766,
+        "se": 1.060741613,
+        "z": -0.4657301744,
+        "p": 0.641408651
+      },
+      {
+        "term": "era_gap_abs",
+        "estimate": -0.1359484289,
+        "se": 0.1506081859,
+        "z": -0.9026629464,
+        "p": 0.3667048077
+      },
+      {
+        "term": "class_missing",
+        "estimate": -1.469573847,
+        "se": 1.670886496,
+        "z": -0.8795174598,
+        "p": 0.3791207706
+      },
+      {
+        "term": "proxy:modelgemini-3.8-flash",
+        "estimate": 0.1082116259,
+        "se": 0.6838407619,
+        "z": 0.1582409706,
+        "p": 0.8742669206
+      },
+      {
+        "term": "proxy:modelgpt-5.4-mini",
+        "estimate": 0.1163369693,
+        "se": 0.6522107424,
+        "z": 0.1783732798,
+        "p": 0.8584298324
+      }
+    ],
+    "re_sd_profile": 2.554935365,
+    "logLik": -185.7050957,
+    "lme4_version": "1.1.37"
+  },
+  "mixed_logit_vb_sensitivity_name": {
+    "formula": "deny ~ proxy + C(model) + proxy:C(model) + C(state) + class_gap_abs + era_gap_abs + class_missing + (1|profile)",
+    "n": 433,
+    "fe": {
+      "Intercept": {
+        "mean": 1.1386066043696244,
+        "sd": 0.1448038305530076
+      },
+      "C(model)[T.gemini-3.8-flash]": {
+        "mean": -0.35203107396165956,
+        "sd": 0.2659237815229121
+      },
+      "C(model)[T.gpt-5.4-mini]": {
+        "mean": 0.27455586320586384,
+        "sd": 0.24141994540620468
+      },
+      "C(state)[T.MD]": {
+        "mean": -0.6967479192047459,
+        "sd": 0.18034880605102155
+      },
+      "C(state)[T.PA]": {
+        "mean": -0.005976454149832432,
+        "sd": 0.28151709090110855
+      },
+      "proxy": {
+        "mean": -0.07394283132913546,
+        "sd": 0.2052274382939618
+      },
+      "proxy:C(model)[T.gemini-3.8-flash]": {
+        "mean": 0.04793523509969614,
+        "sd": 0.3777167170695063
+      },
+      "proxy:C(model)[T.gpt-5.4-mini]": {
+        "mean": 0.07391297262323863,
+        "sd": 0.33932532893936707
+      },
+      "class_gap_abs": {
+        "mean": 0.0683764771679936,
+        "sd": 0.14434451714513807
+      },
+      "era_gap_abs": {
+        "mean": -0.09753017481395616,
+        "sd": 0.020586286086862336
+      },
+      "class_missing": {
+        "mean": -0.5764290757937999,
+        "sd": 0.2732100727578391
+      }
+    }
+  },
+  "M1a_zip": {
+    "n_units": 36,
+    "jsd": 0.0046082949306938915,
+    "p_perm": 0.5002499750024998,
+    "per_code": {
+      "C08": {
+        "mean_diff": 0.003968253968253968,
+        "ci": [
+          0.0,
+          0.011904761904761904
+        ]
+      },
+      "C09": {
+        "mean_diff": 0.0,
+        "ci": [
+          -0.005952380952380955,
+          0.005952380952380955
+        ]
+      },
+      "X01": {
+        "mean_diff": -0.003968253968253968,
+        "ci": [
+          -0.011904761904761904,
+          0.0
+        ]
+      },
+      "X02": {
+        "mean_diff": 0.0,
+        "ci": [
+          -0.005952380952380955,
+          0.005952380952380955
+        ]
+      }
+    }
+  },
+  "M1b_zip": {
+    "n_units": 36,
+    "rate_a": 0.06481481481481483,
+    "rate_b": 0.05555555555555555,
+    "diff": -0.009259259259259259,
+    "ci": [
+      -0.05555555555555555,
+      0.03703703703703704
+    ],
+    "p_perm": 1.0
+  },
+  "M2_zip": {
+    "n_units": 75,
+    "override_a": 0.10666666666666667,
+    "override_b": 0.05333333333333334,
+    "b": 4,
+    "c": 0,
+    "p_mcnemar": 0.125,
+    "tool_called_rate_by_variant": {
+      "anchor": 1.0,
+      "base": 1.0,
+      "control_dup": 1.0,
+      "name_b": 1.0,
+      "name_b_placebo": 1.0,
+      "name_w_placebo": 1.0,
+      "zip_b": 1.0,
+      "zip_placebo": 1.0
+    }
+  },
+  "M3_zip": {
+    "n_pairs": 74,
+    "flips": 8,
+    "flip_rate": 0.10810810810810811,
+    "control_flip_rate": 0.02666666666666667,
+    "n_paired_with_control": 74,
+    "net_flip_rate": 0.08108108108108109,
+    "newcombe": {
+      "diff": 0.08108108108108109,
+      "lo": 0.019367996413587024,
+      "hi": 0.16448004938668345,
+      "degenerate": false,
+      "abcd": [
+        2,
+        6,
+        0,
+        66
+      ]
+    },
+    "net_flip_ci_boot": [
+      0.02666666666666667,
+      0.1527777777777778
+    ],
+    "trigger_upper": 0.16448004938668345,
+    "trigger_method": "newcombe",
+    "wilson_raw": [
+      0.055806661696501225,
+      0.1990904627202631
+    ],
+    "b_deny_a_only": 4,
+    "c_deny_b_only": 4,
+    "p_mcnemar": 1.0
+  },
+  "M1b_approve_exploratory_zip": {
+    "n_units": 39,
+    "rate_a": 0.0,
+    "rate_b": 0.0,
+    "diff": 0.0,
+    "ci": [
+      0.0,
+      0.0
+    ],
+    "p_perm": 1.0
+  },
+  "glmer_confirmatory_zip": {
+    "ok": true,
+    "formula": "deny ~ proxy + model + proxy:model + state + (1 | profile_id)",
+    "n": 434,
+    "singular": false,
+    "convergence_messages": [],
+    "fixef": [
+      {
+        "term": "(Intercept)",
+        "estimate": 2.275270924,
+        "se": 1.564992441,
+        "z": 1.453854258,
+        "p": 0.1459867168
+      },
+      {
+        "term": "proxy",
+        "estimate": -0.1123040684,
+        "se": 0.4550204963,
+        "z": -0.2468110104,
+        "p": 0.805054489
+      },
+      {
+        "term": "modelgemini-3.8-flash",
+        "estimate": -0.363408434,
+        "se": 0.4748496659,
+        "z": -0.7653126032,
+        "p": 0.4440854209
+      },
+      {
+        "term": "modelgpt-5.4-mini",
+        "estimate": 0.2229444156,
+        "se": 0.454165691,
+        "z": 0.4908878412,
+        "p": 0.6235057772
+      },
+      {
+        "term": "stateMD",
+        "estimate": -2.136613235,
+        "se": 1.669519864,
+        "z": -1.279777067,
+        "p": 0.2006235514
+      },
+      {
+        "term": "statePA",
+        "estimate": -2.132595846,
+        "se": 1.818910862,
+        "z": -1.17245759,
+        "p": 0.2410133894
+      },
+      {
+        "term": "proxy:modelgemini-3.8-flash",
+        "estimate": 0.2666268164,
+        "se": 0.6694144556,
+        "z": 0.398298564,
+        "p": 0.6904101189
+      },
+      {
+        "term": "proxy:modelgpt-5.4-mini",
+        "estimate": -0.2229444078,
+        "se": 0.6431456151,
+        "z": -0.3466468597,
+        "p": 0.7288566373
+      }
+    ],
+    "re_sd_profile": 2.426282386,
+    "logLik": -191.9717214,
+    "lme4_version": "1.1.37"
+  },
+  "mixed_logit_vb_sensitivity_zip": {
+    "formula": "deny ~ proxy + C(model) + proxy:C(model) + C(state) + (1|profile)",
+    "n": 434,
+    "fe": {
+      "Intercept": {
+        "mean": 0.9052228760536687,
+        "sd": 0.1410310220154551
+      },
+      "C(model)[T.gemini-3.8-flash]": {
+        "mean": -0.32557544864552557,
+        "sd": 0.2557677716284855
+      },
+      "C(model)[T.gpt-5.4-mini]": {
+        "mean": 0.24389077209975,
+        "sd": 0.23716868764349514
+      },
+      "C(state)[T.MD]": {
+        "mean": -0.7053725140509952,
+        "sd": 0.17415233966724258
+      },
+      "C(state)[T.PA]": {
+        "mean": -0.620451004773367,
+        "sd": 0.2790319653734456
+      },
+      "proxy": {
+        "mean": -0.08484566990208163,
+        "sd": 0.1992202756775898
+      },
+      "proxy:C(model)[T.gemini-3.8-flash]": {
+        "mean": 0.21408471087390316,
+        "sd": 0.3580316992086765
+      },
+      "proxy:C(model)[T.gpt-5.4-mini]": {
+        "mean": -0.2427891322318865,
+        "sd": 0.33451733701422237
+      }
+    }
+  },
+  "placebo": {
+    "name": {
+      "n_pairs": 74,
+      "flips": 8,
+      "flip_rate": 0.10810810810810811,
+      "control_flip_rate": 0.02666666666666667,
+      "n_paired_with_control": 74,
+      "net_flip_rate": 0.08108108108108109,
+      "newcombe": {
+        "diff": 0.08108108108108109,
+        "lo": 0.019367996413587024,
+        "hi": 0.16448004938668345,
+        "degenerate": false,
+        "abcd": [
+          2,
+          6,
+          0,
+          66
+        ]
+      },
+      "net_flip_ci_boot": [
+        0.02702702702702703,
+        0.13518141429100308
+      ],
+      "trigger_upper": 0.16448004938668345,
+      "trigger_method": "newcombe",
+      "wilson_raw": [
+        0.055806661696501225,
+        0.1990904627202631
+      ],
+      "b_deny_a_only": 4,
+      "c_deny_b_only": 4,
+      "p_mcnemar": 1.0
+    },
+    "name_black": {
+      "n_pairs": 75,
+      "flips": 9,
+      "flip_rate": 0.12,
+      "control_flip_rate": 0.02666666666666667,
+      "n_paired_with_control": 75,
+      "net_flip_rate": 0.09333333333333334,
+      "newcombe": {
+        "diff": 0.09333333333333332,
+        "lo": 0.004925288097339525,
+        "hi": 0.18907561548344343,
+        "degenerate": false,
+        "abcd": [
+          0,
+          9,
+          2,
+          64
+        ]
+      },
+      "net_flip_ci_boot": [
+        0.013333333333333334,
+        0.18666666666666668
+      ],
+      "trigger_upper": 0.18907561548344343,
+      "trigger_method": "newcombe",
+      "wilson_raw": [
+        0.06443298969072164,
+        0.2125984251968504
+      ],
+      "b_deny_a_only": 4,
+      "c_deny_b_only": 5,
+      "p_mcnemar": 1.0
+    },
+    "zip": {
+      "n_pairs": 75,
+      "flips": 11,
+      "flip_rate": 0.14666666666666667,
+      "control_flip_rate": 0.02666666666666667,
+      "n_paired_with_control": 75,
+      "net_flip_rate": 0.12,
+      "newcombe": {
+        "diff": 0.12,
+        "lo": 0.02627185362080893,
+        "hi": 0.22037758545249012,
+        "degenerate": false,
+        "abcd": [
+          0,
+          11,
+          2,
+          62
+        ]
+      },
+      "net_flip_ci_boot": [
+        0.04,
+        0.21333333333333335
+      ],
+      "trigger_upper": 0.22037758545249012,
+      "trigger_method": "newcombe",
+      "wilson_raw": [
+        0.08391630937003362,
+        0.24384974306928775
+      ],
+      "b_deny_a_only": 4,
+      "c_deny_b_only": 7,
+      "p_mcnemar": 0.548828125
+    }
+  },
+  "placebo_M1a": {
+    "name": {
+      "n_units": 36,
+      "jsd": 0.0023079860162435314,
+      "p_perm": 1.0,
+      "per_code": {
+        "C08": {
+          "mean_diff": 0.003968253968253968,
+          "ci": [
+            0.0,
+            0.011904761904761904
+          ]
+        },
+        "C09": {
+          "mean_diff": -0.001984126984126985,
+          "ci": [
+            -0.005952380952380955,
+            0.0
+          ]
+        },
+        "X02": {
+          "mean_diff": -0.001984126984126985,
+          "ci": [
+            -0.005952380952380955,
+            0.0
+          ]
+        }
+      }
+    },
+    "zip": {
+      "n_units": 36,
+      "jsd": 0.0023079860162435314,
+      "p_perm": 1.0,
+      "per_code": {
+        "C08": {
+          "mean_diff": 0.003968253968253968,
+          "ci": [
+            0.0,
+            0.011904761904761904
+          ]
+        },
+        "C09": {
+          "mean_diff": -0.001984126984126985,
+          "ci": [
+            -0.005952380952380955,
+            0.0
+          ]
+        },
+        "X02": {
+          "mean_diff": -0.001984126984126985,
+          "ci": [
+            -0.005952380952380955,
+            0.0
+          ]
+        }
+      }
+    }
+  },
+  "cross_name_vs_zip_M3": {
+    "n_pairs": 74,
+    "flips": 5,
+    "flip_rate": 0.06756756756756757,
+    "control_flip_rate": 0.02666666666666667,
+    "n_paired_with_control": 74,
+    "net_flip_rate": 0.04054054054054054,
+    "newcombe": {
+      "diff": 0.04054054054054054,
+      "lo": -0.03750634358709774,
+      "hi": 0.12476908547164636,
+      "degenerate": false,
+      "abcd": [
+        0,
+        5,
+        2,
+        67
+      ]
+    },
+    "net_flip_ci_boot": [
+      -0.013513513513513514,
+      0.0958904109589041
+    ],
+    "trigger_upper": 0.12476908547164636,
+    "trigger_method": "newcombe",
+    "wilson_raw": [
+      0.02920365554856204,
+      0.14861386104924681
+    ],
+    "b_deny_a_only": 2,
+    "c_deny_b_only": 3,
+    "p_mcnemar": 1.0
+  },
+  "holm": {
+    "M2_zip": {
+      "p": 0.125,
+      "p_holm": 1.0,
+      "reject": false
+    },
+    "M2_name": {
+      "p": 0.21875,
+      "p_holm": 1.0,
+      "reject": false
+    },
+    "M1a_name": {
+      "p": 0.24147585241475852,
+      "p_holm": 1.0,
+      "reject": false
+    },
+    "M1a_zip": {
+      "p": 0.5002499750024998,
+      "p_holm": 1.0,
+      "reject": false
+    },
+    "M1b_name": {
+      "p": 1.0,
+      "p_holm": 1.0,
+      "reject": false
+    },
+    "M3_name": {
+      "p": 1.0,
+      "p_holm": 1.0,
+      "reject": false
+    },
+    "M1b_zip": {
+      "p": 1.0,
+      "p_holm": 1.0,
+      "reject": false
+    },
+    "M3_zip": {
+      "p": 1.0,
+      "p_holm": 1.0,
+      "reject": false
+    }
+  },
+  "name_level": {
+    "setup1": {
+      "n": 75,
+      "full_cluster_robust": {
+        "est": -0.013333333333333334,
+        "se": 0.030644220259195987,
+        "t": -0.43510108009134774,
+        "df": 17,
+        "p": 0.6689624397987821,
+        "G": 18,
+        "ci": [
+          -0.07798698660674032,
+          0.05132031994007365
+        ]
+      },
+      "perm_name_level": {
+        "p": 1.0,
+        "G": 18,
+        "exact": false
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F00",
+          "name_b": "Demetria Blount",
+          "est": 0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F01",
+          "name_b": "Ebony Milton",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F02",
+          "name_b": "Keisha Isaac",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F04",
+          "name_b": "Lakisha Blackmon",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F06",
+          "name_b": "Latasha Burrell",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F07",
+          "name_b": "Latisha Dozier",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F08",
+          "name_b": "Latonya Parham",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F09",
+          "name_b": "Latoya Echols",
+          "est": 0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F10",
+          "name_b": "Latrice Gary",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F11",
+          "name_b": "Lawanda Carrington",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F12",
+          "name_b": "Tamika Branch",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F13",
+          "name_b": "Tanisha Ricks",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M14",
+          "name_b": "Darius Bonds",
+          "est": 0.0,
+          "n": 6
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M16",
+          "name_b": "Lamont Dubose",
+          "est": 0.0,
+          "n": 6
+        },
+        {
+          "name_pair_id": "M17",
+          "name_b": "Terrell Denson",
+          "est": 0.0,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F00",
+          "est": -0.027777777777777776,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F01",
+          "est": -0.013888888888888888,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F02",
+          "est": -0.013888888888888888,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F03",
+          "est": -0.013888888888888888,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F04",
+          "est": 0.0,
+          "same_sign_inside_ci": false
+        },
+        {
+          "dropped": "F06",
+          "est": 0.0,
+          "same_sign_inside_ci": false
+        },
+        {
+          "dropped": "F07",
+          "est": -0.013888888888888888,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F08",
+          "est": -0.013888888888888888,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F09",
+          "est": -0.027777777777777776,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F10",
+          "est": -0.013888888888888888,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F11",
+          "est": 0.0,
+          "same_sign_inside_ci": false
+        },
+        {
+          "dropped": "F12",
+          "est": -0.013888888888888888,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F13",
+          "est": -0.013888888888888888,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M14",
+          "est": -0.014492753623188406,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": -0.015151515151515152,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M16",
+          "est": -0.014492753623188406,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M17",
+          "est": -0.015151515151515152,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": -0.014492753623188406,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": false,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    },
+    "setup2": {
+      "n": 72,
+      "full_cluster_robust": {
+        "est": -0.05555555555555555,
+        "se": 0.02467717003407857,
+        "t": -2.251293623978547,
+        "df": 17,
+        "p": 0.037885755108026005,
+        "G": 18,
+        "ci": [
+          -0.10761983331029601,
+          -0.003491277800815089
+        ]
+      },
+      "perm_name_level": {
+        "p": 0.1232,
+        "G": 18,
+        "exact": false
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F00",
+          "name_b": "Demetria Blount",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F01",
+          "name_b": "Ebony Milton",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F02",
+          "name_b": "Keisha Isaac",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F04",
+          "name_b": "Lakisha Blackmon",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F06",
+          "name_b": "Latasha Burrell",
+          "est": -0.5,
+          "n": 2
+        },
+        {
+          "name_pair_id": "F07",
+          "name_b": "Latisha Dozier",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F08",
+          "name_b": "Latonya Parham",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F09",
+          "name_b": "Latoya Echols",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F10",
+          "name_b": "Latrice Gary",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F11",
+          "name_b": "Lawanda Carrington",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F12",
+          "name_b": "Tamika Branch",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F13",
+          "name_b": "Tanisha Ricks",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M14",
+          "name_b": "Darius Bonds",
+          "est": -0.2,
+          "n": 5
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 8
+        },
+        {
+          "name_pair_id": "M16",
+          "name_b": "Lamont Dubose",
+          "est": 0.0,
+          "n": 6
+        },
+        {
+          "name_pair_id": "M17",
+          "name_b": "Terrell Denson",
+          "est": -0.1111111111111111,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F00",
+          "est": -0.043478260869565216,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F01",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F02",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F03",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F04",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F06",
+          "est": -0.04285714285714286,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F07",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F08",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F09",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F10",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F11",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F12",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F13",
+          "est": -0.057971014492753624,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M14",
+          "est": -0.04477611940298507,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": -0.0625,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M16",
+          "est": -0.06060606060606061,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M17",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": -0.06060606060606061,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": true,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    }
+  },
+  "name_level_clean_pairs_descriptive": {
+    "setup1": {
+      "n": 27,
+      "full_cluster_robust": {
+        "est": 0.037037037037037035,
+        "se": 0.04166349121670079,
+        "t": 0.8889566369846307,
+        "df": 4,
+        "p": 0.42425588053065805,
+        "G": 5,
+        "ci": [
+          -0.07863935921702314,
+          0.1527134332910972
+        ]
+      },
+      "perm_name_level": {
+        "p": 1.0,
+        "G": 5,
+        "exact": true
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F09",
+          "name_b": "Latoya Echols",
+          "est": 0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M14",
+          "name_b": "Darius Bonds",
+          "est": 0.0,
+          "n": 6
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F03",
+          "est": 0.041666666666666664,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F09",
+          "est": 0.0,
+          "same_sign_inside_ci": false
+        },
+        {
+          "dropped": "M14",
+          "est": 0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": 0.05555555555555555,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": 0.047619047619047616,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": false,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    },
+    "setup2": {
+      "n": 25,
+      "full_cluster_robust": {
+        "est": -0.04,
+        "se": 0.04071363407999831,
+        "t": -0.9824718648648242,
+        "df": 4,
+        "p": 0.381492337042488,
+        "G": 5,
+        "ci": [
+          -0.1530391700562254,
+          0.07303917005622537
+        ]
+      },
+      "perm_name_level": {
+        "p": 1.0,
+        "G": 5,
+        "exact": true
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F09",
+          "name_b": "Latoya Echols",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M14",
+          "name_b": "Darius Bonds",
+          "est": -0.2,
+          "n": 5
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 8
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F03",
+          "est": -0.045454545454545456,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F09",
+          "est": -0.045454545454545456,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M14",
+          "est": 0.0,
+          "same_sign_inside_ci": false
+        },
+        {
+          "dropped": "M15",
+          "est": -0.058823529411764705,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": -0.05263157894736842,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": false,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    }
+  },
+  "name_level_excl_sensitivity_only": {
+    "setup1": {
+      "n": 54,
+      "full_cluster_robust": {
+        "est": 0.037037037037037035,
+        "se": 0.027184290496947174,
+        "t": 1.3624426593438712,
+        "df": 11,
+        "p": 0.20030205607838109,
+        "G": 12,
+        "ci": [
+          -0.022795182934363854,
+          0.09686925700843793
+        ]
+      },
+      "perm_name_level": {
+        "p": 0.5,
+        "G": 12,
+        "exact": true
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F00",
+          "name_b": "Demetria Blount",
+          "est": 0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F01",
+          "name_b": "Ebony Milton",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F07",
+          "name_b": "Latisha Dozier",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F08",
+          "name_b": "Latonya Parham",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F09",
+          "name_b": "Latoya Echols",
+          "est": 0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F10",
+          "name_b": "Latrice Gary",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F13",
+          "name_b": "Tanisha Ricks",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M14",
+          "name_b": "Darius Bonds",
+          "est": 0.0,
+          "n": 6
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M17",
+          "name_b": "Terrell Denson",
+          "est": 0.0,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F00",
+          "est": 0.0196078431372549,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F01",
+          "est": 0.0392156862745098,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F03",
+          "est": 0.0392156862745098,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F07",
+          "est": 0.0392156862745098,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F08",
+          "est": 0.0392156862745098,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F09",
+          "est": 0.0196078431372549,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F10",
+          "est": 0.0392156862745098,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F13",
+          "est": 0.0392156862745098,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M14",
+          "est": 0.041666666666666664,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": 0.044444444444444446,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M17",
+          "est": 0.044444444444444446,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": 0.041666666666666664,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": true,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    },
+    "setup2": {
+      "n": 52,
+      "full_cluster_robust": {
+        "est": -0.057692307692307696,
+        "se": 0.02814717762112419,
+        "t": -2.049665812639423,
+        "df": 11,
+        "p": 0.06501308997758705,
+        "G": 12,
+        "ci": [
+          -0.11964382793486551,
+          0.004259212550250122
+        ]
+      },
+      "perm_name_level": {
+        "p": 0.25,
+        "G": 12,
+        "exact": true
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F00",
+          "name_b": "Demetria Blount",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F01",
+          "name_b": "Ebony Milton",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F07",
+          "name_b": "Latisha Dozier",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F08",
+          "name_b": "Latonya Parham",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F09",
+          "name_b": "Latoya Echols",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F10",
+          "name_b": "Latrice Gary",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F13",
+          "name_b": "Tanisha Ricks",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M14",
+          "name_b": "Darius Bonds",
+          "est": -0.2,
+          "n": 5
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 8
+        },
+        {
+          "name_pair_id": "M17",
+          "name_b": "Terrell Denson",
+          "est": -0.1111111111111111,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F00",
+          "est": -0.04081632653061224,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F01",
+          "est": -0.061224489795918366,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F03",
+          "est": -0.061224489795918366,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F07",
+          "est": -0.061224489795918366,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F08",
+          "est": -0.061224489795918366,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F09",
+          "est": -0.061224489795918366,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F10",
+          "est": -0.061224489795918366,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F13",
+          "est": -0.061224489795918366,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M14",
+          "est": -0.0425531914893617,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": -0.06818181818181818,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M17",
+          "est": -0.046511627906976744,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": -0.06521739130434782,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": true,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    }
+  },
+  "name_level_excl_no_class": {
+    "setup1": {
+      "n": 48,
+      "full_cluster_robust": {
+        "est": -0.041666666666666664,
+        "se": 0.043357615392223776,
+        "t": -0.9609999602085961,
+        "df": 10,
+        "p": 0.35921250813445227,
+        "G": 11,
+        "ci": [
+          -0.13827345405155855,
+          0.05494012071822522
+        ]
+      },
+      "perm_name_level": {
+        "p": 0.625,
+        "G": 11,
+        "exact": true
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F02",
+          "name_b": "Keisha Isaac",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F04",
+          "name_b": "Lakisha Blackmon",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F06",
+          "name_b": "Latasha Burrell",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F09",
+          "name_b": "Latoya Echols",
+          "est": 0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F11",
+          "name_b": "Lawanda Carrington",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F12",
+          "name_b": "Tamika Branch",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M14",
+          "name_b": "Darius Bonds",
+          "est": 0.0,
+          "n": 6
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M16",
+          "name_b": "Lamont Dubose",
+          "est": 0.0,
+          "n": 6
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F02",
+          "est": -0.044444444444444446,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F03",
+          "est": -0.044444444444444446,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F04",
+          "est": -0.022222222222222223,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F06",
+          "est": -0.022222222222222223,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F09",
+          "est": -0.06666666666666667,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F11",
+          "est": -0.022222222222222223,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F12",
+          "est": -0.044444444444444446,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M14",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": -0.05128205128205128,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M16",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": true,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    },
+    "setup2": {
+      "n": 45,
+      "full_cluster_robust": {
+        "est": -0.044444444444444446,
+        "se": 0.03135938560282032,
+        "t": -1.417261326715767,
+        "df": 10,
+        "p": 0.18680145642908758,
+        "G": 11,
+        "ci": [
+          -0.1143175098805074,
+          0.0254286209916185
+        ]
+      },
+      "perm_name_level": {
+        "p": 0.5,
+        "G": 11,
+        "exact": true
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F02",
+          "name_b": "Keisha Isaac",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F04",
+          "name_b": "Lakisha Blackmon",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F06",
+          "name_b": "Latasha Burrell",
+          "est": -0.5,
+          "n": 2
+        },
+        {
+          "name_pair_id": "F09",
+          "name_b": "Latoya Echols",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F11",
+          "name_b": "Lawanda Carrington",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F12",
+          "name_b": "Tamika Branch",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M14",
+          "name_b": "Darius Bonds",
+          "est": -0.2,
+          "n": 5
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 8
+        },
+        {
+          "name_pair_id": "M16",
+          "name_b": "Lamont Dubose",
+          "est": 0.0,
+          "n": 6
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F02",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F03",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F04",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F06",
+          "est": -0.023255813953488372,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F09",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F11",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F12",
+          "est": -0.047619047619047616,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M14",
+          "est": -0.025,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": -0.05405405405405406,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M16",
+          "est": -0.05128205128205128,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": -0.05128205128205128,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": true,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    }
+  },
+  "name_level_strict_15_5_sensitivity": {
+    "setup1": {
+      "n": 33,
+      "full_cluster_robust": {
+        "est": -0.06060606060606061,
+        "se": 0.044663552803183335,
+        "t": -1.3569467004367148,
+        "df": 7,
+        "p": 0.21692680950831275,
+        "G": 8,
+        "ci": [
+          -0.1662185807267628,
+          0.04500645951464158
+        ]
+      },
+      "perm_name_level": {
+        "p": 0.5,
+        "G": 8,
+        "exact": true
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F04",
+          "name_b": "Lakisha Blackmon",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F06",
+          "name_b": "Latasha Burrell",
+          "est": -0.3333333333333333,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F07",
+          "name_b": "Latisha Dozier",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F08",
+          "name_b": "Latonya Parham",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F13",
+          "name_b": "Tanisha Ricks",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 9
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F03",
+          "est": -0.06666666666666667,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F04",
+          "est": -0.03333333333333333,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F06",
+          "est": -0.03333333333333333,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F07",
+          "est": -0.06666666666666667,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F08",
+          "est": -0.06666666666666667,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F13",
+          "est": -0.06666666666666667,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": -0.08333333333333333,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": -0.07407407407407407,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": true,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    },
+    "setup2": {
+      "n": 31,
+      "full_cluster_robust": {
+        "est": -0.03225806451612903,
+        "se": 0.03493100197466809,
+        "t": -0.923479507960365,
+        "df": 7,
+        "p": 0.3864827643612167,
+        "G": 8,
+        "ci": [
+          -0.11485675891786463,
+          0.05034062988560657
+        ]
+      },
+      "perm_name_level": {
+        "p": 1.0,
+        "G": 8,
+        "exact": true
+      },
+      "per_name": [
+        {
+          "name_pair_id": "F03",
+          "name_b": "Kenya Colbert",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F04",
+          "name_b": "Lakisha Blackmon",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F06",
+          "name_b": "Latasha Burrell",
+          "est": -0.5,
+          "n": 2
+        },
+        {
+          "name_pair_id": "F07",
+          "name_b": "Latisha Dozier",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F08",
+          "name_b": "Latonya Parham",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "F13",
+          "name_b": "Tanisha Ricks",
+          "est": 0.0,
+          "n": 3
+        },
+        {
+          "name_pair_id": "M15",
+          "name_b": "Jermaine Williams",
+          "est": 0.0,
+          "n": 8
+        },
+        {
+          "name_pair_id": "M18",
+          "name_b": "Tyrone Polk",
+          "est": 0.0,
+          "n": 6
+        }
+      ],
+      "lono": [
+        {
+          "dropped": "F03",
+          "est": -0.03571428571428571,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F04",
+          "est": -0.03571428571428571,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F06",
+          "est": 0.0,
+          "same_sign_inside_ci": false
+        },
+        {
+          "dropped": "F07",
+          "est": -0.03571428571428571,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F08",
+          "est": -0.03571428571428571,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "F13",
+          "est": -0.03571428571428571,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M15",
+          "est": -0.043478260869565216,
+          "same_sign_inside_ci": true
+        },
+        {
+          "dropped": "M18",
+          "est": -0.04,
+          "same_sign_inside_ci": true
+        }
+      ],
+      "lono_all_pass": false,
+      "robust_confirmed": false,
+      "note": "no name random effect (15.5); clusters = name pairs"
+    }
+  },
+  "fallback": [
+    {
+      "upper": 0.1454716574690747,
+      "method": "newcombe",
+      "trigger_fallback": false
+    },
+    {
+      "upper": 0.16448004938668345,
+      "method": "newcombe",
+      "trigger_fallback": false
+    }
+  ],
+  "parse_rate": 0.9624074074074074,
+  "tool_called_rate": 1.0,
+  "hmda_reason_compare": {
+    "llm_cited_as_hmda": {
+      "1": 0.544,
+      "5": 0.227,
+      "3": 0.156,
+      "4": 0.053,
+      "2": 0.015,
+      "9": 0.005
+    }
+  }
+}

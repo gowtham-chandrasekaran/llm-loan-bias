@@ -1,0 +1,41 @@
+# HAIKU MINI-PILOT, 15.9(5) (logged 8c30a41f; output-robustness branch; final for phase minipilot, NOT yet run: needs Gowtham's "run it").
+# 25 pilot profiles x 8 variants x 3 repeats x setups 1-3 x 3 vendors, batch; same design as the pilot (pre-reg 15.3) with claude-sonnet-5 -> claude-haiku-5-5.
+# The (5b) mini planted-bias check is a SEPARATE config/run (pc_* records, own folder) and is not part of this file.
+# Fixes from pilot_observations.md: Google thinking_budget 0 + max_output_tokens 2048 + MAX_TOKENS rerun gate; Anthropic cap from observed per-call costs; batches ordered by profile.
+# PILOT (pre-reg 15.3): batch APIs, setups 3 -> 1 -> 2, lowest reasoning setting per vendor, $15 hard cap.
+run_seed: 777
+trim_seed: 20261012            # pre-seeded order for dropping setup-2 profiles if projected cost > cap (repeats never cut)
+phase: minipilot              # K1: phase caps (budget.PHASE_CAPS) + cumulative ledger
+pilot: true                    # all outputs tagged excluded_from_confirmatory
+mode: batch
+budget_usd: 9.53               # 15.9(7): K2 caps @ 79625d0 = budget.PHASE_CAPS['minipilot'] (enforced total $9.53)
+per_vendor_budget_usd: {openai: 2.55, anthropic: 0.59, google: 6.40, mock: 9.53}   # OpenAI incl. judge; cent ceilings of the exact worst case
+expected_prompt_version: v2.0-m1a          # runner.config_guard refuses the run if PROMPT_VERSION differs
+letter_lexicon_sha256: fc2f89973b0464da08d87e6e76b73ffc435530c946fe854922ab992631df2e6b   # frozen lexicon; guard refuses on mismatch
+repeats: 3
+setups: [3, 1, 2]
+variants: [base, control_dup, name_b, name_w_placebo, name_b_placebo, zip_b, zip_placebo, anchor]
+# Reasoning settings (15.3 #7), each verified with one live call on 2026-10-12 (docs/live_checks_thinking.json):
+#   openai  gpt-5.4-mini     reasoning.effort = "none"          -> 0 reasoning tokens
+#   anthropic claude-haiku-5-5 thinking = {"type": "disabled"}   -> Models API reports thinking.types.disabled.supported = true (2026-10-17); NOT yet live-verified (no paid call)
+#   google  gemini-3.8-flash thinking_budget = 0                -> 0 thought tokens
+models:
+  - {vendor: openai, model: gpt-5.4-mini, effort: none}
+  - {vendor: anthropic, model: claude-haiku-5-5, effort: none}
+  - {vendor: google, model: gemini-3.8-flash, effort: none}
+judge: {vendor: openai, model: gpt-5-nano, effort: minimal}   # 'minimal' live-verified 2026-10-12: 0 reasoning tokens (docs/live_checks_judge.json); runs in batch mode by default
+max_output_tokens: 2048
+# 15.9 (2a)/(5a) M1a hook: setup-3 tool-deny needs 1-4 ordered codes (validation failure -> retry). Paid runs REFUSE to start
+# while PROMPT_VERSION is pre-M1a (runner.m1a_guard); the M1a setup-3 prompt was approved at 7af391c8 and shipped at d7b45a3 (v2.0-m1a).
+m1a_require_codes_on_deny_setup3: true
+google_tools_schema_mode: final_turn   # decided at the (5b) gate; applied to ALL Google setup-2 items
+batch_chunk: 500
+poll_seconds: 60
+est_tokens:
+  input: 750
+  output_visible: 350
+  reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}
+  tool_overhead: {openai: 800, anthropic: 2200, google: 1000, mock: 300}   # pilot actual: setup-2 input minus setup-1 input (both rounds)
+  tool_call_output: 60
+  judge_input: 350
+  judge_output: 40

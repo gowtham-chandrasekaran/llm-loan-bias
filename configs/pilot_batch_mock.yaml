@@ -26,3 +26,5 @@ est_tokens:
   tool_call_output: 60
   judge_input: 350
   judge_output: 40
+# 15.9 (i): M1a prompt requires the M1a hook ON
+m1a_require_codes_on_deny_setup3: true

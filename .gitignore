@@ -8,8 +8,27 @@ __pycache__/
 data/raw/*
 !data/raw/.gitkeep
 runs/*/raw_cache/
-runs/
+# Run folders are ignored by default. Published run files are listed below as explicit, commented exceptions.
+runs/*
+# --- Publish 2026-10-20 exceptions -----------------------------------------------------------------------------------
+# pilot-v1 (already public since e59d8e1): raw/ (read-only copies, checked by raw_SHA256SUMS), analysis.json and the
+# pilot summaries were tracked before; analysis_placebo_fix.json (placebo-fix re-analysis, reproduced by
+# tests/test_reviewer_followups.py via `analysis --legacy-pilot-v1`) is new. The top-level calls/judgments/ledger/state
+# files in this folder are byte-identical duplicates of raw/ and stay ignored; rejudge_*_state.json stays ignored
+# (judge re-run state; rejudge_hedging_v3_state.json contains the held constructed letters).
+!runs/20261012T143812-ff54324d-4745d6-batch/
+runs/20261012T143812-ff54324d-4745d6-batch/*
+!runs/20261012T143812-ff54324d-4745d6-batch/raw/
+!runs/20261012T143812-ff54324d-4745d6-batch/raw_SHA256SUMS
+!runs/20261012T143812-ff54324d-4745d6-batch/analysis.json
+!runs/20261012T143812-ff54324d-4745d6-batch/analysis_placebo_fix.json
+!runs/20261012T143812-ff54324d-4745d6-batch/pilot_summary.json
+!runs/20261012T143812-ff54324d-4745d6-batch/pilot_summary.md
+# HELD until 15.8.5 labeling closes (files carry variant / pair_type next to the letters); NOT published, see
+# docs/research/HELD_FILES.md: core mini-pilot runs/20261018T124607-e5e8b45a-1a973e-batch, smoke 1
+# 20261017T213809-918ac8fb-64e476, smoke 2 20261017T225139-9c4f9094-aa232a. No exception on purpose.
 
-# blind keys never tracked (plan 15.8)
+# blind keys never tracked (plan 15.8); these come last so no exception above can re-include them
 blind_key*.jsonl
 **/blind_key*
+**/answer_key*

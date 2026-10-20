@@ -11,3 +11,5 @@ judge: {vendor: mock, model: mock-1, effort: none}
 max_output_tokens: 1500
 # token assumptions for the pre-run estimate (replaced by measured means after the mock/pilot run)
 est_tokens: {input: 750, output_visible: 350, reasoning: {none: 0, minimal: 50, low: 400, medium: 1200, high: 3000}, judge_input: 350, judge_output: 40}
+# 15.9 (i): M1a prompt requires the M1a hook ON
+m1a_require_codes_on_deny_setup3: true

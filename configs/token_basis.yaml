@@ -1,0 +1,59 @@
+source: runs/20261012T143812-ff54324d-4745d6-batch/raw/calls.jsonl (pilot actual per-call
+  usage; setup 2 = both tool rounds). Same basis as docs/cost_haiku_swap.md.
+worst_multiplier: 1.25
+worst_google_price_multiplier: 2.0
+worst_rerun_margin: 0.05
+worst_judge_multiplier: 3.0
+tokens:
+  anthropic:
+    1:
+      inp: 842.375
+      out: 519.23
+      inp95: 851.0
+      out95: 623.0
+    2:
+      inp: 3092.7808
+      out: 673.6597
+      inp95: 3110.0
+      out95: 840.5
+    3:
+      inp: 915.935
+      out: 407.02
+      inp95: 926.0
+      out95: 537.25
+  google:
+    1:
+      inp: 613.63
+      out: 558.115
+      inp95: 619.05
+      out95: 796.0
+    2:
+      inp: 1672.3217
+      out: 364.155
+      inp95: 1684.05
+      out95: 425.0
+    3:
+      inp: 668.15
+      out: 272.26
+      inp95: 674.05
+      out95: 350.2
+  openai:
+    1:
+      inp: 556.165
+      out: 242.6983
+      inp95: 561.0
+      out95: 292.0
+    2:
+      inp: 1429.3033
+      out: 272.64
+      inp95: 1438.0
+      out95: 312.0
+    3:
+      inp: 607.085
+      out: 192.5867
+      inp95: 613.0
+      out95: 231.0
+judge_per_item:
+  input: 335.6002
+  output: 48.2586
+  per: judged decision letter (all vendors x setups)
