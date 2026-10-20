@@ -83,8 +83,9 @@ their content can be rebuilt from `configs/`; their hashes, like those of files 
 | `llm-loan-bias/runs/cumulative_spend_ledger.jsonl` | 6,553,295 | `df20d4e228bdf49a5d06eed1941d0a5b476dc8147d3e2b20ac79d34ed25b0447` | cumulative spend ledger (operational; not tracked); held, Reviewer hold list. Grows with every paid run, so this hash is a snapshot after the re-test |
 
 Total: 26 files, 73,085,652 bytes. Largest: the re-test `raw/batch_responses.jsonl` (21.7 MB, under GitHub's 50 MB
-warning size). Raw Gemini `thought_signature` values appear only in held files (`raw/batch_responses.jsonl`,
-`batch_state.json`); published code and records-side logging keep only their sha256 and length.
+warning size). For these two runs, raw Gemini `thought_signature` values appear only in held files
+(`raw/batch_responses.jsonl`, `batch_state.json`); the records keep only their sha256 and length. (The pilot-v1
+`raw/batch_state.json`, public since Oct 12, already contains Gemini signatures from that run.)
 
 New docs held back for this update: none. (`docs/research/s2_retest_summary.md` is operational only and is published.)
 
