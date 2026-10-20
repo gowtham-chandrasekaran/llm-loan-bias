@@ -27,6 +27,16 @@ runs/20261012T143812-ff54324d-4745d6-batch/*
 # HELD until 15.8.5 labeling closes (files carry variant / pair_type next to the letters); NOT published, see
 # docs/research/HELD_FILES.md: core mini-pilot runs/20261018T124607-e5e8b45a-1a973e-batch, smoke 1
 # 20261017T213809-918ac8fb-64e476, smoke 2 20261017T225139-9c4f9094-aa232a. No exception on purpose.
+# Also held (publish-retest): 15.9.1 probe runs/probe_s2/ (live 20261020T181308-684ca6-live and mock dry runs), setup-2
+# re-test runs/20261020T190210-ee9b9f61-a646ff-batch, launched configs runs/retest_config_*.yaml, launch logs runs/*.log,
+# the cumulative ledger runs/cumulative_spend_ledger.jsonl and dry-run output runs/s2_retest_dryrun/. All covered by
+# runs/* above; listed explicitly so a later exception cannot re-include them.
+runs/probe_s2/
+runs/20261020T190210-ee9b9f61-a646ff-batch/
+runs/retest_config_*.yaml
+runs/*.log
+runs/cumulative_spend_ledger.jsonl
+runs/s2_retest_dryrun/
 
 # blind keys never tracked (plan 15.8); these come last so no exception above can re-include them
 blind_key*.jsonl

@@ -75,6 +75,8 @@ Two caveats, from the data:
 | **Smoke 1** `20261017T213809-918ac8fb-64e476` | held | Oct 17: 36 calls (12 per vendor, setup 3, 4 variants) to check that structured output works on each vendor. Spend $0.0372. | **Held** |
 | **Smoke 2** `20261017T225139-9c4f9094-aa232a` | held | Oct 17: 24 calls (setups 1 and 2, 4 profiles x 3 vendors, base variant). Spend $0.0380. | **Held** |
 | **Core mini-pilot** `20261018T124607-e5e8b45a-1a973e-batch` | held | Oct 18: the pilot design re-run with Claude Haiku 5.5 and the 15.9 output checks: 5,400 model calls (all done) plus 5,384 judge records. Spend $3.9873 (ledger). | **Held** |
+| **15.9.1 probe** `probe_s2/20261020T181308-684ca6-live` | held | Oct 20: 12 setup-2 calls (2 profiles, base variant, 3 vendors, sync and batch) to check the forced tool call. Spend $0.0180. Excluded from all analyses. | **Held** |
+| **Setup-2 re-test** `20261020T190210-ee9b9f61-a646ff-batch` | held | Oct 20: setup 2 re-run under 15.9.1, 1,800 model calls (all done) plus the judge on 1,800 letters. Spend $1.8208. Replaces the core setup-2 data (15.9.1 item 5). | **Held** |
 
 **Why some runs are held.** The smoke and mini-pilot files list the variant and pair type next to each letter. Human
 labeling under amendment 15.8.5 is still open, and the labelers must not be able to tell which variant a letter came from.
@@ -83,7 +85,7 @@ These folders are published only after labeling closes. Their sha256 checksums a
 manifest also covers other held labeling-design material. For the held runs, only operational facts (call counts, spend,
 tool use) are reported here; no effect estimates have been computed for the mini-pilot.
 
-Total spend to date: **$14.6435** of the $200 limit (amendment 15.9.1, item 8, from the spend ledgers).
+Total spend to date: **$16.4823** of the $200 limit (from the spend ledgers; $14.6435 before the 15.9.1 probe and re-test).
 
 ## 6. Findings so far (pilot and mini-pilot only, not confirmatory)
 
@@ -122,16 +124,26 @@ So the final tool-call rate was 549/600 = 91.5%, below the pre-stated 95% bar. O
 
 ## 7. Status and next steps
 
-1. **Amendment 15.9.1 (pending Gowtham's approval)** forces the round-1 tool call in setup 2 for all vendors, so the
-   model always sees the scorer before deciding. Text: [research/memos/draft_15.9.1.md](research/memos/draft_15.9.1.md).
-2. **Probe** (after approval and a separate "run it"): 2 profiles x 3 vendors x setup 2, sync and batch, cap $0.15.
-   Checks the forced call, a valid final answer, at most 1 tool call, and Haiku thinking disabled.
-3. **Setup-2 re-test**: setup 2 re-run on the 25 pilot profiles for all three vendors (1,800 calls plus judge), cap $3.88.
-   Its data replace the core setup-2 data whatever they show.
-4. **Planted-bias check**: bias is planted at known sizes to check that the pipeline detects bias of a known size before trusting a null result (rules in the logged 15.9
+Done (Oct 20, 2026; plain-language summary: [research/s2_retest_summary.md](research/s2_retest_summary.md)):
+
+1. **Amendment 15.9.1** (sha256 5041167f; approved by Gowtham for the probe and the re-test) forces the round-1 tool
+   call in setup 2 for all vendors, so the model always sees the scorer before deciding. Original text: [research/memos/draft_15.9.1.md](research/memos/draft_15.9.1.md).
+   Implementation notes: [amendment_15_9_1_forced_tool.md](amendment_15_9_1_forced_tool.md).
+2. **Probe: passed.** 2 profiles x 3 vendors x setup 2, sync and batch, 12 calls, $0.0180 (cap $0.15). Every call made
+   the forced tool call on its first attempt with a valid final answer, and Haiku's thinking stayed off.
+3. **Setup-2 re-test: complete.** Setup 2 re-run on the 25 pilot profiles for all three vendors: 1,800 / 1,800 calls
+   made the forced tool call on the first attempt, with 0 retries, 0 stops and 0 API errors. Haiku reported 0 reasoning
+   tokens in both rounds, and the judge finished all 1,800 letters. Spend $1.8208 against $3.88 in caps. Operational
+   results only; no effect estimates have been computed.
+
+Next:
+
+4. **Replace the core setup-2 data** (15.9.1 item 5): the re-test data replace the core setup-2 data whatever they show;
+   the old setup-2 records are archived read-only and reported only as operational rows.
+5. **Planted-bias check**: bias is planted at known sizes to check that the pipeline detects bias of a known size before trusting a null result (rules in the logged 15.9
    erratum, held until labeling closes; implementation in `src/llmbias/positive_control.py`).
-5. **Decision gate** (15.9(5b)): a written go/no-go decision from the mini-pilot results.
-6. **Main run: gated.** No paid call after the mini-pilot without the written gate decision.
+6. **Decision gate** (15.9(5b)): a written go/no-go decision from the mini-pilot results.
+7. **Main run: gated.** No paid call after the mini-pilot without the written gate decision.
 
 ## 8. Reproduce the numbers offline (no API keys, no paid calls)
 
@@ -164,11 +176,13 @@ docs/START_HERE.md                this file
 docs/RUNNING.md                   command reference (data build, mock runs, batch runs)
 docs/design.md                    design notes: variants, pairs, setups, matching, deviations
 docs/amendment_15_9_output_robustness.md   how 15.9 output robustness is implemented
+docs/amendment_15_9_1_forced_tool.md       how 15.9.1 (forced setup-2 tool call, probe, re-test, replacement) is implemented
 docs/research/
   amendment_log.md                which amendments are logged, with sha256 and approval
   HELD_FILES.md                   sha256 manifest of files held until labeling closes
   README.md                       index of the research docs
   memos/draft_15.9.1.md           amendment 15.9.1, PENDING APPROVAL
+  s2_retest_summary.md            15.9.1 probe and setup-2 re-test, plain language (operational only)
   memos/pilot_observations.md     pilot-v1 observations (independent recomputation)
   memos/pilot_analysis/           scripts and outputs behind pilot_observations.md
   review/novelty_check*.md        novelty checks v1, v2, v3

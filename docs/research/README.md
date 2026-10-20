@@ -9,6 +9,7 @@ and labeling material are not included. The M4 detector at 72a3d3a lives on the 
 |---|---|---|
 | [`amendment_log.md`](amendment_log.md) | log of approved amendments | `c2c275f972a74d203a774d61582a2cfd558ded7007e6052fca74cb100dce7470` |
 | [`memos/draft_15.9.1.md`](memos/draft_15.9.1.md) | 15.9.1, **PENDING APPROVAL** (header added; original sha256 in the header) | `03350bba4610bff061bf1726e717d5ad3641a44f43b2787546abd6e7f27ebb69` |
+| [`s2_retest_summary.md`](s2_retest_summary.md) | 15.9.1 probe and setup-2 re-test: plain-language, operational results only (no effect estimates) | see `sha256sum s2_retest_summary.md` |
 | [`memos/pilot_observations.md`](memos/pilot_observations.md) | pilot-v1 observations memo | `4e2c03856d76f7834056b0855f46fe7cc658c6448d59ea78c394966784c20a1a` |
 | [`review/novelty_check.md`](review/novelty_check.md) | novelty check v1 (Reviewer) | `e578515a8dc1e8dc51c8a9694029fda6465a0b087537bae9bd7e70ed90936aa6` |
 | [`review/novelty_check_v2.md`](review/novelty_check_v2.md) | novelty check v2 (Reviewer) | `edee946471d6985cf7ece4504bafd3d7807111a14435633893e9a046175f3982` |
