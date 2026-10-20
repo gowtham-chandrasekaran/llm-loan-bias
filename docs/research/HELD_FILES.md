@@ -51,7 +51,7 @@ run folder except pilot-v1 until 15.8.5 labeling closes. The free mock dry-run f
 summary: [s2_retest_summary.md](s2_retest_summary.md).
 
 Config files derived from the public configs (`*.yaml` below) are treated as low entropy whatever their size, because
-their content can be reconstructed from `configs/`; their hashes, like those of files under 1 KB, are recorded privately.
+their content can be rebuilt from `configs/`; their hashes, like those of files under 1 KB, are recorded privately.
 
 | Path | Size | sha256 | Reason |
 |---|---:|---|---|
