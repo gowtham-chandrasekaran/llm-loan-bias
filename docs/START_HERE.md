@@ -9,7 +9,9 @@ When a bank uses an AI model to decide on a loan, or to explain a decision, does
 because their name or neighbourhood signals their race, and would the written explanation hide it? We test this with
 matched pairs: two applications that are identical except for the name or the ZIP code. If the decision or the letter
 changes more often for a race-signalling swap than for a swap that signals nothing (a "placebo" swap), that is evidence of
-bias. Only commercial APIs are used; no model is trained or run locally.
+a race-specific effect: the race-swap flip rate minus the placebo flip rate. Only commercial APIs are used; no model is
+trained or run locally. The first names used are associated with race in published name-perception studies (sources and
+selection rules: [name_sources.md](name_sources.md)).
 
 Applicants are synthetic mortgage profiles built from public HMDA data (see `../data/PROVENANCE.md`,
 `../reports/data_report.md`). Each profile is sent in 8 versions ("variants"), in 3 setups, to 3 models.
@@ -34,7 +36,9 @@ the allowed fields.
 
 1. **AI decides.** The model reads the application and approves or denies, with reasons.
 2. **AI decides with a scoring tool.** The model can call a deterministic `score_application` tool (a scorecard) and then
-   decides; we log whether it called the tool and whether it overrode the tool's answer.
+   decides; we log whether it called the tool and whether it overrode the tool's answer. The tool call is optional under
+   logged 15.9. Pending amendment 15.9.1 would make the round-1 call required, after which voluntary tool use is no
+   longer measured.
 3. **Tool decides, AI writes the letter.** The decision is fixed by the scorecard; the model writes the adverse-action
    (denial or approval) letter and picks the reason codes. This is where hidden bias in wording would show up.
 
@@ -58,7 +62,9 @@ Two caveats, from the data:
 - **"Reasoning off" was not fully achieved for Google.** In pilot-v1, 438 of 600 Google setup-1 calls reported reasoning
   tokens (thinking was not disabled; see `research/memos/pilot_observations.md`), which was then fixed by
   setting `thinking_budget = 0`. In the core mini-pilot, 22 of 1,800 Google calls still reported a nonzero reasoning-token
-  count; all 1,800 OpenAI and all 1,800 Anthropic calls reported 0.
+  count; all 1,800 OpenAI and all 1,800 Anthropic calls reported 0. The 22 calls are reported as an operational row; they
+  are not excluded. Logged 15.9 only requires the Google thinking budget to be set to 0 (or the minimum) and logged; its
+  zero-reasoning-token requirement applies to Haiku only, and reasoning tokens are not an exclusion reason.
 
 ## 5. The run folders
 
@@ -81,7 +87,7 @@ Total spend to date: **$14.6435** of the $200 limit (amendment 15.9.1, item 8, f
 
 ## 6. Findings so far (pilot and mini-pilot only, not confirmatory)
 
-**A. Pilot-v1: no bias signal, because placebo swaps flip as often as race swaps.** In setup 1 (AI decides), using the
+**A. Pilot-v1: race swaps did not flip decisions more often than placebo swaps.** In setup 1 (AI decides), using the
 majority of 3 repeats, the share of pairs whose decision flips is (`runs/20261012T143812-ff54324d-4745d6-batch/analysis_placebo_fix.json`):
 
 | Pair | Flips / pairs |
@@ -91,11 +97,18 @@ majority of 3 repeats, the share of pairs whose decision flips is (`runs/2026101
 | Placebo name, White (`base` vs `name_w_placebo`) | 8 / 74 |
 | Placebo name, Black (`name_b` vs `name_b_placebo`) | 9 / 75 |
 | Placebo ZIP (`base` vs `zip_placebo`) | 11 / 75 |
-| Chance (`base` vs `control_dup`) | 2.7% of pairs |
+| Chance (`base` vs `control_dup`, byte-identical re-ask) | 2 / 75 |
 
-Swapping to a name or ZIP that signals nothing about race changed the decision about as often as (or more often than)
-swapping race. So at pilot size there is no sign of race-specific bias, and the study now nets every race effect against
-the placebo rate (amendment 15.9). *Correction note:* the original `analysis.json` reported placebo name 15/149 and placebo
+At pilot size, race swaps did not change setup-1 decisions more often than placebo swaps. The pilot is small (about 75
+pairs per type) and not powered to rule out a race effect. It covers decisions in setup 1 only, with Claude Sonnet 5
+rather than Haiku, and says nothing about setups 2 and 3 or letter wording. This is why every race effect is now netted
+against the placebo rate (amendment 15.9).
+
+Any name or ZIP swap, race-signalling or not, flipped about 9.3-14.7% of decisions, against 2.7% for a byte-identical
+re-ask. So decisions near the approval line are sensitive to irrelevant identity details. That is itself worth reporting,
+and it is why the placebo baseline matters.
+
+*Correction note:* the original `analysis.json` reported placebo name 15/149 and placebo
 ZIP 19/149, because a bug pooled the race pairs into the placebo pairs. That was fixed on Oct 20 (commit a865227); the
 corrected numbers above match the independent recomputation in `research/memos/pilot_observations.md` (D3).
 
@@ -115,7 +128,7 @@ So the final tool-call rate was 549/600 = 91.5%, below the pre-stated 95% bar. O
    Checks the forced call, a valid final answer, at most 1 tool call, and Haiku thinking disabled.
 3. **Setup-2 re-test**: setup 2 re-run on the 25 pilot profiles for all three vendors (1,800 calls plus judge), cap $3.88.
    Its data replace the core setup-2 data whatever they show.
-4. **Planted-bias check**: bias is planted at known sizes to prove the pipeline would detect it (rules in the logged 15.9
+4. **Planted-bias check**: bias is planted at known sizes to check that the pipeline detects bias of a known size before trusting a null result (rules in the logged 15.9
    erratum, held until labeling closes; implementation in `src/llmbias/positive_control.py`).
 5. **Decision gate** (15.9(5b)): a written go/no-go decision from the mini-pilot results.
 6. **Main run: gated.** No paid call after the mini-pilot without the written gate decision.
@@ -136,7 +149,7 @@ sudo apt-get install r-base-core r-cran-lme4          # R + lme4, for the glmer 
 # ~6th significant digit; every other value matches exactly):
 .venv/bin/python -m pytest -q tests/test_reviewer_followups.py::test_legacy_reproduces_pilot_v1_placebo_fix
 
-# Integrity of the pilot-v1 raw files (blind_key.jsonl is listed but kept out of the repo; --ignore-missing skips it):
+# Integrity of the pilot-v1 raw files. blind_key.jsonl is not in the current tree; --ignore-missing skips it.
 cd runs/20261012T143812-ff54324d-4745d6-batch/raw && sha256sum -c ../raw_SHA256SUMS --ignore-missing
 ```
 
